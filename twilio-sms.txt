@@ -1,0 +1,319 @@
+// Twilio SMS Webhook Handler (Standalone version for Supabase Editor)
+// Handles incoming SMS and AI conversation
+
+import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+
+// ============================================================================
+// SUPABASE CLIENT
+// ============================================================================
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+// ============================================================================
+// TWILIO UTILITIES
+// ============================================================================
+const TWILIO_ACCOUNT_SID = Deno.env.get('TWILIO_ACCOUNT_SID')!;
+const TWILIO_AUTH_TOKEN = Deno.env.get('TWILIO_AUTH_TOKEN')!;
+
+async function sendSMS(to: string, from: string, body: string) {
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
+  const auth = btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`);
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${auth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({ To: to, From: from, Body: body }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Twilio error: ${error}`);
+  }
+  
+  const data = await response.json();
+  return { sid: data.sid, status: data.status };
+}
+
+function twiml(content: string): Response {
+  return new Response(
+    `<?xml version="1.0" encoding="UTF-8"?><Response>${content}</Response>`,
+    { headers: { 'Content-Type': 'application/xml' } }
+  );
+}
+
+function parseTwilioBody(body: string): Record<string, string> {
+  const params: Record<string, string> = {};
+  for (const pair of body.split('&')) {
+    const [key, value] = pair.split('=');
+    if (key && value !== undefined) {
+      params[decodeURIComponent(key)] = decodeURIComponent(value.replace(/\+/g, ' '));
+    }
+  }
+  return params;
+}
+
+// ============================================================================
+// GEMINI AI
+// ============================================================================
+const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')!;
+
+async function generateAIResponse(customerMessage: string, context: any) {
+  const systemPrompt = `You are ${context.assistantName}, a friendly AI assistant for ${context.businessName}.
+
+Your job is to help potential customers via SMS:
+1. Be warm, friendly, and professional (but not robotic)
+2. Qualify leads by naturally gathering information
+3. Offer to schedule appointments when appropriate
+4. Keep responses SHORT - this is SMS, aim for 1-3 sentences max
+
+INFORMATION TO GATHER (ask naturally, not all at once):
+- What service do they need?
+- How urgent is it?
+- Is it for a home or business?
+
+ALREADY COLLECTED:
+${Object.entries(context.collectedInfo || {}).map(([k, v]) => `- ${k}: ${v}`).join('\n') || '(Nothing yet)'}
+
+RESPONSE FORMAT:
+Always respond with valid JSON:
+{
+  "response": "Your SMS response text here",
+  "intent": "greeting|inquiry|scheduling|objection|information|goodbye",
+  "confidence": 0.95,
+  "extracted": {"field_id": "value"}
+}
+
+The "extracted" object should contain any new information learned. Use field IDs: service, urgency, property, name, preferred_time.`;
+
+  const messages = context.messageHistory.map((m: any) => ({
+    role: m.role === 'customer' ? 'user' : 'model',
+    parts: [{ text: m.content }],
+  }));
+  
+  messages.push({ role: 'user', parts: [{ text: customerMessage }] });
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents: messages,
+        generationConfig: { temperature: 0.7, maxOutputTokens: 200 },
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    console.error('Gemini API error:', await response.text());
+    return { response: "Thanks for your message! Let me connect you with our team.", intent: 'inquiry', confidence: 0.5, collectedInfo: context.collectedInfo };
+  }
+
+  const data = await response.json();
+  const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+  try {
+    const jsonMatch = aiText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      return {
+        response: parsed.response || aiText,
+        intent: parsed.intent || 'inquiry',
+        confidence: parsed.confidence || 0.8,
+        collectedInfo: { ...context.collectedInfo, ...(parsed.extracted || {}) },
+      };
+    }
+  } catch (e) {
+    console.warn('Failed to parse AI response as JSON');
+  }
+
+  return { response: aiText.slice(0, 320), intent: 'inquiry', confidence: 0.5, collectedInfo: context.collectedInfo };
+}
+
+// ============================================================================
+// MAIN HANDLER
+// ============================================================================
+serve(async (req) => {
+  try {
+    const body = await req.text();
+    const params = parseTwilioBody(body);
+    
+    console.log('SMS webhook received:', params);
+    
+    const toPhone = params.To;
+    const fromPhone = params.From;
+    const messageBody = params.Body;
+    const messageSid = params.MessageSid;
+    
+    // Find the business
+    const { data: business, error: bizError } = await supabase
+      .from('businesses')
+      .select('*')
+      .eq('twilio_phone', toPhone)
+      .single();
+    
+    if (bizError || !business) {
+      console.error('Business not found for phone:', toPhone);
+      return twiml('');
+    }
+    
+    // Get AI settings
+    const { data: aiSettings } = await supabase
+      .from('ai_settings')
+      .select('*')
+      .eq('business_id', business.id)
+      .single();
+    
+    // Find or create conversation
+    let { data: conversation } = await supabase
+      .from('conversations')
+      .select('*, lead:leads(*)')
+      .eq('business_id', business.id)
+      .eq('customer_phone', fromPhone)
+      .eq('status', 'active')
+      .single();
+    
+    if (!conversation) {
+      // Create new lead and conversation
+      const { data: lead } = await supabase
+        .from('leads')
+        .insert({ business_id: business.id, phone: fromPhone, source: 'sms', status: 'new' })
+        .select()
+        .single();
+      
+      if (!lead) {
+        console.error('Failed to create lead');
+        return twiml('');
+      }
+      
+      const { data: newConvo } = await supabase
+        .from('conversations')
+        .insert({
+          business_id: business.id,
+          lead_id: lead.id,
+          business_phone: toPhone,
+          customer_phone: fromPhone,
+          status: 'active',
+          mode: 'ai',
+          ai_context: { collected_info: {} },
+        })
+        .select('*, lead:leads(*)')
+        .single();
+      
+      conversation = newConvo;
+    }
+    
+    if (!conversation) {
+      console.error('Failed to get/create conversation');
+      return twiml('');
+    }
+    
+    // Store inbound message
+    await supabase.from('messages').insert({
+      conversation_id: conversation.id,
+      direction: 'inbound',
+      content: messageBody,
+      sender_type: 'customer',
+      twilio_sid: messageSid,
+    });
+    
+    // If in human mode, don't auto-respond
+    if (conversation.mode === 'human') {
+      console.log('Conversation in human mode, skipping AI response');
+      return twiml('');
+    }
+    
+    // Get message history
+    const { data: messages } = await supabase
+      .from('messages')
+      .select('direction, content, sender_type')
+      .eq('conversation_id', conversation.id)
+      .order('created_at', { ascending: true })
+      .limit(20);
+    
+    const messageHistory = (messages || []).map(m => ({
+      role: m.sender_type === 'customer' ? 'customer' : 'ai',
+      content: m.content,
+    }));
+    
+    // Generate AI response
+    const context = {
+      businessName: business.name,
+      assistantName: aiSettings?.assistant_name || 'BookFox',
+      collectedInfo: conversation.ai_context?.collected_info || {},
+      messageHistory: messageHistory.slice(0, -1),
+    };
+    
+    const aiResult = await generateAIResponse(messageBody, context);
+    
+    // Check if should escalate
+    const messageCount = conversation.message_count + 1;
+    const maxMessages = aiSettings?.max_messages_before_human || 10;
+    
+    if (messageCount >= maxMessages || aiResult.confidence < 0.4) {
+      console.log('Escalating to human');
+      
+      await supabase.from('conversations').update({ mode: 'human' }).eq('id', conversation.id);
+      
+      const escalationMsg = "Thanks for chatting! I'm going to connect you with a team member who can better help. They'll reach out shortly! 🦊";
+      const { sid, status } = await sendSMS(fromPhone, toPhone, escalationMsg);
+      
+      await supabase.from('messages').insert({
+        conversation_id: conversation.id,
+        direction: 'outbound',
+        content: escalationMsg,
+        sender_type: 'ai',
+        twilio_sid: sid,
+        twilio_status: status,
+        ai_intent: 'escalation',
+      });
+      
+      return twiml('');
+    }
+    
+    // Send AI response
+    const { sid: twilioSid, status: twilioStatus } = await sendSMS(fromPhone, toPhone, aiResult.response);
+    
+    // Store outbound message
+    await supabase.from('messages').insert({
+      conversation_id: conversation.id,
+      direction: 'outbound',
+      content: aiResult.response,
+      sender_type: 'ai',
+      twilio_sid: twilioSid,
+      twilio_status: twilioStatus,
+      ai_intent: aiResult.intent,
+      ai_confidence: aiResult.confidence,
+    });
+    
+    // Update conversation context
+    await supabase.from('conversations').update({
+      ai_context: { ...conversation.ai_context, collected_info: aiResult.collectedInfo, last_intent: aiResult.intent },
+    }).eq('id', conversation.id);
+    
+    // Update lead with qualification data
+    const leadUpdates: any = {};
+    if (aiResult.collectedInfo.service) leadUpdates.service_needed = aiResult.collectedInfo.service;
+    if (aiResult.collectedInfo.urgency) leadUpdates.urgency = aiResult.collectedInfo.urgency;
+    if (aiResult.collectedInfo.property) leadUpdates.property_type = aiResult.collectedInfo.property;
+    if (aiResult.collectedInfo.name) leadUpdates.name = aiResult.collectedInfo.name;
+    
+    if (Object.keys(leadUpdates).length > 0) {
+      await supabase.from('leads').update(leadUpdates).eq('id', conversation.lead_id);
+    }
+    
+    console.log(`AI response sent: "${aiResult.response.slice(0, 50)}..."`);
+    
+    return twiml('');
+    
+  } catch (error) {
+    console.error('SMS webhook error:', error);
+    return twiml('');
+  }
+});
