@@ -45,6 +45,44 @@ function StepIndicator({ currentStep, totalSteps }) {
   );
 }
 
+// Business name step - only shown if no business exists
+function BusinessNameStep({ value, onChange }) {
+  return (
+    <div className="animate-fadeIn">
+      <div className="text-center mb-10">
+        <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-full mb-4">
+          Let's get started
+        </span>
+        <h2 className="text-3xl font-bold text-stone-800 mb-3">What's your business called?</h2>
+        <p className="text-stone-500 text-lg max-w-md mx-auto">
+          This is how customers will see your business
+        </p>
+      </div>
+      
+      <div className="max-w-lg mx-auto">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg className="w-5 h-5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Smith's Plumbing"
+            className="w-full pl-12 pr-4 py-4 border-2 border-stone-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-lg"
+            autoFocus
+          />
+        </div>
+        <p className="text-stone-500 text-sm mt-3">
+          You can change this later in settings
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // Trade type selection - premium cards
 function TradeTypeStep({ value, onChange }) {
   const trades = [
@@ -432,11 +470,13 @@ function SuccessStep({ businessName }) {
 }
 
 export default function Onboarding() {
-  const { business, refreshBusiness } = useAuth();
+  const { user, business, refreshBusiness } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [direction, setDirection] = useState(1);
+  const [businessName, setBusinessName] = useState('');
   
   // Form state
   const [tradeType, setTradeType] = useState('');
@@ -452,20 +492,32 @@ export default function Onboarding() {
   const [phone, setPhone] = useState('');
   const [aiSettings, setAiSettings] = useState({ name: 'BookFox' });
 
-  const totalSteps = 5;
+  // If no business exists, we need to collect business name first
+  const needsBusinessCreation = !business;
+  const totalSteps = needsBusinessCreation ? 6 : 5;
+  
+  // Adjust step indices based on whether we need business creation
+  const getActualStep = () => {
+    if (needsBusinessCreation) return step;
+    return step + 1; // Skip business name step
+  };
 
   const canContinue = () => {
-    switch (step) {
-      case 0: return !!tradeType;
-      case 1: return true;
+    const actualStep = getActualStep();
+    switch (actualStep) {
+      case 0: return businessName.trim().length >= 2; // Business name
+      case 1: return !!tradeType;
       case 2: return true;
-      case 3: return !!aiSettings.name;
-      case 4: return true;
+      case 3: return true;
+      case 4: return !!aiSettings.name;
+      case 5: return true;
       default: return false;
     }
   };
 
   const handleNext = async () => {
+    setError(null);
+    
     if (step < totalSteps - 1) {
       setDirection(1);
       setStep(step + 1);
@@ -473,28 +525,65 @@ export default function Onboarding() {
       // Save all settings and go to dashboard
       setLoading(true);
       try {
-        // Update business
-        await supabase
-          .from('businesses')
-          .update({
-            trade_type: tradeType,
-            business_hours: hours,
-            phone: phone,
-          })
-          .eq('id', business.id);
+        let currentBusiness = business;
+        
+        // Create business if it doesn't exist
+        if (!currentBusiness && user) {
+          const { data: newBusiness, error: bizError } = await supabase
+            .from('businesses')
+            .insert({ name: businessName.trim() })
+            .select()
+            .single();
 
-        // Update AI settings
-        await supabase
-          .from('ai_settings')
-          .update({
-            assistant_name: aiSettings.name,
-          })
-          .eq('business_id', business.id);
+          if (bizError) throw bizError;
+
+          // Create team member link
+          const { error: teamError } = await supabase
+            .from('team_members')
+            .insert({
+              user_id: user.id,
+              business_id: newBusiness.id,
+              role: 'owner',
+            });
+
+          if (teamError) throw teamError;
+          
+          // Create default AI settings
+          await supabase
+            .from('ai_settings')
+            .insert({
+              business_id: newBusiness.id,
+              assistant_name: aiSettings.name || 'BookFox',
+            });
+
+          currentBusiness = newBusiness;
+        }
+        
+        if (currentBusiness) {
+          // Update business
+          await supabase
+            .from('businesses')
+            .update({
+              trade_type: tradeType,
+              business_hours: hours,
+              phone: phone,
+            })
+            .eq('id', currentBusiness.id);
+
+          // Update AI settings
+          await supabase
+            .from('ai_settings')
+            .update({
+              assistant_name: aiSettings.name,
+            })
+            .eq('business_id', currentBusiness.id);
+        }
 
         await refreshBusiness();
         navigate('/dashboard');
-      } catch (error) {
-        console.error('Failed to save onboarding:', error);
+      } catch (err) {
+        console.error('Failed to save onboarding:', err);
+        setError(err.message || 'Failed to save. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -534,18 +623,38 @@ export default function Onboarding() {
 
           {/* Card */}
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl shadow-stone-900/10 p-8 md:p-12 border border-white/50">
+            {/* Error display */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+
             {/* Step Content */}
             <div className="min-h-[400px]">
-              {step === 0 && <TradeTypeStep value={tradeType} onChange={setTradeType} />}
-              {step === 1 && <HoursStep value={hours} onChange={setHours} />}
-              {step === 2 && <PhoneStep value={phone} onChange={setPhone} />}
-              {step === 3 && <AiStep value={aiSettings} onChange={setAiSettings} businessName={business?.name} />}
-              {step === 4 && <SuccessStep businessName={business?.name} />}
+              {needsBusinessCreation ? (
+                <>
+                  {step === 0 && <BusinessNameStep value={businessName} onChange={setBusinessName} />}
+                  {step === 1 && <TradeTypeStep value={tradeType} onChange={setTradeType} />}
+                  {step === 2 && <HoursStep value={hours} onChange={setHours} />}
+                  {step === 3 && <PhoneStep value={phone} onChange={setPhone} />}
+                  {step === 4 && <AiStep value={aiSettings} onChange={setAiSettings} businessName={businessName} />}
+                  {step === 5 && <SuccessStep businessName={businessName} />}
+                </>
+              ) : (
+                <>
+                  {step === 0 && <TradeTypeStep value={tradeType} onChange={setTradeType} />}
+                  {step === 1 && <HoursStep value={hours} onChange={setHours} />}
+                  {step === 2 && <PhoneStep value={phone} onChange={setPhone} />}
+                  {step === 3 && <AiStep value={aiSettings} onChange={setAiSettings} businessName={business?.name} />}
+                  {step === 4 && <SuccessStep businessName={business?.name} />}
+                </>
+              )}
             </div>
 
             {/* Navigation */}
             <div className="flex items-center justify-between mt-10 pt-6 border-t border-stone-100">
-              {step > 0 && step < 4 ? (
+              {step > 0 && step < totalSteps - 1 ? (
                 <button
                   onClick={handleBack}
                   className="flex items-center gap-2 px-6 py-3 text-stone-600 font-medium hover:text-stone-800 hover:bg-stone-100 rounded-xl transition-all"
@@ -572,7 +681,7 @@ export default function Onboarding() {
                     </svg>
                     Saving...
                   </>
-                ) : step === 4 ? (
+                ) : step === totalSteps - 1 ? (
                   <>
                     Go to Dashboard
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -592,7 +701,7 @@ export default function Onboarding() {
           </div>
 
           {/* Skip option */}
-          {step < 4 && (
+          {step < totalSteps - 1 && (
             <p className="text-center mt-6">
               <button
                 onClick={() => navigate('/dashboard')}
