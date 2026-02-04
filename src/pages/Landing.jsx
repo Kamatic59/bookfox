@@ -214,7 +214,7 @@ export default function Landing() {
             <p className="text-stone-500 text-sm">
               No credit card required • Setup in 5 minutes • Cancel anytime
             </p>
-          </div>
+          </FadeIn>
 
           {/* App Preview */}
           <div className="mt-16 relative">
