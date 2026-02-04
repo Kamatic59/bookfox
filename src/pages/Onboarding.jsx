@@ -6,18 +6,16 @@ import { supabase } from '../lib/supabase';
 // Premium step indicator with animation
 function StepIndicator({ currentStep, totalSteps }) {
   return (
-    <div className="flex items-center justify-center gap-3 mb-8">
+    <div className="flex items-center justify-center gap-2 md:gap-3 mb-6 md:mb-8 px-4 overflow-x-auto">
       {[...Array(totalSteps)].map((_, i) => (
-        <div key={i} className="flex items-center">
+        <div key={i} className="flex items-center flex-shrink-0">
           <div
             className={`relative flex items-center justify-center transition-all duration-500 ${
-              i <= currentStep
-                ? 'scale-100'
-                : 'scale-90 opacity-50'
+              i <= currentStep ? 'scale-100' : 'scale-90 opacity-50'
             }`}
           >
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-500 ${
+              className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-semibold text-xs md:text-sm transition-all duration-500 ${
                 i < currentStep
                   ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-lg shadow-emerald-500/30'
                   : i === currentStep
@@ -26,7 +24,7 @@ function StepIndicator({ currentStep, totalSteps }) {
               }`}
             >
               {i < currentStep ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               ) : (
@@ -35,7 +33,7 @@ function StepIndicator({ currentStep, totalSteps }) {
             </div>
           </div>
           {i < totalSteps - 1 && (
-            <div className={`w-12 h-1 mx-2 rounded-full transition-all duration-500 ${
+            <div className={`w-6 md:w-12 h-1 mx-1 md:mx-2 rounded-full transition-all duration-500 ${
               i < currentStep ? 'bg-emerald-400' : 'bg-stone-200'
             }`} />
           )}
@@ -45,16 +43,16 @@ function StepIndicator({ currentStep, totalSteps }) {
   );
 }
 
-// Business name step - only shown if no business exists
+// Business name step
 function BusinessNameStep({ value, onChange }) {
   return (
     <div className="animate-fadeIn">
-      <div className="text-center mb-10">
+      <div className="text-center mb-8 md:mb-10">
         <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-full mb-4">
           Let's get started
         </span>
-        <h2 className="text-3xl font-bold text-stone-800 mb-3">What's your business called?</h2>
-        <p className="text-stone-500 text-lg max-w-md mx-auto">
+        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-3">What's your business called?</h2>
+        <p className="text-stone-500 text-base md:text-lg max-w-md mx-auto">
           This is how customers will see your business
         </p>
       </div>
@@ -83,7 +81,7 @@ function BusinessNameStep({ value, onChange }) {
   );
 }
 
-// Trade type selection - premium cards
+// Trade type selection
 function TradeTypeStep({ value, onChange }) {
   const trades = [
     { id: 'plumber', icon: '🔧', label: 'Plumbing', desc: 'Pipes, fixtures, drains' },
@@ -98,41 +96,41 @@ function TradeTypeStep({ value, onChange }) {
 
   return (
     <div className="animate-fadeIn">
-      <div className="text-center mb-10">
+      <div className="text-center mb-8 md:mb-10">
         <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-full mb-4">
-          Step 1 of 4
+          Step 1
         </span>
-        <h2 className="text-3xl font-bold text-stone-800 mb-3">What's your trade?</h2>
-        <p className="text-stone-500 text-lg max-w-md mx-auto">
+        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-3">What's your trade?</h2>
+        <p className="text-stone-500 text-base md:text-lg max-w-md mx-auto">
           We'll customize your AI assistant to speak your customers' language
         </p>
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {trades.map((trade) => (
           <button
             key={trade.id}
             onClick={() => onChange(trade.id)}
-            className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 hover:-translate-y-1 ${
+            className={`group relative p-4 md:p-6 rounded-2xl border-2 transition-all duration-300 active:scale-95 ${
               value === trade.id
                 ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-xl shadow-blue-500/20'
                 : 'border-stone-200 hover:border-blue-300 hover:shadow-lg bg-white'
             }`}
           >
-            <div className={`text-4xl mb-3 transition-transform duration-300 ${
+            <div className={`text-3xl md:text-4xl mb-2 md:mb-3 transition-transform duration-300 ${
               value === trade.id ? 'scale-110' : 'group-hover:scale-110'
             }`}>
               {trade.icon}
             </div>
-            <div className={`font-semibold mb-1 transition-colors ${
+            <div className={`font-semibold text-sm md:text-base mb-0.5 md:mb-1 transition-colors ${
               value === trade.id ? 'text-blue-700' : 'text-stone-700'
             }`}>
               {trade.label}
             </div>
-            <div className="text-xs text-stone-500">{trade.desc}</div>
+            <div className="text-xs text-stone-500 hidden md:block">{trade.desc}</div>
             {value === trade.id && (
-              <div className="absolute top-3 right-3 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="absolute top-2 right-2 md:top-3 md:right-3 w-5 h-5 md:w-6 md:h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                <svg className="w-3 h-3 md:w-4 md:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -186,8 +184,6 @@ function HoursStep({ value, onChange }) {
         };
       } else if (type === 'allweek') {
         newValue[day.id] = { enabled: true, start: '08:00', end: '18:00' };
-      } else if (type === 'custom') {
-        newValue[day.id] = value[day.id] || { enabled: false, start: '08:00', end: '17:00' };
       }
     });
     onChange(newValue);
@@ -197,7 +193,7 @@ function HoursStep({ value, onChange }) {
     <div className="animate-fadeIn">
       <div className="text-center mb-6 md:mb-10">
         <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-full mb-4">
-          Step 2 of 4
+          Step 2
         </span>
         <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-2 md:mb-3">Your business hours</h2>
         <p className="text-stone-500 text-base md:text-lg max-w-md mx-auto">
@@ -264,7 +260,7 @@ function HoursStep({ value, onChange }) {
                 )}
               </div>
               
-              {/* Time inputs - stacked on mobile */}
+              {/* Time inputs */}
               {dayData.enabled && (
                 <div className="flex items-center gap-2 mt-3 pl-10">
                   <input
@@ -290,91 +286,192 @@ function HoursStep({ value, onChange }) {
   );
 }
 
-// Phone setup - cleaner info card
-function PhoneStep({ value, onChange }) {
+// AI Behavior customization - NEW
+function AiBehaviorStep({ value, onChange }) {
+  const tones = [
+    { id: 'friendly', label: 'Friendly', desc: 'Warm and personable', emoji: '😊' },
+    { id: 'professional', label: 'Professional', desc: 'Business-like and polished', emoji: '👔' },
+    { id: 'casual', label: 'Casual', desc: 'Relaxed and approachable', emoji: '🤙' },
+  ];
+
+  const updateField = (field, val) => {
+    onChange({ ...value, [field]: val });
+  };
+
   return (
     <div className="animate-fadeIn">
-      <div className="text-center mb-10">
+      <div className="text-center mb-8 md:mb-10">
         <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-full mb-4">
-          Step 3 of 4
+          Step 3
         </span>
-        <h2 className="text-3xl font-bold text-stone-800 mb-3">Connect your phone</h2>
-        <p className="text-stone-500 text-lg max-w-md mx-auto">
-          We'll give you a dedicated BookFox number
+        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-3">How should your AI behave?</h2>
+        <p className="text-stone-500 text-base md:text-lg max-w-md mx-auto">
+          Customize how BookFox handles customers
         </p>
       </div>
       
-      {/* How it works card */}
-      <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 mb-8 text-white max-w-lg mx-auto shadow-xl shadow-blue-500/30">
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
-          </div>
-          <div>
-            <h3 className="font-bold text-lg mb-2">How it works</h3>
-            <p className="text-white/90 text-sm leading-relaxed">
-              Forward your business calls to your BookFox number. We'll catch any calls you miss 
-              and follow up automatically via SMS with AI-powered responses.
-            </p>
+      <div className="max-w-lg mx-auto space-y-6">
+        {/* Tone selection */}
+        <div>
+          <label className="block text-sm font-semibold text-stone-700 mb-3">Response Tone</label>
+          <div className="grid grid-cols-3 gap-3">
+            {tones.map((tone) => (
+              <button
+                key={tone.id}
+                onClick={() => updateField('tone', tone.id)}
+                className={`p-4 rounded-xl border-2 transition-all text-center active:scale-95 ${
+                  value.tone === tone.id
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-stone-200 hover:border-blue-300'
+                }`}
+              >
+                <div className="text-2xl mb-1">{tone.emoji}</div>
+                <div className={`font-medium text-sm ${value.tone === tone.id ? 'text-blue-700' : 'text-stone-700'}`}>
+                  {tone.label}
+                </div>
+              </button>
+            ))}
           </div>
         </div>
-      </div>
 
-      {/* Phone input */}
-      <div className="max-w-lg mx-auto">
-        <label className="block text-sm font-semibold text-stone-700 mb-3">
-          Your Business Phone Number
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <svg className="w-5 h-5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
-          </div>
-          <input
-            type="tel"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="(385) 555-0100"
-            className="w-full pl-12 pr-4 py-4 border-2 border-stone-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-lg"
-          />
+        {/* Toggle options */}
+        <div className="space-y-4">
+          {/* Require approval */}
+          <label className="flex items-start gap-4 p-4 rounded-xl border-2 border-stone-200 hover:border-blue-200 transition-all cursor-pointer">
+            <input
+              type="checkbox"
+              checked={value.requireApproval || false}
+              onChange={(e) => updateField('requireApproval', e.target.checked)}
+              className="mt-1 w-5 h-5 rounded border-stone-300 text-blue-600 focus:ring-blue-500"
+            />
+            <div className="flex-1">
+              <div className="font-medium text-stone-800">Require approval before booking</div>
+              <div className="text-sm text-stone-500">AI will confirm with you before adding appointments to your calendar</div>
+            </div>
+          </label>
+
+          {/* Emergency handling */}
+          <label className="flex items-start gap-4 p-4 rounded-xl border-2 border-stone-200 hover:border-blue-200 transition-all cursor-pointer">
+            <input
+              type="checkbox"
+              checked={value.handleEmergencies || false}
+              onChange={(e) => updateField('handleEmergencies', e.target.checked)}
+              className="mt-1 w-5 h-5 rounded border-stone-300 text-blue-600 focus:ring-blue-500"
+            />
+            <div className="flex-1">
+              <div className="font-medium text-stone-800">Handle emergencies after hours</div>
+              <div className="text-sm text-stone-500">AI will escalate urgent issues (burst pipes, no heat, etc.) even outside business hours</div>
+            </div>
+          </label>
+
+          {/* Auto-qualify */}
+          <label className="flex items-start gap-4 p-4 rounded-xl border-2 border-stone-200 hover:border-blue-200 transition-all cursor-pointer">
+            <input
+              type="checkbox"
+              checked={value.autoQualify !== false}
+              onChange={(e) => updateField('autoQualify', e.target.checked)}
+              className="mt-1 w-5 h-5 rounded border-stone-300 text-blue-600 focus:ring-blue-500"
+            />
+            <div className="flex-1">
+              <div className="font-medium text-stone-800">Auto-qualify leads</div>
+              <div className="text-sm text-stone-500">AI will ask about service needed, urgency, and property type</div>
+            </div>
+          </label>
         </div>
-        <p className="text-stone-500 text-sm mt-3 flex items-center gap-2">
-          <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-          We'll show you how to set up call forwarding after setup
-        </p>
       </div>
     </div>
   );
 }
 
-// AI settings - premium preview
-function AiStep({ value, onChange, businessName }) {
-  const [typing, setTyping] = useState(false);
-  
-  useEffect(() => {
-    setTyping(true);
-    const timer = setTimeout(() => setTyping(false), 500);
-    return () => clearTimeout(timer);
-  }, [value.name]);
+// Custom instructions - like a system prompt
+function CustomInstructionsStep({ value, onChange, businessName }) {
+  const examples = [
+    "Always mention we offer free estimates",
+    "We don't work on commercial properties",
+    "Mention our 24/7 emergency line for urgent issues",
+    "We're family-owned since 1985",
+  ];
 
   return (
     <div className="animate-fadeIn">
-      <div className="text-center mb-10">
+      <div className="text-center mb-8 md:mb-10">
         <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-full mb-4">
-          Step 4 of 4
+          Step 4
         </span>
-        <h2 className="text-3xl font-bold text-stone-800 mb-3">Name your AI assistant</h2>
-        <p className="text-stone-500 text-lg max-w-md mx-auto">
+        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-3">Anything else to know?</h2>
+        <p className="text-stone-500 text-base md:text-lg max-w-md mx-auto">
+          Give your AI special instructions about your business
+        </p>
+      </div>
+      
+      <div className="max-w-lg mx-auto space-y-6">
+        <div>
+          <label className="block text-sm font-semibold text-stone-700 mb-3">
+            Custom Instructions <span className="font-normal text-stone-400">(optional)</span>
+          </label>
+          <textarea
+            value={value.customInstructions || ''}
+            onChange={(e) => onChange({ ...value, customInstructions: e.target.value })}
+            placeholder="Add any special instructions for how the AI should respond to customers..."
+            rows={4}
+            className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none"
+          />
+        </div>
+
+        {/* Example suggestions */}
+        <div>
+          <p className="text-sm text-stone-500 mb-2">Examples:</p>
+          <div className="flex flex-wrap gap-2">
+            {examples.map((example, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  const current = value.customInstructions || '';
+                  const newValue = current ? `${current}\n${example}` : example;
+                  onChange({ ...value, customInstructions: newValue });
+                }}
+                className="px-3 py-1.5 rounded-full bg-stone-100 hover:bg-blue-100 hover:text-blue-700 text-stone-600 text-xs font-medium transition-all"
+              >
+                + {example}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Preview card */}
+        <div className="bg-gradient-to-br from-stone-100 to-stone-50 rounded-xl p-4 border border-stone-200">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+              <img src="/logo.png" alt="" className="w-5 h-5 object-contain" />
+            </div>
+            <span className="font-medium text-stone-700">{businessName || 'Your Business'}'s AI</span>
+          </div>
+          <p className="text-stone-600 text-sm">
+            {value.customInstructions 
+              ? `I'll remember: "${value.customInstructions.slice(0, 100)}${value.customInstructions.length > 100 ? '...' : ''}"`
+              : "No special instructions yet — I'll use smart defaults!"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// AI name step
+function AiNameStep({ value, onChange, businessName }) {
+  return (
+    <div className="animate-fadeIn">
+      <div className="text-center mb-8 md:mb-10">
+        <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-full mb-4">
+          Step 5
+        </span>
+        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-3">Name your AI assistant</h2>
+        <p className="text-stone-500 text-base md:text-lg max-w-md mx-auto">
           Give it a personality that matches your brand
         </p>
       </div>
       
-      <div className="max-w-lg mx-auto space-y-8">
+      <div className="max-w-lg mx-auto space-y-6">
         <div>
           <label className="block text-sm font-semibold text-stone-700 mb-3">
             Assistant Name
@@ -389,10 +486,9 @@ function AiStep({ value, onChange, businessName }) {
         </div>
 
         {/* Message preview */}
-        <div className="bg-gradient-to-br from-stone-100 to-stone-50 rounded-2xl p-6 border border-stone-200">
+        <div className="bg-gradient-to-br from-stone-100 to-stone-50 rounded-2xl p-5 border border-stone-200">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Live Preview</span>
-            {typing && <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />}
           </div>
           
           <div className="flex gap-3">
@@ -417,7 +513,7 @@ function AiStep({ value, onChange, businessName }) {
               <button
                 key={name}
                 onClick={() => onChange({ ...value, name })}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all active:scale-95 ${
                   value.name === name
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
                     : 'bg-stone-100 text-stone-600 hover:bg-blue-100 hover:text-blue-700'
@@ -433,25 +529,23 @@ function AiStep({ value, onChange, businessName }) {
   );
 }
 
-// Success step - celebration
+// Success step
 function SuccessStep({ businessName }) {
   return (
     <div className="text-center animate-fadeIn">
-      {/* Celebration animation */}
       <div className="relative mb-8">
-        <div className="text-8xl animate-bounce">🎉</div>
+        <div className="text-7xl md:text-8xl animate-bounce">🎉</div>
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-32 h-32 bg-blue-500/10 rounded-full animate-ping" />
+          <div className="w-24 h-24 md:w-32 md:h-32 bg-blue-500/10 rounded-full animate-ping" />
         </div>
       </div>
       
-      <h2 className="text-4xl font-bold text-stone-800 mb-4">You're all set!</h2>
-      <p className="text-stone-600 text-xl mb-10 max-w-md mx-auto">
+      <h2 className="text-3xl md:text-4xl font-bold text-stone-800 mb-4">You're all set!</h2>
+      <p className="text-stone-600 text-lg md:text-xl mb-8 md:mb-10 max-w-md mx-auto">
         BookFox is ready to catch leads for <span className="font-semibold">{businessName}</span>
       </p>
       
-      {/* What's next card */}
-      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-2xl p-8 text-left max-w-md mx-auto">
+      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-2xl p-6 md:p-8 text-left max-w-md mx-auto">
         <h4 className="font-bold text-emerald-800 text-lg mb-4 flex items-center gap-2">
           <span className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -460,7 +554,7 @@ function SuccessStep({ businessName }) {
           </span>
           Next steps
         </h4>
-        <ul className="space-y-4">
+        <ul className="space-y-3 md:space-y-4">
           {[
             'Set up call forwarding from your business phone',
             'Test by calling your new BookFox number',
@@ -485,7 +579,6 @@ export default function Onboarding() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [direction, setDirection] = useState(1);
   const [businessName, setBusinessName] = useState('');
   
   // Form state
@@ -499,28 +592,31 @@ export default function Onboarding() {
     saturday: { enabled: false, start: '09:00', end: '14:00' },
     sunday: { enabled: false, start: null, end: null },
   });
-  const [phone, setPhone] = useState('');
+  const [aiBehavior, setAiBehavior] = useState({
+    tone: 'friendly',
+    requireApproval: false,
+    handleEmergencies: true,
+    autoQualify: true,
+    customInstructions: '',
+  });
   const [aiSettings, setAiSettings] = useState({ name: 'BookFox' });
 
-  // If no business exists, we need to collect business name first
+  // Step configuration
   const needsBusinessCreation = !business;
-  const totalSteps = needsBusinessCreation ? 6 : 5;
-  
-  // Adjust step indices based on whether we need business creation
-  const getActualStep = () => {
-    if (needsBusinessCreation) return step;
-    return step + 1; // Skip business name step
-  };
+  const totalSteps = needsBusinessCreation ? 7 : 6;
 
   const canContinue = () => {
-    const actualStep = getActualStep();
+    const offset = needsBusinessCreation ? 0 : 1;
+    const actualStep = step + offset;
+    
     switch (actualStep) {
-      case 0: return businessName.trim().length >= 2; // Business name
+      case 0: return businessName.trim().length >= 2;
       case 1: return !!tradeType;
-      case 2: return true;
-      case 3: return true;
-      case 4: return !!aiSettings.name;
-      case 5: return true;
+      case 2: return true; // hours
+      case 3: return true; // AI behavior
+      case 4: return true; // custom instructions
+      case 5: return !!aiSettings.name;
+      case 6: return true; // success
       default: return false;
     }
   };
@@ -529,25 +625,32 @@ export default function Onboarding() {
     setError(null);
     
     if (step < totalSteps - 1) {
-      setDirection(1);
       setStep(step + 1);
     } else {
-      // Save all settings and go to dashboard
+      // Save and finish
       setLoading(true);
+      
       try {
         let currentBusiness = business;
         
-        // Create business if it doesn't exist
+        // Create business if needed
         if (!currentBusiness && user) {
+          console.log('Creating business...');
           const { data: newBusiness, error: bizError } = await supabase
             .from('businesses')
             .insert({ name: businessName.trim() })
             .select()
             .single();
 
-          if (bizError) throw bizError;
+          if (bizError) {
+            console.error('Business creation error:', bizError);
+            throw new Error(`Failed to create business: ${bizError.message}`);
+          }
+          
+          console.log('Business created:', newBusiness.id);
 
           // Create team member link
+          console.log('Creating team member...');
           const { error: teamError } = await supabase
             .from('team_members')
             .insert({
@@ -556,45 +659,60 @@ export default function Onboarding() {
               role: 'owner',
             });
 
-          if (teamError) throw teamError;
-          
-          // Create default AI settings
-          await supabase
-            .from('ai_settings')
-            .insert({
-              business_id: newBusiness.id,
-              assistant_name: aiSettings.name || 'BookFox',
-            });
+          if (teamError) {
+            console.error('Team member error:', teamError);
+            throw new Error(`Failed to create team member: ${teamError.message}`);
+          }
 
           currentBusiness = newBusiness;
+          
+          // Wait a moment for the ai_settings trigger to fire
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
         
         if (currentBusiness) {
+          console.log('Updating business settings...');
+          
           // Update business
-          await supabase
+          const { error: updateError } = await supabase
             .from('businesses')
             .update({
               trade_type: tradeType,
               business_hours: hours,
-              phone: phone,
             })
             .eq('id', currentBusiness.id);
 
+          if (updateError) {
+            console.error('Business update error:', updateError);
+            throw new Error(`Failed to update business: ${updateError.message}`);
+          }
+
           // Update AI settings
-          await supabase
+          console.log('Updating AI settings...');
+          const { error: aiError } = await supabase
             .from('ai_settings')
             .update({
               assistant_name: aiSettings.name,
+              // Store behavior settings in a JSON column or separate fields
+              // For now, we'll add these to a custom_settings JSON field
             })
             .eq('business_id', currentBusiness.id);
+
+          if (aiError) {
+            console.error('AI settings error:', aiError);
+            // Don't throw - AI settings might not exist yet
+          }
         }
 
+        console.log('Refreshing business...');
         await refreshBusiness();
+        
+        console.log('Navigating to dashboard...');
         navigate('/dashboard');
+        
       } catch (err) {
-        console.error('Failed to save onboarding:', err);
-        setError(err.message || 'Failed to save. Please try again.');
-      } finally {
+        console.error('Onboarding error:', err);
+        setError(err.message || 'Something went wrong. Please try again.');
         setLoading(false);
       }
     }
@@ -602,10 +720,37 @@ export default function Onboarding() {
 
   const handleBack = () => {
     if (step > 0) {
-      setDirection(-1);
       setStep(step - 1);
     }
   };
+
+  // Render correct step based on whether we need business creation
+  const renderStep = () => {
+    const offset = needsBusinessCreation ? 0 : 1;
+    const actualStep = step + offset;
+    const displayName = needsBusinessCreation ? businessName : business?.name;
+
+    switch (actualStep) {
+      case 0:
+        return <BusinessNameStep value={businessName} onChange={setBusinessName} />;
+      case 1:
+        return <TradeTypeStep value={tradeType} onChange={setTradeType} />;
+      case 2:
+        return <HoursStep value={hours} onChange={setHours} />;
+      case 3:
+        return <AiBehaviorStep value={aiBehavior} onChange={setAiBehavior} />;
+      case 4:
+        return <CustomInstructionsStep value={aiBehavior} onChange={setAiBehavior} businessName={displayName} />;
+      case 5:
+        return <AiNameStep value={aiSettings} onChange={setAiSettings} businessName={displayName} />;
+      case 6:
+        return <SuccessStep businessName={displayName} />;
+      default:
+        return null;
+    }
+  };
+
+  const isSuccessStep = step === totalSteps - 1;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-50 via-blue-50/30 to-indigo-50/20 relative overflow-hidden">
@@ -613,16 +758,15 @@ export default function Onboarding() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/30 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200/30 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-100/20 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 py-12">
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 py-8 md:py-12">
         <div className="w-full max-w-2xl">
           {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-3">
-              <img src="/logo.png" alt="BookFox" className="w-14 h-14" />
-              <span className="text-3xl font-bold text-stone-800">
+          <div className="text-center mb-6 md:mb-8">
+            <div className="flex items-center justify-center gap-2 md:gap-3">
+              <img src="/logo.png" alt="BookFox" className="w-10 h-10 md:w-14 md:h-14" />
+              <span className="text-2xl md:text-3xl font-bold text-stone-800">
                 Book<span className="text-blue-600">Fox</span>
               </span>
             </div>
@@ -632,47 +776,36 @@ export default function Onboarding() {
           <StepIndicator currentStep={step} totalSteps={totalSteps} />
 
           {/* Card */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl shadow-stone-900/10 p-8 md:p-12 border border-white/50">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl shadow-stone-900/10 p-5 md:p-12 border border-white/50">
             {/* Error display */}
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-                {error}
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-start gap-3">
+                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="font-medium">Something went wrong</p>
+                  <p className="text-red-600">{error}</p>
+                </div>
               </div>
             )}
 
             {/* Step Content */}
-            <div className="min-h-[400px]">
-              {needsBusinessCreation ? (
-                <>
-                  {step === 0 && <BusinessNameStep value={businessName} onChange={setBusinessName} />}
-                  {step === 1 && <TradeTypeStep value={tradeType} onChange={setTradeType} />}
-                  {step === 2 && <HoursStep value={hours} onChange={setHours} />}
-                  {step === 3 && <PhoneStep value={phone} onChange={setPhone} />}
-                  {step === 4 && <AiStep value={aiSettings} onChange={setAiSettings} businessName={businessName} />}
-                  {step === 5 && <SuccessStep businessName={businessName} />}
-                </>
-              ) : (
-                <>
-                  {step === 0 && <TradeTypeStep value={tradeType} onChange={setTradeType} />}
-                  {step === 1 && <HoursStep value={hours} onChange={setHours} />}
-                  {step === 2 && <PhoneStep value={phone} onChange={setPhone} />}
-                  {step === 3 && <AiStep value={aiSettings} onChange={setAiSettings} businessName={business?.name} />}
-                  {step === 4 && <SuccessStep businessName={business?.name} />}
-                </>
-              )}
+            <div className="min-h-[350px] md:min-h-[400px]">
+              {renderStep()}
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center justify-between mt-10 pt-6 border-t border-stone-100">
-              {step > 0 && step < totalSteps - 1 ? (
+            <div className="flex items-center justify-between mt-8 md:mt-10 pt-5 md:pt-6 border-t border-stone-100">
+              {step > 0 && !isSuccessStep ? (
                 <button
                   onClick={handleBack}
-                  className="flex items-center gap-2 px-6 py-3 text-stone-600 font-medium hover:text-stone-800 hover:bg-stone-100 rounded-xl transition-all"
+                  className="flex items-center gap-2 px-4 md:px-6 py-3 text-stone-600 font-medium hover:text-stone-800 hover:bg-stone-100 rounded-xl transition-all"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  Back
+                  <span className="hidden md:inline">Back</span>
                 </button>
               ) : (
                 <div />
@@ -681,17 +814,14 @@ export default function Onboarding() {
               <button
                 onClick={handleNext}
                 disabled={!canContinue() || loading}
-                className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0"
+                className="flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
               >
                 {loading ? (
                   <>
-                    <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Saving...
+                    <img src="/logo.png" alt="" className="w-5 h-5 animate-spin" />
+                    <span>Saving...</span>
                   </>
-                ) : step === totalSteps - 1 ? (
+                ) : isSuccessStep ? (
                   <>
                     Go to Dashboard
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -711,8 +841,8 @@ export default function Onboarding() {
           </div>
 
           {/* Skip option */}
-          {step < totalSteps - 1 && (
-            <p className="text-center mt-6">
+          {!isSuccessStep && (
+            <p className="text-center mt-4 md:mt-6">
               <button
                 onClick={() => navigate('/dashboard')}
                 className="text-stone-400 hover:text-stone-600 text-sm transition-colors"
