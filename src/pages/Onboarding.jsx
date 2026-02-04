@@ -208,7 +208,7 @@ function HoursStep({ value, onChange }) {
       </div>
 
       {/* Quick select */}
-      <div className="flex gap-2 justify-center mb-5">
+      <div className="flex gap-2 justify-center mb-4">
         <button
           onClick={() => setQuickHours('weekdays')}
           className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 text-blue-700 text-sm font-semibold transition-all active:scale-95 border border-blue-200"
@@ -222,6 +222,7 @@ function HoursStep({ value, onChange }) {
           7 Days
         </button>
       </div>
+      <p className="text-center text-stone-400 text-xs mb-4">Tap a day to toggle</p>
       
       <div className="space-y-2 max-w-lg mx-auto">
         {days.map((day) => {
@@ -360,6 +361,7 @@ function AiBehaviorStep({ value, onChange }) {
         </div>
 
         {/* Toggle options - whole card glows */}
+        <p className="text-stone-400 text-xs mb-2">Tap to toggle</p>
         <div className="space-y-3">
           {options.map((option) => {
             const isOn = option.id === 'autoQualify' ? value[option.id] !== false : value[option.id] || false;
