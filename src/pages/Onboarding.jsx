@@ -802,14 +802,24 @@ export default function Onboarding() {
           </div>
 
           {!isSuccessStep && (
-            <p className="text-center mt-4">
+            <div className="text-center mt-4 space-x-4">
               <button
                 onClick={() => navigate('/dashboard')}
                 className="text-stone-400 hover:text-stone-600 text-sm font-medium transition-colors"
               >
                 Skip for now
               </button>
-            </p>
+              <span className="text-stone-300">•</span>
+              <button
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  navigate('/login');
+                }}
+                className="text-stone-400 hover:text-red-500 text-sm font-medium transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
           )}
         </div>
       </div>
