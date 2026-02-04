@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLeads } from '../hooks/useLeads';
 import { useConversations } from '../hooks/useConversations';
+import { FadeIn, AnimateOnScroll } from '../components/Animations';
 
 // Stat card with trend
-function StatCard({ icon, label, value, trend, trendUp, color = 'blue' }) {
+function StatCard({ icon, label, value, trend, trendUp, color = 'blue', delay = 0 }) {
   const colorClasses = {
     blue: 'from-blue-500 to-blue-600 shadow-blue-500/20',
     green: 'from-emerald-500 to-emerald-600 shadow-emerald-500/20',
@@ -14,24 +15,26 @@ function StatCard({ icon, label, value, trend, trendUp, color = 'blue' }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
-        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorClasses[color]} shadow-lg flex items-center justify-center text-xl text-white`}>
-          {icon}
+    <FadeIn delay={delay} className="h-full">
+      <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-stone-100 hover:shadow-md active:shadow-sm transition-all duration-200 h-full">
+        <div className="flex items-start justify-between">
+          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${colorClasses[color]} shadow-lg flex items-center justify-center text-lg sm:text-xl text-white`}>
+            {icon}
+          </div>
+          {trend && (
+            <span className={`text-xs sm:text-sm font-medium px-2 py-0.5 sm:py-1 rounded-full ${
+              trendUp ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'
+            }`}>
+              {trendUp ? '↑' : '↓'} {trend}
+            </span>
+          )}
         </div>
-        {trend && (
-          <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-            trendUp ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'
-          }`}>
-            {trendUp ? '↑' : '↓'} {trend}
-          </span>
-        )}
+        <div className="mt-3 sm:mt-4">
+          <p className="text-2xl sm:text-3xl font-bold text-stone-800">{value}</p>
+          <p className="text-stone-500 text-xs sm:text-sm mt-0.5 sm:mt-1">{label}</p>
+        </div>
       </div>
-      <div className="mt-4">
-        <p className="text-3xl font-bold text-stone-800">{value}</p>
-        <p className="text-stone-500 text-sm mt-1">{label}</p>
-      </div>
-    </div>
+    </FadeIn>
   );
 }
 
@@ -61,22 +64,22 @@ function ActivityItem({ icon, title, description, time, type }) {
 // Quick action card
 function QuickAction({ icon, title, description, to, color = 'blue' }) {
   const colorClasses = {
-    blue: 'hover:border-blue-200 hover:bg-blue-50/50',
-    green: 'hover:border-emerald-200 hover:bg-emerald-50/50',
-    amber: 'hover:border-amber-200 hover:bg-amber-50/50',
-    purple: 'hover:border-purple-200 hover:bg-purple-50/50',
+    blue: 'hover:border-blue-200 hover:bg-blue-50/50 active:bg-blue-100/50',
+    green: 'hover:border-emerald-200 hover:bg-emerald-50/50 active:bg-emerald-100/50',
+    amber: 'hover:border-amber-200 hover:bg-amber-50/50 active:bg-amber-100/50',
+    purple: 'hover:border-purple-200 hover:bg-purple-50/50 active:bg-purple-100/50',
   };
 
   return (
     <Link 
       to={to}
-      className={`block p-4 bg-white rounded-xl border border-stone-100 ${colorClasses[color]} transition-all group`}
+      className={`block p-4 bg-white rounded-xl border border-stone-100 ${colorClasses[color]} transition-all duration-200 group active:scale-[0.98]`}
     >
       <div className="flex items-center gap-3">
-        <span className="text-2xl group-hover:scale-110 transition-transform">{icon}</span>
-        <div>
+        <span className="text-2xl group-hover:scale-110 group-active:scale-100 transition-transform duration-200">{icon}</span>
+        <div className="min-w-0">
           <p className="font-medium text-stone-800">{title}</p>
-          <p className="text-stone-500 text-sm">{description}</p>
+          <p className="text-stone-500 text-sm truncate">{description}</p>
         </div>
       </div>
     </Link>
@@ -189,7 +192,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
         <StatCard 
           icon="📞" 
           label="Leads Today" 
@@ -197,28 +200,32 @@ export default function Dashboard() {
           trend="12%"
           trendUp={true}
           color="blue"
+          delay={0}
         />
         <StatCard 
           icon="💬" 
-          label="Active Conversations" 
+          label="Active Chats" 
           value={activeConvos.length}
           trend="8%"
           trendUp={true}
           color="green"
+          delay={50}
         />
         <StatCard 
           icon="✨" 
-          label="Qualified Leads" 
+          label="Qualified" 
           value={qualifiedLeads.length}
           trend="23%"
           trendUp={true}
           color="amber"
+          delay={100}
         />
         <StatCard 
           icon="⏰" 
-          label="Avg Response Time" 
+          label="Response Time" 
           value="< 30s"
           color="purple"
+          delay={150}
         />
       </div>
 

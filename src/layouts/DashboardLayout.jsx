@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Logo, FoxIconMinimal } from '../components/Logo';
 
@@ -12,17 +12,38 @@ const navItems = [
   { to: '/dashboard/settings', icon: '⚙️', label: 'Settings' },
 ];
 
-// Sidebar nav link component
-function SidebarLink({ to, icon, label, end = false, collapsed }) {
+// Mobile bottom navigation item
+function MobileNavItem({ to, icon, label, end = false }) {
   return (
     <NavLink
       to={to}
       end={end}
       className={({ isActive }) =>
-        `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+        `flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all duration-200 ${
           isActive
-            ? 'bg-blue-50 text-blue-600 font-medium'
-            : 'text-stone-600 hover:bg-stone-100 hover:text-stone-800'
+            ? 'text-blue-600 bg-blue-50'
+            : 'text-stone-500 active:bg-stone-100'
+        }`
+      }
+    >
+      <span className="text-xl mb-0.5">{icon}</span>
+      <span className="text-[10px] font-medium">{label}</span>
+    </NavLink>
+  );
+}
+
+// Sidebar nav link component
+function SidebarLink({ to, icon, label, end = false, collapsed, onClick }) {
+  return (
+    <NavLink
+      to={to}
+      end={end}
+      onClick={onClick}
+      className={({ isActive }) =>
+        `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+          isActive
+            ? 'bg-blue-50 text-blue-600 font-medium shadow-sm'
+            : 'text-stone-600 hover:bg-stone-100 hover:text-stone-800 active:bg-stone-200'
         } ${collapsed ? 'justify-center' : ''}`
       }
     >
@@ -35,9 +56,24 @@ function SidebarLink({ to, icon, label, end = false, collapsed }) {
 export default function DashboardLayout() {
   const { user, business, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClick = () => setUserMenuOpen(false);
+    if (userMenuOpen) {
+      document.addEventListener('click', handleClick);
+      return () => document.removeEventListener('click', handleClick);
+    }
+  }, [userMenuOpen]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -47,46 +83,57 @@ export default function DashboardLayout() {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      <div
+        className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
+          sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setSidebarOpen(false)}
+      />
 
       {/* Sidebar */}
-      <aside 
-        className={`fixed top-0 left-0 z-50 h-full bg-white border-r border-stone-200 transition-all duration-300 flex flex-col
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
-          lg:translate-x-0 
+      <aside
+        className={`fixed top-0 left-0 z-50 h-full bg-white border-r border-stone-200 flex flex-col
+          transition-all duration-300 ease-out
+          ${sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'} 
+          lg:translate-x-0 lg:shadow-none
           ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'}
-          w-64
+          w-72
         `}
       >
         {/* Logo */}
-        <div className={`p-6 border-b border-stone-100 flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
+        <div className={`p-5 border-b border-stone-100 flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
           {sidebarCollapsed ? (
             <FoxIconMinimal size={32} />
           ) : (
             <Logo size="md" />
           )}
-          <button 
-            className="hidden lg:block p-1 hover:bg-stone-100 rounded-lg transition-colors"
+          <button
+            className="hidden lg:flex p-2 hover:bg-stone-100 rounded-xl transition-colors"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >
-            <svg className={`w-5 h-5 text-stone-400 transition-transform ${sidebarCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 text-stone-400 transition-transform duration-300 ${sidebarCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+          </button>
+          {/* Mobile close button */}
+          <button
+            className="lg:hidden p-2 hover:bg-stone-100 rounded-xl transition-colors"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <svg className="w-5 h-5 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-hide">
           {navItems.map((item) => (
-            <SidebarLink 
-              key={item.to} 
-              {...item} 
+            <SidebarLink
+              key={item.to}
+              {...item}
               collapsed={sidebarCollapsed}
+              onClick={() => setSidebarOpen(false)}
             />
           ))}
         </nav>
@@ -94,20 +141,23 @@ export default function DashboardLayout() {
         {/* Business info */}
         <div className={`p-4 border-t border-stone-100 ${sidebarCollapsed ? 'text-center' : ''}`}>
           {!sidebarCollapsed && (
-            <div className="mb-3">
-              <p className="font-medium text-stone-800 truncate">{business?.name}</p>
-              <p className="text-stone-500 text-sm truncate">
+            <div className="mb-3 p-3 bg-stone-50 rounded-xl">
+              <p className="font-medium text-stone-800 truncate text-sm">{business?.name}</p>
+              <p className="text-stone-500 text-xs truncate mt-0.5">
                 {business?.twilio_phone || 'No phone configured'}
               </p>
             </div>
           )}
-          
+
           <div className="relative">
             <button
-              onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className={`w-full flex items-center gap-3 p-2 rounded-xl hover:bg-stone-100 transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setUserMenuOpen(!userMenuOpen);
+              }}
+              className={`w-full flex items-center gap-3 p-2 rounded-xl hover:bg-stone-100 active:bg-stone-200 transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}
             >
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/20">
                 {user?.email?.charAt(0).toUpperCase()}
               </div>
               {!sidebarCollapsed && (
@@ -116,42 +166,47 @@ export default function DashboardLayout() {
                     <p className="text-sm font-medium text-stone-800 truncate">{user?.email}</p>
                     <p className="text-xs text-stone-500">Owner</p>
                   </div>
-                  <svg className="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                  <svg className={`w-4 h-4 text-stone-400 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </>
               )}
             </button>
 
             {/* User dropdown menu */}
-            {userMenuOpen && (
-              <div className={`absolute bottom-full mb-2 bg-white rounded-xl shadow-lg border border-stone-200 py-2 ${sidebarCollapsed ? 'left-full ml-2' : 'left-0 right-0'}`}>
-                <button
-                  onClick={() => navigate('/dashboard/settings')}
-                  className="w-full px-4 py-2 text-left text-sm text-stone-700 hover:bg-stone-50 flex items-center gap-2"
-                >
-                  <span>⚙️</span> Settings
-                </button>
-                <button
-                  onClick={handleSignOut}
-                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                >
-                  <span>🚪</span> Sign Out
-                </button>
-              </div>
-            )}
+            <div
+              className={`absolute bottom-full mb-2 bg-white rounded-xl shadow-lg border border-stone-200 py-2 overflow-hidden transition-all duration-200 ${
+                sidebarCollapsed ? 'left-full ml-2' : 'left-0 right-0'
+              } ${userMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}
+            >
+              <button
+                onClick={() => {
+                  navigate('/dashboard/settings');
+                  setUserMenuOpen(false);
+                }}
+                className="w-full px-4 py-2.5 text-left text-sm text-stone-700 hover:bg-stone-50 active:bg-stone-100 flex items-center gap-2 transition-colors"
+              >
+                <span>⚙️</span> Settings
+              </button>
+              <button
+                onClick={handleSignOut}
+                className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 active:bg-red-100 flex items-center gap-2 transition-colors"
+              >
+                <span>🚪</span> Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </aside>
 
       {/* Main content area */}
-      <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'}`}>
+      <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'} pb-20 lg:pb-0`}>
         {/* Top bar */}
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-stone-200">
+        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-stone-200/80">
           <div className="flex items-center justify-between px-4 lg:px-6 h-16">
             {/* Mobile menu button */}
             <button
-              className="lg:hidden p-2 rounded-lg hover:bg-stone-100 transition-colors"
+              className="lg:hidden p-2.5 -ml-1 rounded-xl hover:bg-stone-100 active:bg-stone-200 transition-colors"
               onClick={() => setSidebarOpen(true)}
             >
               <svg className="w-6 h-6 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,7 +214,12 @@ export default function DashboardLayout() {
               </svg>
             </button>
 
-            {/* Search */}
+            {/* Mobile logo */}
+            <div className="lg:hidden">
+              <FoxIconMinimal size={32} />
+            </div>
+
+            {/* Search - hidden on mobile */}
             <div className="hidden md:flex items-center flex-1 max-w-md ml-4">
               <div className="relative w-full">
                 <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,51 +228,52 @@ export default function DashboardLayout() {
                 <input
                   type="text"
                   placeholder="Search leads, conversations..."
-                  className="w-full pl-10 pr-4 py-2 bg-stone-100 border border-transparent rounded-xl text-sm focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-stone-100 border border-transparent rounded-xl text-sm focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
                 />
               </div>
             </div>
 
             {/* Right side actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              {/* Mobile search */}
+              <button className="md:hidden p-2.5 rounded-xl hover:bg-stone-100 active:bg-stone-200 transition-colors">
+                <svg className="w-5 h-5 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+
               {/* Notifications */}
-              <button className="relative p-2 rounded-xl hover:bg-stone-100 transition-colors">
-                <svg className="w-6 h-6 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button className="relative p-2.5 rounded-xl hover:bg-stone-100 active:bg-stone-200 transition-colors">
+                <svg className="w-5 h-5 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
               </button>
 
-              {/* Help */}
-              <button className="p-2 rounded-xl hover:bg-stone-100 transition-colors">
-                <svg className="w-6 h-6 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {/* Desktop: Help button */}
+              <button className="hidden lg:flex p-2.5 rounded-xl hover:bg-stone-100 active:bg-stone-200 transition-colors">
+                <svg className="w-5 h-5 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-              </button>
-
-              {/* Mobile user avatar */}
-              <button 
-                className="lg:hidden w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm"
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-              >
-                {user?.email?.charAt(0).toUpperCase()}
               </button>
             </div>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="min-h-[calc(100vh-4rem)]">
+        <main className="min-h-[calc(100vh-4rem)] animate-fade-in">
           <Outlet />
         </main>
       </div>
 
-      {/* Mobile close sidebar on nav */}
-      {sidebarOpen && (
-        <div className="lg:hidden" onClick={() => setSidebarOpen(false)}>
-          <Outlet />
+      {/* Mobile bottom navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-stone-200 lg:hidden safe-area-bottom">
+        <div className="flex items-center justify-around px-2 py-1">
+          {navItems.map((item) => (
+            <MobileNavItem key={item.to} {...item} />
+          ))}
         </div>
-      )}
+      </nav>
     </div>
   );
 }
