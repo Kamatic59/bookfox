@@ -625,34 +625,41 @@ export default function Onboarding() {
         let currentBusiness = business;
         
         if (!currentBusiness && user) {
-          console.log('Creating business...');
-          const { data: newBusiness, error: bizError } = await supabase
-            .from('businesses')
-            .insert({ name: businessName.trim() })
-            .select()
-            .single();
-
-          if (bizError) {
-            console.error('Business creation error:', bizError);
-            throw new Error(`Failed to create business: ${bizError.message}`);
+          console.log('Creating business via Edge Function...');
+          
+          // Get the current session for the auth token
+          const { data: { session } } = await supabase.auth.getSession();
+          
+          if (!session) {
+            throw new Error('No active session. Please sign in again.');
           }
-
-          console.log('Creating team member...');
-          const { error: teamError } = await supabase
-            .from('team_members')
-            .insert({
-              user_id: user.id,
-              business_id: newBusiness.id,
-              role: 'owner',
-            });
-
-          if (teamError) {
-            console.error('Team member error:', teamError);
-            throw new Error(`Failed to create team member: ${teamError.message}`);
+          
+          // Call the Edge Function to create business (bypasses RLS)
+          const response = await fetch(
+            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-business`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`,
+              },
+              body: JSON.stringify({
+                name: businessName.trim(),
+                trade_type: tradeType,
+                business_hours: hours,
+              }),
+            }
+          );
+          
+          const result = await response.json();
+          
+          if (!response.ok) {
+            console.error('Edge Function error:', result);
+            throw new Error(result.error || 'Failed to create business');
           }
-
-          currentBusiness = newBusiness;
-          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          console.log('Business created:', result.business.id);
+          currentBusiness = result.business;
         }
         
         if (currentBusiness) {

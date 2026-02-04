@@ -100,27 +100,33 @@ export function AuthProvider({ children }) {
 
     if (error) throw error;
 
-    // Create business and team member after signup
-    if (data.user) {
-      const { data: newBusiness, error: bizError } = await supabase
-        .from('businesses')
-        .insert({ name: businessName })
-        .select()
-        .single();
-
-      if (bizError) throw bizError;
-
-      const { error: teamError } = await supabase
-        .from('team_members')
-        .insert({
-          user_id: data.user.id,
-          business_id: newBusiness.id,
-          role: 'owner',
-        });
-
-      if (teamError) throw teamError;
-
-      setBusiness(newBusiness);
+    // Create business via Edge Function (bypasses RLS)
+    if (data.user && data.session) {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-business`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${data.session.access_token}`,
+            },
+            body: JSON.stringify({ name: businessName }),
+          }
+        );
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          console.error('Failed to create business:', result);
+          throw new Error(result.error || 'Failed to create business');
+        }
+        
+        setBusiness(result.business);
+      } catch (bizError) {
+        console.error('Business creation error:', bizError);
+        // Don't throw - user account was created, they can complete onboarding later
+      }
     }
 
     return data;
