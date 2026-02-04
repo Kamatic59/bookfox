@@ -230,10 +230,10 @@ function HoursStep({ value, onChange }) {
           return (
             <div
               key={day.id}
-              className={`p-3 rounded-xl transition-all duration-300 ${
+              className={`p-3 rounded-2xl transition-all duration-300 ${
                 dayData.enabled 
-                  ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-sm' 
-                  : 'bg-stone-100/50 border-2 border-transparent'
+                  ? 'bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.25)]' 
+                  : 'bg-stone-50 border-2 border-stone-200'
               }`}
             >
               <button
@@ -245,22 +245,9 @@ function HoursStep({ value, onChange }) {
                   <span className="hidden md:inline">{day.label}</span>
                 </span>
                 
-                <div className="flex items-center gap-3">
-                  {!dayData.enabled && (
-                    <span className="text-stone-400 text-sm">Closed</span>
-                  )}
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    dayData.enabled 
-                      ? 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/40' 
-                      : 'bg-stone-200'
-                  }`}>
-                    {dayData.enabled && (
-                      <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                </div>
+                {!dayData.enabled && (
+                  <span className="text-stone-400 text-sm">Closed</span>
+                )}
               </button>
               
               {dayData.enabled && (
@@ -269,14 +256,14 @@ function HoursStep({ value, onChange }) {
                     type="time"
                     value={dayData.start}
                     onChange={(e) => updateTime(day.id, 'start', e.target.value)}
-                    className="flex-1 min-w-0 px-3 py-2 border border-blue-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="flex-1 min-w-0 px-3 py-2.5 border border-blue-300 rounded-xl bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   />
-                  <span className="text-blue-400 text-sm font-medium">to</span>
+                  <span className="text-blue-500 text-sm font-semibold">to</span>
                   <input
                     type="time"
                     value={dayData.end}
                     onChange={(e) => updateTime(day.id, 'end', e.target.value)}
-                    className="flex-1 min-w-0 px-3 py-2 border border-blue-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="flex-1 min-w-0 px-3 py-2.5 border border-blue-300 rounded-xl bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   />
                 </div>
               )}
@@ -372,7 +359,7 @@ function AiBehaviorStep({ value, onChange }) {
           </div>
         </div>
 
-        {/* Toggle options - whole card is the toggle */}
+        {/* Toggle options - whole card glows */}
         <div className="space-y-3">
           {options.map((option) => {
             const isOn = option.id === 'autoQualify' ? value[option.id] !== false : value[option.id] || false;
@@ -381,10 +368,10 @@ function AiBehaviorStep({ value, onChange }) {
               <button
                 key={option.id}
                 onClick={() => updateField(option.id, !isOn)}
-                className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-300 active:scale-[0.98] ${
+                className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 active:scale-[0.98] ${
                   isOn
-                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-lg shadow-blue-500/20'
-                    : 'bg-stone-100/50 border-2 border-transparent hover:bg-stone-100'
+                    ? 'bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.3)]'
+                    : 'bg-stone-50 border-2 border-stone-200 hover:border-stone-300'
                 }`}
               >
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${option.color} flex items-center justify-center text-xl shadow-lg transition-all duration-300 ${isOn ? '' : 'opacity-40 grayscale'}`}>
@@ -393,18 +380,6 @@ function AiBehaviorStep({ value, onChange }) {
                 <div className="flex-1 min-w-0 text-left">
                   <div className={`font-semibold transition-colors ${isOn ? 'text-stone-800' : 'text-stone-400'}`}>{option.title}</div>
                   <div className={`text-sm transition-colors ${isOn ? 'text-stone-600' : 'text-stone-400'}`}>{option.desc}</div>
-                </div>
-                {/* Checkmark indicator */}
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  isOn 
-                    ? 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/40' 
-                    : 'bg-stone-200'
-                }`}>
-                  {isOn && (
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
                 </div>
               </button>
             );
