@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import Toggle from '../components/ui/Toggle';
 
 // Premium step indicator
 function StepIndicator({ currentStep, totalSteps }) {
@@ -233,28 +232,36 @@ function HoursStep({ value, onChange }) {
               key={day.id}
               className={`p-3 rounded-xl transition-all duration-300 ${
                 dayData.enabled 
-                  ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-sm' 
+                  ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-sm' 
                   : 'bg-stone-100/50 border-2 border-transparent'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={() => toggleDay(day.id)}
-                  className="flex items-center gap-3 flex-1 min-h-[44px]"
-                >
-                  <span className={`font-semibold ${dayData.enabled ? 'text-stone-800' : 'text-stone-400'}`}>
-                    <span className="md:hidden">{day.short}</span>
-                    <span className="hidden md:inline">{day.label}</span>
-                  </span>
-                </button>
+              <button
+                onClick={() => toggleDay(day.id)}
+                className="w-full flex items-center justify-between min-h-[44px]"
+              >
+                <span className={`font-semibold transition-colors ${dayData.enabled ? 'text-stone-800' : 'text-stone-400'}`}>
+                  <span className="md:hidden">{day.short}</span>
+                  <span className="hidden md:inline">{day.label}</span>
+                </span>
                 
                 <div className="flex items-center gap-3">
                   {!dayData.enabled && (
                     <span className="text-stone-400 text-sm">Closed</span>
                   )}
-                  <Toggle checked={dayData.enabled} onChange={() => toggleDay(day.id)} />
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    dayData.enabled 
+                      ? 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/40' 
+                      : 'bg-stone-200'
+                  }`}>
+                    {dayData.enabled && (
+                      <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </button>
               
               {dayData.enabled && (
                 <div className="flex items-center gap-2 mt-3">
@@ -285,7 +292,7 @@ function HoursStep({ value, onChange }) {
 function AiBehaviorStep({ value, onChange }) {
   const tones = [
     { id: 'friendly', label: 'Friendly', emoji: '😊', color: 'from-amber-400 to-orange-500' },
-    { id: 'professional', label: 'Professional', emoji: '👔', color: 'from-blue-500 to-indigo-600' },
+    { id: 'professional', label: 'Pro', emoji: '👔', color: 'from-blue-500 to-indigo-600' },
     { id: 'casual', label: 'Casual', emoji: '🤙', color: 'from-emerald-400 to-teal-500' },
   ];
 
@@ -365,30 +372,41 @@ function AiBehaviorStep({ value, onChange }) {
           </div>
         </div>
 
-        {/* Toggle options */}
+        {/* Toggle options - whole card is the toggle */}
         <div className="space-y-3">
           {options.map((option) => {
             const isOn = option.id === 'autoQualify' ? value[option.id] !== false : value[option.id] || false;
             
             return (
-              <div
+              <button
                 key={option.id}
-                className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 cursor-pointer ${
+                onClick={() => updateField(option.id, !isOn)}
+                className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-300 active:scale-[0.98] ${
                   isOn
-                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-sm'
+                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 shadow-lg shadow-blue-500/20'
                     : 'bg-stone-100/50 border-2 border-transparent hover:bg-stone-100'
                 }`}
-                onClick={() => updateField(option.id, !isOn)}
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${option.color} flex items-center justify-center text-xl shadow-lg ${isOn ? 'shadow-blue-500/30' : 'opacity-50'}`}>
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${option.color} flex items-center justify-center text-xl shadow-lg transition-all duration-300 ${isOn ? '' : 'opacity-40 grayscale'}`}>
                   {option.icon}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className={`font-semibold ${isOn ? 'text-stone-800' : 'text-stone-500'}`}>{option.title}</div>
-                  <div className="text-sm text-stone-500 truncate">{option.desc}</div>
+                <div className="flex-1 min-w-0 text-left">
+                  <div className={`font-semibold transition-colors ${isOn ? 'text-stone-800' : 'text-stone-400'}`}>{option.title}</div>
+                  <div className={`text-sm transition-colors ${isOn ? 'text-stone-600' : 'text-stone-400'}`}>{option.desc}</div>
                 </div>
-                <Toggle checked={isOn} onChange={() => updateField(option.id, !isOn)} />
-              </div>
+                {/* Checkmark indicator */}
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  isOn 
+                    ? 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/40' 
+                    : 'bg-stone-200'
+                }`}>
+                  {isOn && (
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+              </button>
             );
           })}
         </div>
