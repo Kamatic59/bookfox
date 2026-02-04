@@ -28,76 +28,82 @@ function AnimatedNumber({ target, duration = 2000, suffix = '' }) {
 // Feature card component
 function FeatureCard({ icon, title, description, delay = 0 }) {
   return (
-    <div 
-      className="bg-white rounded-2xl p-8 shadow-sm border border-stone-100 hover:shadow-lg hover:border-blue-100 transition-all duration-300 hover:-translate-y-1"
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-lg shadow-blue-500/20">
-        {icon}
+    <AnimateOnScroll animation="fade-up">
+      <div 
+        className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-stone-100 hover:shadow-lg hover:border-blue-100 transition-all duration-300 hover:-translate-y-1 active:translate-y-0 h-full"
+        style={{ animationDelay: `${delay}ms` }}
+      >
+        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-xl sm:text-2xl mb-4 sm:mb-5 shadow-lg shadow-blue-500/20">
+          {icon}
+        </div>
+        <h3 className="text-lg sm:text-xl font-bold text-stone-800 mb-2 sm:mb-3">{title}</h3>
+        <p className="text-stone-600 leading-relaxed text-sm sm:text-base">{description}</p>
       </div>
-      <h3 className="text-xl font-bold text-stone-800 mb-3">{title}</h3>
-      <p className="text-stone-600 leading-relaxed">{description}</p>
-    </div>
+    </AnimateOnScroll>
   );
 }
 
 // Testimonial card
 function TestimonialCard({ quote, name, business, image }) {
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm border border-stone-100">
-      <div className="flex gap-1 mb-4">
-        {[...Array(5)].map((_, i) => (
-          <span key={i} className="text-amber-400">★</span>
-        ))}
-      </div>
-      <p className="text-stone-700 text-lg mb-6 leading-relaxed">"{quote}"</p>
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-lg">
-          {name.charAt(0)}
+    <AnimateOnScroll animation="fade-up">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-stone-100 h-full">
+        <div className="flex gap-1 mb-3 sm:mb-4">
+          {[...Array(5)].map((_, i) => (
+            <span key={i} className="text-amber-400 text-sm sm:text-base">★</span>
+          ))}
         </div>
-        <div>
-          <p className="font-semibold text-stone-800">{name}</p>
-          <p className="text-stone-500 text-sm">{business}</p>
+        <p className="text-stone-700 text-base sm:text-lg mb-4 sm:mb-6 leading-relaxed">"{quote}"</p>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-lg shadow-blue-500/20 flex-shrink-0">
+            {name.charAt(0)}
+          </div>
+          <div className="min-w-0">
+            <p className="font-semibold text-stone-800 truncate">{name}</p>
+            <p className="text-stone-500 text-sm truncate">{business}</p>
+          </div>
         </div>
       </div>
-    </div>
+    </AnimateOnScroll>
   );
 }
 
 // Pricing card
 function PricingCard({ name, price, description, features, popular = false, cta = "Start Free Trial" }) {
   return (
-    <div className={`rounded-2xl p-8 ${popular ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-xl shadow-blue-500/30 scale-105' : 'bg-white border border-stone-200'}`}>
-      {popular && (
-        <span className="inline-block bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1 rounded-full mb-4">
-          MOST POPULAR
-        </span>
-      )}
-      <h3 className={`text-2xl font-bold mb-2 ${popular ? 'text-white' : 'text-stone-800'}`}>{name}</h3>
-      <p className={`mb-4 ${popular ? 'text-blue-100' : 'text-stone-500'}`}>{description}</p>
-      <div className="mb-6">
-        <span className={`text-5xl font-bold ${popular ? 'text-white' : 'text-stone-800'}`}>${price}</span>
-        <span className={popular ? 'text-blue-100' : 'text-stone-500'}>/month</span>
+    <AnimateOnScroll animation="scale">
+      <div className={`rounded-2xl p-6 sm:p-8 h-full flex flex-col ${popular ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-xl shadow-blue-500/30 sm:scale-105' : 'bg-white border border-stone-200'}`}>
+        {popular && (
+          <span className="inline-block bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1 rounded-full mb-3 sm:mb-4 self-start">
+            MOST POPULAR
+          </span>
+        )}
+        <h3 className={`text-xl sm:text-2xl font-bold mb-2 ${popular ? 'text-white' : 'text-stone-800'}`}>{name}</h3>
+        <p className={`mb-4 text-sm sm:text-base ${popular ? 'text-blue-100' : 'text-stone-500'}`}>{description}</p>
+        <div className="mb-4 sm:mb-6">
+          <span className={`text-4xl sm:text-5xl font-bold ${popular ? 'text-white' : 'text-stone-800'}`}>${price}</span>
+          <span className={`text-sm sm:text-base ${popular ? 'text-blue-100' : 'text-stone-500'}`}>/month</span>
+        </div>
+        <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 flex-1">
+          {features.map((feature, i) => (
+            <li key={i} className="flex items-start gap-2 sm:gap-3">
+              <span className={`text-base sm:text-lg flex-shrink-0 ${popular ? 'text-blue-200' : 'text-blue-500'}`}>✓</span>
+              <span className={`text-sm sm:text-base ${popular ? 'text-blue-50' : 'text-stone-600'}`}>{feature}</span>
+            </li>
+          ))}
+        </ul>
+        <Link
+          to="/signup"
+          className={`block w-full py-3 px-4 rounded-xl font-semibold text-center transition-all active:scale-[0.98] ${
+            popular 
+              ? 'bg-white text-blue-600 hover:bg-blue-50 active:bg-blue-100' 
+              : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-lg shadow-blue-500/20'
+          }`}
+        >
+          {cta}
+        </Link>
       </div>
-      <ul className="space-y-3 mb-8">
-        {features.map((feature, i) => (
-          <li key={i} className="flex items-center gap-3">
-            <span className={`text-lg ${popular ? 'text-blue-200' : 'text-blue-500'}`}>✓</span>
-            <span className={popular ? 'text-blue-50' : 'text-stone-600'}>{feature}</span>
-          </li>
-        ))}
-      </ul>
-      <Link
-        to="/signup"
-        className={`block w-full py-3 px-4 rounded-xl font-semibold text-center transition ${
-          popular 
-            ? 'bg-white text-blue-600 hover:bg-blue-50' 
-            : 'bg-blue-600 text-white hover:bg-blue-700'
-        }`}
-      >
-        {cta}
-      </Link>
-    </div>
+    </AnimateOnScroll>
   );
 }
 
@@ -145,52 +151,56 @@ export default function Landing() {
         </div>
 
         {/* Mobile menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-stone-200 py-4 px-4 space-y-4">
-            <a href="#features" className="block text-stone-600 hover:text-stone-800">Features</a>
-            <a href="#pricing" className="block text-stone-600 hover:text-stone-800">Pricing</a>
-            <a href="#testimonials" className="block text-stone-600 hover:text-stone-800">Reviews</a>
-            <Link to="/login" className="block text-stone-600 hover:text-stone-800">Sign In</Link>
-            <Link to="/signup" className="block bg-blue-600 text-white px-5 py-2 rounded-lg font-medium text-center">
+        <div 
+          className={`md:hidden bg-white border-t border-stone-200 overflow-hidden transition-all duration-300 ${
+            mobileMenuOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="py-4 px-4 space-y-1">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block py-3 px-4 text-stone-600 hover:bg-stone-50 active:bg-stone-100 rounded-xl transition-colors">Features</a>
+            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block py-3 px-4 text-stone-600 hover:bg-stone-50 active:bg-stone-100 rounded-xl transition-colors">Pricing</a>
+            <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block py-3 px-4 text-stone-600 hover:bg-stone-50 active:bg-stone-100 rounded-xl transition-colors">Reviews</a>
+            <Link to="/login" className="block py-3 px-4 text-stone-600 hover:bg-stone-50 active:bg-stone-100 rounded-xl transition-colors">Sign In</Link>
+            <Link to="/signup" className="block bg-blue-600 text-white py-3 px-4 rounded-xl font-medium text-center hover:bg-blue-700 active:bg-blue-800 transition-colors mt-2">
               Start Free Trial
             </Link>
           </div>
-        )}
+        </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
+          <FadeIn className="text-center max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
               </span>
-              Now with AI-powered lead qualification
+              AI-powered lead qualification
             </div>
             
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-stone-800 mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-stone-800 mb-4 sm:mb-6 leading-[1.1]">
               Never Miss a
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400"> Lead </span>
               Again
             </h1>
             
-            <p className="text-xl text-stone-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-xl text-stone-600 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed px-2">
               BookFox answers your missed calls instantly via SMS, qualifies leads with AI, 
               and books appointments — so you can focus on the job, not the phone.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12 px-2">
               <Link 
                 to="/signup" 
-                className="w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 hover:-translate-y-0.5"
+                className="w-full sm:w-auto bg-blue-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-blue-700 active:bg-blue-800 transition-all shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0"
               >
                 Start Free 14-Day Trial
               </Link>
               <a 
                 href="#demo" 
-                className="w-full sm:w-auto flex items-center justify-center gap-2 text-stone-700 font-medium hover:text-blue-600 transition px-8 py-4"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 text-stone-700 font-medium hover:text-blue-600 active:text-blue-700 transition px-6 sm:px-8 py-3.5 sm:py-4"
               >
                 <span className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
                   <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
