@@ -7,21 +7,50 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadBusiness(session.user.id);
-      } else {
+    let mounted = true;
+    
+    // Timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      if (mounted && loading) {
+        console.warn('Auth loading timeout - setting loading to false');
         setLoading(false);
       }
-    });
+    }, 5000);
+
+    // Get initial session
+    supabase.auth.getSession()
+      .then(({ data: { session }, error: sessionError }) => {
+        if (!mounted) return;
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          setError(sessionError.message);
+          setLoading(false);
+          return;
+        }
+        
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          loadBusiness(session.user.id);
+        } else {
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!mounted) return;
+        console.error('Failed to get session:', err);
+        setError(err.message);
+        setLoading(false);
+      });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+        
         setUser(session?.user ?? null);
         if (session?.user) {
           await loadBusiness(session.user.id);
@@ -32,7 +61,11 @@ export function AuthProvider({ children }) {
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   async function loadBusiness(userId) {
@@ -119,6 +152,7 @@ export function AuthProvider({ children }) {
     user,
     business,
     loading,
+    error,
     signUp,
     signIn,
     signOut,
