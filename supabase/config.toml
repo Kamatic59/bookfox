@@ -1,8 +1,7 @@
 # BookFox Supabase Configuration
 # See: https://supabase.com/docs/guides/cli/config
 
-[project]
-id = "your-project-id"
+# project id set via supabase link
 
 [api]
 enabled = true
@@ -14,7 +13,7 @@ max_rows = 1000
 [db]
 port = 54322
 shadow_port = 54320
-major_version = 15
+major_version = 17
 
 [studio]
 enabled = true
@@ -37,8 +36,7 @@ enable_confirmations = false # Set to true in production
 enabled = true
 file_size_limit = "50MiB"
 
-[functions]
-verify_jwt = false # Enable in production with proper JWT handling
+# Functions are configured in their individual config.toml files
 
 # Edge Function environment variables
 # Set these in Supabase Dashboard > Settings > Edge Functions > Secrets

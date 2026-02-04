@@ -40,17 +40,21 @@ serve(async (req) => {
       twilio_sid: callSid,
     });
     
-    // Handle different call statuses
+    // Handle incoming calls - play message and send SMS follow-up
     if (callStatus === 'ringing' || callStatus === 'in-progress') {
-      // Call is being answered or ringing - let it proceed
-      // You could forward to the business phone here if desired
+      // Trigger SMS follow-up immediately (don't await - let it run in background)
+      handleMissedCall(business, fromPhone, callSid).catch(err => 
+        console.error('SMS follow-up error:', err)
+      );
+      
+      // Play the voicemail message
       return twiml(
         TwiML.say(`Thanks for calling ${business.name}. We're currently unavailable. We'll text you right away to help!`) +
         TwiML.hangup()
       );
     }
     
-    // For missed/no-answer calls, trigger SMS follow-up
+    // For status callbacks (if configured), also handle
     if (['no-answer', 'busy', 'canceled', 'completed'].includes(callStatus)) {
       await handleMissedCall(business, fromPhone, callSid);
     }

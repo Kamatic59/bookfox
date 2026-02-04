@@ -1,3 +1,2 @@
-# Twilio SMS webhook - no JWT required (Twilio validates via signature)
-[function]
+# Twilio SMS webhook - no JWT required
 verify_jwt = false

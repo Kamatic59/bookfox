@@ -2,327 +2,416 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { ChevronRight, ChevronLeft, Check, Phone, Clock, Wrench, Sparkles } from 'lucide-react';
 
-const TRADE_TYPES = [
-  { id: 'plumber', label: 'Plumbing', icon: '🔧' },
-  { id: 'hvac', label: 'HVAC', icon: '❄️' },
-  { id: 'electrician', label: 'Electrical', icon: '⚡' },
-  { id: 'roofing', label: 'Roofing', icon: '🏠' },
-  { id: 'landscaping', label: 'Landscaping', icon: '🌳' },
-  { id: 'general', label: 'General Contractor', icon: '🔨' },
-  { id: 'other', label: 'Other', icon: '🛠️' },
-];
+// Step indicator
+function StepIndicator({ currentStep, totalSteps }) {
+  return (
+    <div className="flex items-center justify-center gap-2 mb-8">
+      {[...Array(totalSteps)].map((_, i) => (
+        <div
+          key={i}
+          className={`h-2 rounded-full transition-all ${
+            i < currentStep
+              ? 'bg-blue-600 w-8'
+              : i === currentStep
+              ? 'bg-blue-600 w-8'
+              : 'bg-stone-200 w-2'
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
 
-const STEPS = [
-  { id: 'trade', title: 'Your Trade', icon: Wrench },
-  { id: 'hours', title: 'Business Hours', icon: Clock },
-  { id: 'phone', title: 'Phone Setup', icon: Phone },
-  { id: 'ai', title: 'AI Settings', icon: Sparkles },
-];
+// Trade type selection
+function TradeTypeStep({ value, onChange }) {
+  const trades = [
+    { id: 'plumber', icon: '🔧', label: 'Plumbing' },
+    { id: 'hvac', icon: '❄️', label: 'HVAC' },
+    { id: 'electrician', icon: '⚡', label: 'Electrical' },
+    { id: 'roofer', icon: '🏠', label: 'Roofing' },
+    { id: 'landscaper', icon: '🌿', label: 'Landscaping' },
+    { id: 'handyman', icon: '🛠️', label: 'Handyman' },
+    { id: 'painter', icon: '🎨', label: 'Painting' },
+    { id: 'other', icon: '📦', label: 'Other' },
+  ];
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-stone-800 mb-2">What type of trade are you in?</h2>
+      <p className="text-stone-500 mb-8">This helps us customize your AI assistant's responses</p>
+      
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {trades.map((trade) => (
+          <button
+            key={trade.id}
+            onClick={() => onChange(trade.id)}
+            className={`p-6 rounded-2xl border-2 transition-all ${
+              value === trade.id
+                ? 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-500/10'
+                : 'border-stone-200 hover:border-blue-200 hover:bg-stone-50'
+            }`}
+          >
+            <span className="text-4xl block mb-3">{trade.icon}</span>
+            <span className={`font-medium ${value === trade.id ? 'text-blue-700' : 'text-stone-700'}`}>
+              {trade.label}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Business hours step
+function HoursStep({ value, onChange }) {
+  const days = [
+    { id: 'monday', label: 'Monday' },
+    { id: 'tuesday', label: 'Tuesday' },
+    { id: 'wednesday', label: 'Wednesday' },
+    { id: 'thursday', label: 'Thursday' },
+    { id: 'friday', label: 'Friday' },
+    { id: 'saturday', label: 'Saturday' },
+    { id: 'sunday', label: 'Sunday' },
+  ];
+
+  const toggleDay = (dayId) => {
+    const newValue = { ...value };
+    if (newValue[dayId]) {
+      newValue[dayId] = { ...newValue[dayId], enabled: !newValue[dayId].enabled };
+    } else {
+      newValue[dayId] = { enabled: true, start: '08:00', end: '17:00' };
+    }
+    onChange(newValue);
+  };
+
+  const updateTime = (dayId, field, time) => {
+    const newValue = { ...value };
+    if (!newValue[dayId]) {
+      newValue[dayId] = { enabled: true, start: '08:00', end: '17:00' };
+    }
+    newValue[dayId][field] = time;
+    onChange(newValue);
+  };
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-stone-800 mb-2">What are your business hours?</h2>
+      <p className="text-stone-500 mb-8">BookFox will know when to expect your calls</p>
+      
+      <div className="space-y-3">
+        {days.map((day) => {
+          const dayData = value[day.id] || { enabled: day.id !== 'sunday' && day.id !== 'saturday', start: '08:00', end: '17:00' };
+          
+          return (
+            <div
+              key={day.id}
+              className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${
+                dayData.enabled ? 'border-blue-200 bg-blue-50/50' : 'border-stone-200'
+              }`}
+            >
+              <button
+                onClick={() => toggleDay(day.id)}
+                className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
+                  dayData.enabled
+                    ? 'bg-blue-600 border-blue-600 text-white'
+                    : 'border-stone-300'
+                }`}
+              >
+                {dayData.enabled && (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </button>
+              
+              <span className={`w-28 font-medium ${dayData.enabled ? 'text-stone-800' : 'text-stone-400'}`}>
+                {day.label}
+              </span>
+              
+              {dayData.enabled ? (
+                <div className="flex items-center gap-2 flex-1">
+                  <input
+                    type="time"
+                    value={dayData.start}
+                    onChange={(e) => updateTime(day.id, 'start', e.target.value)}
+                    className="px-3 py-2 border border-stone-300 rounded-lg bg-white"
+                  />
+                  <span className="text-stone-400">to</span>
+                  <input
+                    type="time"
+                    value={dayData.end}
+                    onChange={(e) => updateTime(day.id, 'end', e.target.value)}
+                    className="px-3 py-2 border border-stone-300 rounded-lg bg-white"
+                  />
+                </div>
+              ) : (
+                <span className="text-stone-400 text-sm">Closed</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Phone setup step
+function PhoneStep({ value, onChange }) {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-stone-800 mb-2">Set up your phone number</h2>
+      <p className="text-stone-500 mb-8">We'll give you a dedicated number for BookFox</p>
+      
+      <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-6">
+        <div className="flex items-start gap-4">
+          <span className="text-3xl">📱</span>
+          <div>
+            <h3 className="font-bold text-stone-800 mb-1">How it works</h3>
+            <p className="text-stone-600 text-sm leading-relaxed">
+              You'll get a dedicated BookFox phone number. Forward your business calls to this number, 
+              and BookFox will catch any calls you miss and follow up automatically via SMS.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-stone-700 mb-2">
+            Your Business Phone Number
+          </label>
+          <input
+            type="tel"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="(385) 555-0100"
+            className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+          />
+          <p className="text-stone-500 text-xs mt-2">
+            We'll show you how to forward calls from this number after setup
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// AI settings step
+function AiStep({ value, onChange }) {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-stone-800 mb-2">Customize your AI assistant</h2>
+      <p className="text-stone-500 mb-8">Give your assistant a personality that matches your brand</p>
+      
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-stone-700 mb-2">
+            Assistant Name
+          </label>
+          <input
+            type="text"
+            value={value.name}
+            onChange={(e) => onChange({ ...value, name: e.target.value })}
+            placeholder="BookFox"
+            className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+          />
+          <p className="text-stone-500 text-xs mt-2">
+            The name your AI will use when greeting customers
+          </p>
+        </div>
+
+        <div className="bg-stone-50 rounded-2xl p-6">
+          <h4 className="font-medium text-stone-800 mb-4">Preview</h4>
+          <div className="flex gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-lg flex-shrink-0">
+              🦊
+            </div>
+            <div className="bg-white rounded-2xl rounded-tl-md p-4 shadow-sm">
+              <p className="text-stone-700">
+                Hi! This is {value.name || 'BookFox'} from your business. 
+                I noticed we missed your call. How can I help you today? 🦊
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Success step
+function SuccessStep({ businessName }) {
+  return (
+    <div className="text-center">
+      <div className="text-8xl mb-6">🎉</div>
+      <h2 className="text-3xl font-bold text-stone-800 mb-4">You're all set!</h2>
+      <p className="text-stone-600 text-lg mb-8 max-w-md mx-auto">
+        BookFox is ready to catch missed calls for {businessName}. 
+        Let's take a look at your new dashboard!
+      </p>
+      
+      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8 text-left max-w-md mx-auto">
+        <h4 className="font-bold text-emerald-800 mb-3">✅ What's next?</h4>
+        <ul className="space-y-2 text-emerald-700">
+          <li className="flex items-center gap-2">
+            <span>1.</span> Forward calls from your business phone
+          </li>
+          <li className="flex items-center gap-2">
+            <span>2.</span> Test by calling your BookFox number
+          </li>
+          <li className="flex items-center gap-2">
+            <span>3.</span> Watch the leads roll in!
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+}
 
 export default function Onboarding() {
   const { business, refreshBusiness } = useAuth();
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(0);
+  const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
+  
   // Form state
   const [tradeType, setTradeType] = useState('');
-  const [businessPhone, setBusinessPhone] = useState('');
-  const [businessHours, setBusinessHours] = useState({
-    monday: { start: '08:00', end: '17:00', enabled: true },
-    tuesday: { start: '08:00', end: '17:00', enabled: true },
-    wednesday: { start: '08:00', end: '17:00', enabled: true },
-    thursday: { start: '08:00', end: '17:00', enabled: true },
-    friday: { start: '08:00', end: '17:00', enabled: true },
-    saturday: { start: '09:00', end: '14:00', enabled: false },
-    sunday: { start: '09:00', end: '14:00', enabled: false },
+  const [hours, setHours] = useState({
+    monday: { enabled: true, start: '08:00', end: '17:00' },
+    tuesday: { enabled: true, start: '08:00', end: '17:00' },
+    wednesday: { enabled: true, start: '08:00', end: '17:00' },
+    thursday: { enabled: true, start: '08:00', end: '17:00' },
+    friday: { enabled: true, start: '08:00', end: '17:00' },
+    saturday: { enabled: false, start: '09:00', end: '14:00' },
+    sunday: { enabled: false, start: null, end: null },
   });
-  const [assistantName, setAssistantName] = useState('BookFox');
-  const [services, setServices] = useState('');
+  const [phone, setPhone] = useState('');
+  const [aiSettings, setAiSettings] = useState({ name: 'BookFox' });
 
-  async function handleFinish() {
-    setLoading(true);
-    setError('');
+  const totalSteps = 5;
 
-    try {
-      // Update business
-      const { error: bizError } = await supabase
-        .from('businesses')
-        .update({
-          trade_type: tradeType,
-          phone: businessPhone,
-          business_hours: businessHours,
-        })
-        .eq('id', business.id);
-
-      if (bizError) throw bizError;
-
-      // Update AI settings
-      const { error: aiError } = await supabase
-        .from('ai_settings')
-        .update({
-          assistant_name: assistantName,
-          services_offered: services.split(',').map(s => s.trim()).filter(Boolean),
-        })
-        .eq('business_id', business.id);
-
-      if (aiError) throw aiError;
-
-      await refreshBusiness();
-      navigate('/');
-    } catch (err) {
-      setError(err.message || 'Failed to save settings');
-    } finally {
-      setLoading(false);
+  const canContinue = () => {
+    switch (step) {
+      case 0: return !!tradeType;
+      case 1: return true;
+      case 2: return true;
+      case 3: return !!aiSettings.name;
+      case 4: return true;
+      default: return false;
     }
-  }
+  };
 
-  function nextStep() {
-    if (currentStep < STEPS.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
-  }
+  const handleNext = async () => {
+    if (step < totalSteps - 1) {
+      setStep(step + 1);
+    } else {
+      // Save all settings and go to dashboard
+      setLoading(true);
+      try {
+        // Update business
+        await supabase
+          .from('businesses')
+          .update({
+            trade_type: tradeType,
+            business_hours: hours,
+            phone: phone,
+          })
+          .eq('id', business.id);
 
-  function prevStep() {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+        // Update AI settings
+        await supabase
+          .from('ai_settings')
+          .update({
+            assistant_name: aiSettings.name,
+          })
+          .eq('business_id', business.id);
+
+        await refreshBusiness();
+        navigate('/dashboard');
+      } catch (error) {
+        console.error('Failed to save onboarding:', error);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
+  };
+
+  const handleBack = () => {
+    if (step > 0) {
+      setStep(step - 1);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-50 to-blue-50 p-4">
-      <div className="max-w-2xl mx-auto pt-8">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-blue-50/30 to-stone-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
+        {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 text-2xl font-bold text-stone-800">
-            <span className="text-3xl">🦊</span>
+          <div className="inline-flex items-center gap-2 text-3xl font-bold text-stone-800">
+            <span className="text-4xl">🦊</span>
             <span>BookFox</span>
           </div>
-          <h1 className="text-xl text-stone-700 mt-2">Let's set up your AI receptionist</h1>
         </div>
 
         {/* Progress */}
-        <div className="flex items-center justify-between mb-8 px-4">
-          {STEPS.map((step, index) => (
-            <div key={step.id} className="flex items-center">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
-                  index < currentStep
-                    ? 'bg-green-500 text-white'
-                    : index === currentStep
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-stone-200 text-stone-500'
-                }`}
-              >
-                {index < currentStep ? <Check className="w-5 h-5" /> : index + 1}
-              </div>
-              {index < STEPS.length - 1 && (
-                <div
-                  className={`w-12 sm:w-20 h-1 mx-1 ${
-                    index < currentStep ? 'bg-green-500' : 'bg-stone-200'
-                  }`}
-                />
-              )}
-            </div>
-          ))}
-        </div>
+        <StepIndicator currentStep={step} totalSteps={totalSteps} />
 
-        {/* Step Content */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
-
-          {/* Step 1: Trade Type */}
-          {currentStep === 0 && (
-            <div>
-              <h2 className="text-xl font-semibold text-stone-800 mb-2">What type of work do you do?</h2>
-              <p className="text-stone-600 mb-6">This helps us customize the AI for your industry.</p>
-              
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {TRADE_TYPES.map((trade) => (
-                  <button
-                    key={trade.id}
-                    type="button"
-                    onClick={() => setTradeType(trade.id)}
-                    className={`p-4 rounded-xl border-2 text-left transition ${
-                      tradeType === trade.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-stone-200 hover:border-stone-300'
-                    }`}
-                  >
-                    <span className="text-2xl">{trade.icon}</span>
-                    <div className="font-medium text-stone-800 mt-1">{trade.label}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Business Hours */}
-          {currentStep === 1 && (
-            <div>
-              <h2 className="text-xl font-semibold text-stone-800 mb-2">When are you available?</h2>
-              <p className="text-stone-600 mb-6">The AI will let customers know your operating hours.</p>
-              
-              <div className="space-y-3">
-                {Object.entries(businessHours).map(([day, hours]) => (
-                  <div key={day} className="flex items-center gap-3">
-                    <label className="flex items-center gap-2 w-28">
-                      <input
-                        type="checkbox"
-                        checked={hours.enabled}
-                        onChange={(e) =>
-                          setBusinessHours({
-                            ...businessHours,
-                            [day]: { ...hours, enabled: e.target.checked },
-                          })
-                        }
-                        className="w-4 h-4 text-blue-600 rounded"
-                      />
-                      <span className="capitalize text-stone-700">{day}</span>
-                    </label>
-                    
-                    {hours.enabled && (
-                      <div className="flex items-center gap-2 text-sm">
-                        <input
-                          type="time"
-                          value={hours.start}
-                          onChange={(e) =>
-                            setBusinessHours({
-                              ...businessHours,
-                              [day]: { ...hours, start: e.target.value },
-                            })
-                          }
-                          className="px-2 py-1 border border-stone-300 rounded-lg"
-                        />
-                        <span className="text-stone-500">to</span>
-                        <input
-                          type="time"
-                          value={hours.end}
-                          onChange={(e) =>
-                            setBusinessHours({
-                              ...businessHours,
-                              [day]: { ...hours, end: e.target.value },
-                            })
-                          }
-                          className="px-2 py-1 border border-stone-300 rounded-lg"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Phone Setup */}
-          {currentStep === 2 && (
-            <div>
-              <h2 className="text-xl font-semibold text-stone-800 mb-2">Your business phone</h2>
-              <p className="text-stone-600 mb-6">
-                We'll forward missed calls to your BookFox AI number. You'll get a dedicated number after setup.
-              </p>
-              
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">
-                  Main Business Phone
-                </label>
-                <input
-                  type="tel"
-                  value={businessPhone}
-                  onChange={(e) => setBusinessPhone(e.target.value)}
-                  className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                  placeholder="(555) 123-4567"
-                />
-                <p className="text-xs text-stone-500 mt-2">
-                  💡 After setup, you'll configure call forwarding from this number to your BookFox number.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Step 4: AI Settings */}
-          {currentStep === 3 && (
-            <div>
-              <h2 className="text-xl font-semibold text-stone-800 mb-2">Customize your AI</h2>
-              <p className="text-stone-600 mb-6">Make BookFox feel like part of your team.</p>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-1">
-                    AI Assistant Name
-                  </label>
-                  <input
-                    type="text"
-                    value={assistantName}
-                    onChange={(e) => setAssistantName(e.target.value)}
-                    className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                    placeholder="BookFox"
-                  />
-                  <p className="text-xs text-stone-500 mt-1">
-                    The AI will introduce itself with this name
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-1">
-                    Services You Offer
-                  </label>
-                  <textarea
-                    value={services}
-                    onChange={(e) => setServices(e.target.value)}
-                    className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none"
-                    placeholder="Water heater repair, drain cleaning, pipe installation..."
-                    rows={3}
-                  />
-                  <p className="text-xs text-stone-500 mt-1">
-                    Comma-separated list — helps the AI understand what you do
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+        {/* Card */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10">
+          {/* Step Content */}
+          {step === 0 && <TradeTypeStep value={tradeType} onChange={setTradeType} />}
+          {step === 1 && <HoursStep value={hours} onChange={setHours} />}
+          {step === 2 && <PhoneStep value={phone} onChange={setPhone} />}
+          {step === 3 && <AiStep value={aiSettings} onChange={setAiSettings} />}
+          {step === 4 && <SuccessStep businessName={business?.name} />}
 
           {/* Navigation */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-stone-100">
-            <button
-              type="button"
-              onClick={prevStep}
-              disabled={currentStep === 0}
-              className="flex items-center gap-2 px-4 py-2 text-stone-600 hover:text-stone-800 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              Back
-            </button>
-
-            {currentStep < STEPS.length - 1 ? (
+          <div className="flex items-center justify-between mt-10 pt-6 border-t border-stone-100">
+            {step > 0 && step < 4 ? (
               <button
-                type="button"
-                onClick={nextStep}
-                className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition"
+                onClick={handleBack}
+                className="px-6 py-3 text-stone-600 font-medium hover:text-stone-800 transition-colors"
               >
-                Continue
-                <ChevronRight className="w-5 h-5" />
+                ← Back
               </button>
             ) : (
-              <button
-                type="button"
-                onClick={handleFinish}
-                disabled={loading}
-                className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition disabled:opacity-50"
-              >
-                {loading ? 'Saving...' : 'Finish Setup'}
-                <Check className="w-5 h-5" />
-              </button>
+              <div />
             )}
+            
+            <button
+              onClick={handleNext}
+              disabled={!canContinue() || loading}
+              className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Saving...
+                </span>
+              ) : step === 4 ? (
+                'Go to Dashboard →'
+              ) : (
+                'Continue →'
+              )}
+            </button>
           </div>
         </div>
+
+        {/* Skip */}
+        {step < 4 && (
+          <p className="text-center mt-6">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="text-stone-500 hover:text-stone-700 text-sm"
+            >
+              Skip for now, I'll set this up later
+            </button>
+          </p>
+        )}
       </div>
     </div>
   );

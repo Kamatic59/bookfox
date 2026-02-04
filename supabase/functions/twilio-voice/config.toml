@@ -1,3 +1,2 @@
-# Twilio Voice webhook - no JWT required (Twilio validates via signature)
-[function]
+# Twilio Voice webhook - no JWT required
 verify_jwt = false

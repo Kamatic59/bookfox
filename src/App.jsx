@@ -9,6 +9,7 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Onboarding from './pages/Onboarding';
+import Landing from './pages/Landing';
 
 // Loading spinner
 function LoadingScreen() {
@@ -54,7 +55,7 @@ function PublicRoute({ children }) {
     if (!business) {
       return <Navigate to="/onboarding" replace />;
     }
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
   
   return children;
@@ -76,8 +77,26 @@ function OnboardingRoute({ children }) {
 }
 
 function AppRoutes() {
+  const { isAuthenticated, loading, business } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <Routes>
+      {/* Landing page - show to non-authenticated users */}
+      <Route
+        path="/"
+        element={
+          isAuthenticated ? (
+            business ? <Navigate to="/dashboard" replace /> : <Navigate to="/onboarding" replace />
+          ) : (
+            <Landing />
+          )
+        }
+      />
+
       {/* Public routes */}
       <Route
         path="/login"
@@ -106,9 +125,9 @@ function AppRoutes() {
         }
       />
       
-      {/* Protected routes */}
+      {/* Protected routes - Dashboard layout */}
       <Route
-        path="/"
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <DashboardLayout />
@@ -121,6 +140,12 @@ function AppRoutes() {
         <Route path="leads" element={<Leads />} />
         <Route path="settings" element={<Settings />} />
       </Route>
+
+      {/* Legacy routes - redirect to new structure */}
+      <Route path="/inbox" element={<Navigate to="/dashboard/inbox" replace />} />
+      <Route path="/calendar" element={<Navigate to="/dashboard/calendar" replace />} />
+      <Route path="/leads" element={<Navigate to="/dashboard/leads" replace />} />
+      <Route path="/settings" element={<Navigate to="/dashboard/settings" replace />} />
       
       {/* Catch all */}
       <Route path="*" element={<Navigate to="/" replace />} />
