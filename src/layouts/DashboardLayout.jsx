@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Logo, FoxIconMinimal } from '../components/Logo';
 
 // Navigation items
 const navItems = [
@@ -64,10 +65,11 @@ export default function DashboardLayout() {
       >
         {/* Logo */}
         <div className={`p-6 border-b border-stone-100 flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
-          <div className="flex items-center gap-2">
-            <span className="text-3xl">🦊</span>
-            {!sidebarCollapsed && <span className="text-xl font-bold text-stone-800">BookFox</span>}
-          </div>
+          {sidebarCollapsed ? (
+            <FoxIconMinimal size={32} />
+          ) : (
+            <Logo size="md" />
+          )}
           <button 
             className="hidden lg:block p-1 hover:bg-stone-100 rounded-lg transition-colors"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}

@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { Logo, LogoLight } from '../components/Logo';
+import { AnimateOnScroll, AnimatedCounter, FadeIn } from '../components/Animations';
 
 // Animated counter component
 function AnimatedNumber({ target, duration = 2000, suffix = '' }) {
@@ -108,9 +110,8 @@ export default function Landing() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center gap-2">
-              <span className="text-3xl">🦊</span>
-              <span className="text-xl font-bold text-stone-800">BookFox</span>
+            <Link to="/">
+              <Logo size="md" />
             </Link>
             
             {/* Desktop nav */}
@@ -494,9 +495,8 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">🦊</span>
-                <span className="text-xl font-bold text-white">BookFox</span>
+              <div className="mb-4">
+                <LogoLight size="md" />
               </div>
               <p className="text-sm">
                 AI-powered receptionist for trade businesses. Never miss a lead again.

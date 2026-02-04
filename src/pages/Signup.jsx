@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Logo, FoxIcon } from '../components/Logo';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -37,7 +38,9 @@ export default function Signup() {
         </div>
 
         <div className="relative z-10 max-w-md">
-          <div className="text-8xl mb-8">🦊</div>
+          <div className="mb-8">
+            <FoxIcon size={120} className="drop-shadow-2xl" />
+          </div>
           <h2 className="text-3xl font-bold text-white mb-4">
             Join 2,500+ trade pros
           </h2>
@@ -83,9 +86,8 @@ export default function Signup() {
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
           {/* Logo */}
-          <Link to="/" className="inline-flex items-center gap-2 text-3xl font-bold text-stone-800 mb-8">
-            <span className="text-4xl">🦊</span>
-            <span>BookFox</span>
+          <Link to="/" className="inline-block mb-8">
+            <Logo size="lg" />
           </Link>
 
           <div className="mb-8">

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import { Logo } from '../components/Logo';
 
 // Step indicator
 function StepIndicator({ currentStep, totalSteps }) {
@@ -348,10 +349,7 @@ export default function Onboarding() {
       <div className="w-full max-w-2xl">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 text-3xl font-bold text-stone-800">
-            <span className="text-4xl">🦊</span>
-            <span>BookFox</span>
-          </div>
+          <Logo size="lg" className="justify-center" />
         </div>
 
         {/* Progress */}
