@@ -15,10 +15,13 @@ import Landing from './pages/Landing';
 // Loading spinner
 function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-blue-50/30 to-indigo-50/20 flex items-center justify-center">
       <div className="text-center">
-        <div className="text-5xl mb-4 animate-bounce">🦊</div>
-        <p className="text-stone-600">Loading...</p>
+        <div className="relative mb-4">
+          <img src="/logo.png" alt="BookFox" className="w-16 h-16 mx-auto animate-bounce" />
+          <div className="absolute inset-0 w-16 h-16 mx-auto bg-blue-400/20 rounded-full blur-xl animate-pulse" />
+        </div>
+        <p className="text-stone-600 font-medium">Loading...</p>
       </div>
     </div>
   );

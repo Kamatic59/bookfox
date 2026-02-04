@@ -144,7 +144,7 @@ function TradeTypeStep({ value, onChange }) {
   );
 }
 
-// Business hours - cleaner design
+// Business hours - mobile optimized
 function HoursStep({ value, onChange }) {
   const days = [
     { id: 'monday', label: 'Monday', short: 'Mon' },
@@ -195,82 +195,92 @@ function HoursStep({ value, onChange }) {
 
   return (
     <div className="animate-fadeIn">
-      <div className="text-center mb-10">
+      <div className="text-center mb-6 md:mb-10">
         <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-full mb-4">
           Step 2 of 4
         </span>
-        <h2 className="text-3xl font-bold text-stone-800 mb-3">Your business hours</h2>
-        <p className="text-stone-500 text-lg max-w-md mx-auto">
+        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-2 md:mb-3">Your business hours</h2>
+        <p className="text-stone-500 text-base md:text-lg max-w-md mx-auto">
           So BookFox knows when to catch your calls
         </p>
       </div>
 
       {/* Quick select buttons */}
-      <div className="flex flex-wrap gap-3 justify-center mb-8">
+      <div className="flex gap-2 md:gap-3 justify-center mb-6 md:mb-8">
         <button
           onClick={() => setQuickHours('weekdays')}
-          className="px-4 py-2 rounded-full bg-stone-100 hover:bg-blue-100 hover:text-blue-700 text-stone-600 text-sm font-medium transition-all"
+          className="px-3 md:px-4 py-2 rounded-full bg-stone-100 hover:bg-blue-100 hover:text-blue-700 text-stone-600 text-sm font-medium transition-all active:scale-95"
         >
-          Mon-Fri (9-5)
+          Mon-Fri
         </button>
         <button
           onClick={() => setQuickHours('allweek')}
-          className="px-4 py-2 rounded-full bg-stone-100 hover:bg-blue-100 hover:text-blue-700 text-stone-600 text-sm font-medium transition-all"
+          className="px-3 md:px-4 py-2 rounded-full bg-stone-100 hover:bg-blue-100 hover:text-blue-700 text-stone-600 text-sm font-medium transition-all active:scale-95"
         >
-          7 Days a Week
+          7 Days
         </button>
       </div>
       
-      <div className="space-y-3 max-w-lg mx-auto">
+      <div className="space-y-2 md:space-y-3 max-w-lg mx-auto">
         {days.map((day) => {
           const dayData = value[day.id] || { enabled: !['saturday', 'sunday'].includes(day.id), start: '08:00', end: '17:00' };
           
           return (
             <div
               key={day.id}
-              className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-300 ${
+              className={`p-3 md:p-4 rounded-xl border-2 transition-all duration-300 ${
                 dayData.enabled 
                   ? 'border-blue-200 bg-gradient-to-r from-blue-50/80 to-indigo-50/80' 
                   : 'border-stone-200 bg-stone-50/50'
               }`}
             >
-              <button
-                onClick={() => toggleDay(day.id)}
-                className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all flex-shrink-0 ${
-                  dayData.enabled
-                    ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/30'
-                    : 'border-stone-300 hover:border-blue-400'
-                }`}
-              >
-                {dayData.enabled && (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
+              {/* Day toggle row */}
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => toggleDay(day.id)}
+                  className="flex items-center gap-3 flex-1 min-h-[44px]"
+                >
+                  <div
+                    className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+                      dayData.enabled
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/30'
+                        : 'border-stone-300'
+                    }`}
+                  >
+                    {dayData.enabled && (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className={`font-medium ${dayData.enabled ? 'text-stone-800' : 'text-stone-400'}`}>
+                    <span className="md:hidden">{day.short}</span>
+                    <span className="hidden md:inline">{day.label}</span>
+                  </span>
+                </button>
+                
+                {!dayData.enabled && (
+                  <span className="text-stone-400 text-sm">Closed</span>
                 )}
-              </button>
+              </div>
               
-              <span className={`w-24 font-medium ${dayData.enabled ? 'text-stone-800' : 'text-stone-400'}`}>
-                {day.label}
-              </span>
-              
-              {dayData.enabled ? (
-                <div className="flex items-center gap-2 flex-1 justify-end">
+              {/* Time inputs - stacked on mobile */}
+              {dayData.enabled && (
+                <div className="flex items-center gap-2 mt-3 pl-10">
                   <input
                     type="time"
                     value={dayData.start}
                     onChange={(e) => updateTime(day.id, 'start', e.target.value)}
-                    className="px-3 py-2 border border-stone-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="flex-1 min-w-0 px-3 py-2.5 border border-stone-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   />
-                  <span className="text-stone-400 text-sm">to</span>
+                  <span className="text-stone-400 text-sm flex-shrink-0">to</span>
                   <input
                     type="time"
                     value={dayData.end}
                     onChange={(e) => updateTime(day.id, 'end', e.target.value)}
-                    className="px-3 py-2 border border-stone-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="flex-1 min-w-0 px-3 py-2.5 border border-stone-200 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   />
                 </div>
-              ) : (
-                <span className="text-stone-400 text-sm ml-auto">Closed</span>
               )}
             </div>
           );
