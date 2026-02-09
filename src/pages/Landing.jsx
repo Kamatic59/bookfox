@@ -29,7 +29,7 @@ function GlassCard({ children, className = '', glow = false }) {
     <div className={`
       relative bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 
       shadow-[0_8px_32px_rgba(0,0,0,0.08)] 
-      ${glow ? 'shadow-[0_0_40px_rgba(16,185,129,0.15)]' : ''}
+      ${glow ? 'shadow-[0_0_40px_rgba(37,99,235,0.15)]' : ''}
       ${className}
     `}>
       {children}
@@ -46,11 +46,11 @@ function FAQ({ q, a }) {
         onClick={() => setOpen(!open)} 
         className="w-full py-5 flex justify-between items-center text-left gap-4 group"
       >
-        <span className="font-semibold text-slate-800 text-lg group-hover:text-emerald-600 transition-colors">{q}</span>
+        <span className="font-semibold text-slate-800 text-lg group-hover:text-blue-700 transition-colors">{q}</span>
         <span className={`
-          w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 
+          w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 
           text-white flex items-center justify-center text-xl font-bold
-          transition-all duration-300 shadow-lg shadow-emerald-500/25
+          transition-all duration-300 shadow-lg shadow-blue-600/25
           ${open ? 'rotate-45 scale-110' : 'group-hover:scale-110'}
         `}>+</span>
       </button>
@@ -71,12 +71,12 @@ function CTAButton({ children, className = '', full = true }) {
       to="/signup" 
       className={`
         relative block overflow-hidden
-        bg-gradient-to-r from-emerald-500 to-emerald-600 
-        hover:from-emerald-400 hover:to-emerald-500
+        bg-gradient-to-r from-blue-600 to-blue-700 
+        hover:from-blue-500 hover:to-blue-600
         text-white font-bold text-xl px-8 py-5 rounded-2xl text-center 
         transition-all duration-300 active:scale-[0.98]
-        shadow-[0_8px_32px_rgba(16,185,129,0.4)]
-        hover:shadow-[0_12px_48px_rgba(16,185,129,0.5)]
+        shadow-[0_8px_32px_rgba(37,99,235,0.4)]
+        hover:shadow-[0_12px_48px_rgba(37,99,235,0.5)]
         hover:-translate-y-0.5
         ${full ? 'w-full' : ''} 
         ${className}
@@ -97,8 +97,8 @@ function FeatureCard({ icon, title, desc, delay = 0 }) {
         group bg-white/60 backdrop-blur-lg rounded-2xl p-6 
         border border-white/50 
         shadow-[0_4px_24px_rgba(0,0,0,0.06)]
-        hover:shadow-[0_8px_40px_rgba(16,185,129,0.15)]
-        hover:border-emerald-200/50
+        hover:shadow-[0_8px_40px_rgba(37,99,235,0.15)]
+        hover:border-blue-200/50
         hover:-translate-y-1
         transition-all duration-300
       ">
@@ -106,11 +106,11 @@ function FeatureCard({ icon, title, desc, delay = 0 }) {
           <span className="
             text-3xl p-3 rounded-xl 
             bg-gradient-to-br from-slate-100 to-slate-50
-            group-hover:from-emerald-100 group-hover:to-emerald-50
+            group-hover:from-blue-100 group-hover:to-blue-50
             transition-colors duration-300
           ">{icon}</span>
           <div>
-            <h3 className="font-bold text-slate-900 text-lg group-hover:text-emerald-700 transition-colors">{title}</h3>
+            <h3 className="font-bold text-slate-900 text-lg group-hover:text-blue-800 transition-colors">{title}</h3>
             <p className="text-slate-600 mt-1">{desc}</p>
           </div>
         </div>
@@ -126,10 +126,10 @@ function StepItem({ num, text, delay = 0 }) {
       <li className="flex items-start gap-4 group">
         <span className="
           flex-shrink-0 w-12 h-12 
-          bg-gradient-to-br from-emerald-400 to-emerald-600 
+          bg-gradient-to-br from-blue-500 to-blue-700 
           rounded-full flex items-center justify-center font-bold text-lg text-white
-          shadow-lg shadow-emerald-500/30
-          group-hover:scale-110 group-hover:shadow-emerald-500/50
+          shadow-lg shadow-blue-600/30
+          group-hover:scale-110 group-hover:shadow-blue-600/50
           transition-all duration-300
         ">{num}</span>
         <span className="pt-3 text-lg text-blue-100 group-hover:text-white transition-colors">{text}</span>
@@ -144,9 +144,9 @@ export default function Landing() {
       
       {/* Background decorative elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-emerald-200/30 to-blue-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-blue-200/30 to-blue-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-blue-200/30 to-purple-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
-        <div className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-gradient-to-br from-emerald-100/20 to-cyan-100/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-gradient-to-br from-blue-100/20 to-cyan-100/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
       </div>
 
       {/* ==================== */}
@@ -171,8 +171,8 @@ export default function Landing() {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
               Never Miss Another{' '}
               <span className="relative">
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-blue-600">Job Call</span>
-                <span className="absolute bottom-2 left-0 right-0 h-3 bg-emerald-200/50 -z-10 rounded" />
+                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-700">Job Call</span>
+                <span className="absolute bottom-2 left-0 right-0 h-3 bg-orange-200/60 -z-10 rounded" />
               </span>
               {' '}Again
             </h1>
@@ -194,7 +194,7 @@ export default function Landing() {
           <FadeIn delay={400}>
             <p className="text-slate-400 text-sm text-center mt-5 flex items-center justify-center gap-4">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                <span className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
                 Takes 2 minutes
               </span>
               <span>•</span>
@@ -219,7 +219,7 @@ export default function Landing() {
           <FadeIn>
             <GlassCard className="p-8 sm:p-10">
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
-                Missed Calls = <span className="text-red-500">Lost Jobs</span>
+                Missed Calls = <span className="text-orange-500">Lost Jobs</span>
               </h2>
               
               <ul className="space-y-4 text-lg text-slate-700">
@@ -231,7 +231,7 @@ export default function Landing() {
                 ].map((item, i) => (
                   <FadeIn key={i} delay={i * 100}>
                     <li className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50/50 transition-colors">
-                      <span className="w-2 h-2 bg-red-400 rounded-full flex-shrink-0" />
+                      <span className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0" />
                       {item}
                     </li>
                   </FadeIn>
@@ -259,7 +259,7 @@ export default function Landing() {
         <div className="max-w-2xl mx-auto relative z-10">
           <FadeIn>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 text-center">
-              What <span className="text-emerald-600">BookFox</span> Does
+              What <span className="text-blue-700">BookFox</span> Does
             </h2>
           </FadeIn>
           
@@ -283,13 +283,13 @@ export default function Landing() {
       {/* ==================== */}
       <section className="relative py-20 px-6 bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 text-white overflow-hidden">
         {/* Glow effects */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl" />
         
         <div className="max-w-2xl mx-auto relative z-10">
           <FadeIn>
             <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center">
-              How It <span className="text-emerald-400">Works</span>
+              How It <span className="text-blue-500">Works</span>
             </h2>
           </FadeIn>
           
@@ -309,7 +309,7 @@ export default function Landing() {
         <div className="max-w-2xl mx-auto relative z-10">
           <FadeIn>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 text-center">
-              Just <span className="text-emerald-600">1 Extra Job</span> Per Week Pays for BookFox
+              Just <span className="text-blue-700">1 Extra Job</span> Per Week Pays for BookFox
             </h2>
           </FadeIn>
           
@@ -329,9 +329,9 @@ export default function Landing() {
             <GlassCard glow className="p-8 text-center bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700">
               <p className="text-slate-400 mb-2">BookFox costs</p>
               <p className="text-5xl font-bold text-white mb-3">$299<span className="text-2xl text-slate-400">/month</span></p>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/20 rounded-full">
-                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                <span className="text-emerald-400 font-medium">One job pays for 3+ months</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 rounded-full">
+                <span className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
+                <span className="text-orange-400 font-medium">One job pays for 3+ months</span>
               </div>
             </GlassCard>
           </FadeIn>
@@ -358,15 +358,15 @@ export default function Landing() {
           <div className="grid sm:grid-cols-2 gap-6">
             {/* Great for */}
             <FadeIn delay={100}>
-              <GlassCard className="p-6 border-emerald-200/50 hover:shadow-[0_8px_40px_rgba(16,185,129,0.1)] transition-shadow">
-                <h3 className="font-bold text-emerald-700 text-lg mb-5 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">✓</span>
+              <GlassCard className="p-6 border-blue-200/50 hover:shadow-[0_8px_40px_rgba(37,99,235,0.1)] transition-shadow">
+                <h3 className="font-bold text-blue-700 text-lg mb-5 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">✓</span>
                   Great for:
                 </h3>
                 <ul className="space-y-3 text-lg text-slate-700">
                   {["Plumbers", "HVAC", "Electricians", "Contractors"].map((item, i) => (
                     <li key={i} className="flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
                       {item}
                     </li>
                   ))}
@@ -438,12 +438,12 @@ export default function Landing() {
       {/* ==================== */}
       <section className="relative py-20 px-6 bg-gradient-to-br from-blue-900 via-slate-900 to-slate-900 text-white overflow-hidden">
         {/* Glow effects */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-3xl" />
         
         <div className="max-w-2xl mx-auto text-center relative z-10">
           <FadeIn>
             <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-              Every Missed Call Is a <span className="text-red-400">Lost Job</span>
+              Every Missed Call Is a <span className="text-orange-400">Lost Job</span>
             </h2>
           </FadeIn>
           
@@ -454,7 +454,7 @@ export default function Landing() {
           </FadeIn>
           
           <FadeIn delay={200}>
-            <CTAButton className="shadow-[0_8px_48px_rgba(16,185,129,0.5)]">
+            <CTAButton className="shadow-[0_8px_48px_rgba(37,99,235,0.5)]">
               See It In Action
             </CTAButton>
           </FadeIn>
@@ -462,7 +462,7 @@ export default function Landing() {
           <FadeIn delay={300}>
             <p className="text-slate-500 text-sm mt-6 flex items-center justify-center gap-3 flex-wrap">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+                <span className="w-2 h-2 bg-orange-400 rounded-full" />
                 Free trial
               </span>
               <span>•</span>
@@ -501,8 +501,8 @@ export default function Landing() {
           to="/signup" 
           className="
             block w-full py-4 rounded-2xl text-center font-bold text-xl text-white
-            bg-gradient-to-r from-emerald-500 to-emerald-600
-            shadow-[0_4px_24px_rgba(16,185,129,0.4)]
+            bg-gradient-to-r from-blue-600 to-blue-700
+            shadow-[0_4px_24px_rgba(37,99,235,0.4)]
             active:scale-[0.98] transition-transform
           "
         >
