@@ -26,7 +26,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <Link to="/" className="inline-flex items-center gap-2 mb-8">
           <img src="/logo.png" alt="BookFox" className="w-10 h-10" />

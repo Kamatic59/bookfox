@@ -111,7 +111,7 @@ export default function Onboarding() {
   // STEP 0: Welcome
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-6">
         <div className="max-w-md text-center">
           <div className="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <img src="/logo.png" alt="BookFox" className="w-14 h-14" />
@@ -149,7 +149,7 @@ export default function Onboarding() {
   // STEP 1: Business Basics
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-white p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={1} total={6} />
           <h2 className="text-2xl font-bold text-stone-800 mb-2">Tell Us About Your Business</h2>
@@ -215,7 +215,7 @@ export default function Onboarding() {
   // STEP 2: Phone Number
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-white p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={2} total={6} />
           <h2 className="text-2xl font-bold text-stone-800 mb-2">Your Business Phone Number</h2>
@@ -303,7 +303,7 @@ export default function Onboarding() {
     };
 
     return (
-      <div className="min-h-screen bg-white p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={3} total={6} />
           <h2 className="text-2xl font-bold text-stone-800 mb-2">Where Do Your Leads Come From?</h2>
@@ -347,7 +347,7 @@ export default function Onboarding() {
   // STEP 4: Business Questions
   if (step === 4) {
     return (
-      <div className="min-h-screen bg-white p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={4} total={6} />
           <h2 className="text-2xl font-bold text-stone-800 mb-2">How Should BookFox Talk To Leads?</h2>
@@ -462,7 +462,7 @@ export default function Onboarding() {
     };
 
     return (
-      <div className="min-h-screen bg-white p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={5} total={6} />
           <h2 className="text-2xl font-bold text-stone-800 mb-2">When Can You Take Jobs?</h2>
@@ -562,7 +562,7 @@ export default function Onboarding() {
   // STEP 6: Test & Finish
   if (step === 6) {
     return (
-      <div className="min-h-screen bg-white p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={6} total={6} />
           <h2 className="text-2xl font-bold text-stone-800 mb-2">You're All Set! Let's Test It.</h2>
