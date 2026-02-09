@@ -39,7 +39,11 @@ Deno.serve(async (req) => {
     if (userError || !user) {
       console.error('Auth error:', userError);
       return new Response(
-        JSON.stringify({ error: 'Invalid or expired token' }),
+        JSON.stringify({ 
+          error: 'Invalid or expired token', 
+          details: userError?.message || 'No user found',
+          hint: 'Try logging out and back in'
+        }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
