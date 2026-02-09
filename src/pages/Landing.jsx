@@ -1,159 +1,303 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-// FAQ Accordion
-function FAQ({ q, a }) {
-  const [open, setOpen] = useState(false);
+// Animation wrapper - fades in on scroll
+function FadeIn({ children, delay = 0, className = '' }) {
+  const [isVisible, setIsVisible] = useState(false);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+  
   return (
-    <div className="border-b border-slate-200 last:border-0">
-      <button 
-        onClick={() => setOpen(!open)} 
-        className="w-full py-5 flex justify-between items-center text-left gap-4"
-      >
-        <span className="font-semibold text-slate-800 text-lg">{q}</span>
-        <span className={`text-2xl text-slate-400 transition-transform flex-shrink-0 ${open ? 'rotate-45' : ''}`}>+</span>
-      </button>
-      {open && <p className="pb-5 text-slate-600 text-lg leading-relaxed">{a}</p>}
+    <div 
+      className={`transition-all duration-700 ease-out ${
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-8'
+      } ${className}`}
+    >
+      {children}
     </div>
   );
 }
 
-// Main CTA Button - consistent everywhere
+// Glass Card component
+function GlassCard({ children, className = '', glow = false }) {
+  return (
+    <div className={`
+      relative bg-white/70 backdrop-blur-xl rounded-2xl border border-white/50 
+      shadow-[0_8px_32px_rgba(0,0,0,0.08)] 
+      ${glow ? 'shadow-[0_0_40px_rgba(16,185,129,0.15)]' : ''}
+      ${className}
+    `}>
+      {children}
+    </div>
+  );
+}
+
+// FAQ Accordion with smooth animation
+function FAQ({ q, a }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-slate-200/50 last:border-0">
+      <button 
+        onClick={() => setOpen(!open)} 
+        className="w-full py-5 flex justify-between items-center text-left gap-4 group"
+      >
+        <span className="font-semibold text-slate-800 text-lg group-hover:text-emerald-600 transition-colors">{q}</span>
+        <span className={`
+          w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 
+          text-white flex items-center justify-center text-xl font-bold
+          transition-all duration-300 shadow-lg shadow-emerald-500/25
+          ${open ? 'rotate-45 scale-110' : 'group-hover:scale-110'}
+        `}>+</span>
+      </button>
+      <div className={`
+        overflow-hidden transition-all duration-500 ease-out
+        ${open ? 'max-h-40 opacity-100 pb-5' : 'max-h-0 opacity-0'}
+      `}>
+        <p className="text-slate-600 text-lg leading-relaxed">{a}</p>
+      </div>
+    </div>
+  );
+}
+
+// Glowing CTA Button
 function CTAButton({ children, className = '', full = true }) {
   return (
     <Link 
       to="/signup" 
-      className={`block bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xl px-8 py-5 rounded-xl text-center transition active:scale-[0.98] ${full ? 'w-full' : ''} ${className}`}
+      className={`
+        relative block overflow-hidden
+        bg-gradient-to-r from-emerald-500 to-emerald-600 
+        hover:from-emerald-400 hover:to-emerald-500
+        text-white font-bold text-xl px-8 py-5 rounded-2xl text-center 
+        transition-all duration-300 active:scale-[0.98]
+        shadow-[0_8px_32px_rgba(16,185,129,0.4)]
+        hover:shadow-[0_12px_48px_rgba(16,185,129,0.5)]
+        hover:-translate-y-0.5
+        ${full ? 'w-full' : ''} 
+        ${className}
+      `}
     >
-      {children}
+      {/* Shine effect */}
+      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000" />
+      <span className="relative">{children}</span>
     </Link>
+  );
+}
+
+// Feature Card with hover glow
+function FeatureCard({ icon, title, desc, delay = 0 }) {
+  return (
+    <FadeIn delay={delay}>
+      <div className="
+        group bg-white/60 backdrop-blur-lg rounded-2xl p-6 
+        border border-white/50 
+        shadow-[0_4px_24px_rgba(0,0,0,0.06)]
+        hover:shadow-[0_8px_40px_rgba(16,185,129,0.15)]
+        hover:border-emerald-200/50
+        hover:-translate-y-1
+        transition-all duration-300
+      ">
+        <div className="flex items-start gap-4">
+          <span className="
+            text-3xl p-3 rounded-xl 
+            bg-gradient-to-br from-slate-100 to-slate-50
+            group-hover:from-emerald-100 group-hover:to-emerald-50
+            transition-colors duration-300
+          ">{icon}</span>
+          <div>
+            <h3 className="font-bold text-slate-900 text-lg group-hover:text-emerald-700 transition-colors">{title}</h3>
+            <p className="text-slate-600 mt-1">{desc}</p>
+          </div>
+        </div>
+      </div>
+    </FadeIn>
+  );
+}
+
+// Step item for How It Works
+function StepItem({ num, text, delay = 0 }) {
+  return (
+    <FadeIn delay={delay}>
+      <li className="flex items-start gap-4 group">
+        <span className="
+          flex-shrink-0 w-12 h-12 
+          bg-gradient-to-br from-emerald-400 to-emerald-600 
+          rounded-full flex items-center justify-center font-bold text-lg text-white
+          shadow-lg shadow-emerald-500/30
+          group-hover:scale-110 group-hover:shadow-emerald-500/50
+          transition-all duration-300
+        ">{num}</span>
+        <span className="pt-3 text-lg text-blue-100 group-hover:text-white transition-colors">{text}</span>
+      </li>
+    </FadeIn>
   );
 }
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-white text-slate-800">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50/30 to-slate-50 text-slate-800 overflow-hidden">
       
+      {/* Background decorative elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-emerald-200/30 to-blue-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-blue-200/30 to-purple-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
+        <div className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-gradient-to-br from-emerald-100/20 to-cyan-100/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      </div>
+
       {/* ==================== */}
       {/* SECTION 1: HERO */}
       {/* ==================== */}
-      <section className="min-h-[100svh] flex flex-col justify-center px-6 py-12">
-        <div className="max-w-2xl mx-auto w-full">
+      <section className="relative min-h-[100svh] flex flex-col justify-center px-6 py-12">
+        <div className="max-w-2xl mx-auto w-full relative z-10">
           
           {/* Logo */}
-          <div className="flex items-center gap-2 mb-8">
-            <img src="/logo.png" alt="BookFox" className="w-10 h-10" />
-            <span className="text-xl font-bold">Book<span className="text-blue-600">Fox</span></span>
-          </div>
+          <FadeIn delay={0}>
+            <div className="flex items-center gap-3 mb-8">
+              <div className="relative">
+                <img src="/logo.png" alt="BookFox" className="w-12 h-12 relative z-10" />
+                <div className="absolute inset-0 bg-blue-400/30 rounded-full blur-xl scale-150" />
+              </div>
+              <span className="text-2xl font-bold">Book<span className="text-blue-600">Fox</span></span>
+            </div>
+          </FadeIn>
           
-          {/* Headline - short for mobile */}
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight mb-4">
-            Never Miss Another Job Call Again
-          </h1>
+          {/* Headline */}
+          <FadeIn delay={100}>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
+              Never Miss Another{' '}
+              <span className="relative">
+                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-blue-600">Job Call</span>
+                <span className="absolute bottom-2 left-0 right-0 h-3 bg-emerald-200/50 -z-10 rounded" />
+              </span>
+              {' '}Again
+            </h1>
+          </FadeIn>
           
-          {/* Subheadline - one line */}
-          <p className="text-lg sm:text-xl text-slate-600 mb-8">
-            BookFox answers calls and books jobs for trade businesses — 24/7.
-          </p>
+          {/* Subheadline */}
+          <FadeIn delay={200}>
+            <p className="text-xl text-slate-600 mb-10 leading-relaxed">
+              BookFox answers calls and books jobs for trade businesses — <span className="font-semibold text-slate-800">24/7</span>.
+            </p>
+          </FadeIn>
           
-          {/* CTA - big, full width */}
-          <CTAButton>See It In Action</CTAButton>
+          {/* CTA */}
+          <FadeIn delay={300}>
+            <CTAButton>See It In Action</CTAButton>
+          </FadeIn>
           
           {/* Micro-trust */}
-          <p className="text-slate-400 text-sm text-center mt-4">
-            Takes 2 minutes · No obligation
-          </p>
+          <FadeIn delay={400}>
+            <p className="text-slate-400 text-sm text-center mt-5 flex items-center justify-center gap-4">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                Takes 2 minutes
+              </span>
+              <span>•</span>
+              <span>No obligation</span>
+            </p>
+          </FadeIn>
+        </div>
+        
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 rounded-full border-2 border-slate-300 flex items-start justify-center p-2">
+            <div className="w-1.5 h-3 bg-slate-400 rounded-full animate-pulse" />
+          </div>
         </div>
       </section>
 
       {/* ==================== */}
       {/* SECTION 2: PAIN */}
       {/* ==================== */}
-      <section className="py-16 px-6 bg-slate-50">
-        <div className="max-w-2xl mx-auto">
-          
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
-            Missed Calls = Lost Jobs
-          </h2>
-          
-          {/* Bullets - no icons, one line each */}
-          <ul className="space-y-4 text-lg text-slate-700">
-            <li>• Customers call the next contractor</li>
-            <li>• After-hours leads go cold</li>
-            <li>• You're stuck answering the phone</li>
-            <li>• Hiring help is expensive</li>
-          </ul>
-          
-          <p className="mt-8 text-lg text-slate-600">
-            Miss 5 calls a week? That's <span className="font-bold text-red-600">$2,000–5,000/month</span> gone.
-          </p>
+      <section className="relative py-20 px-6">
+        <div className="max-w-2xl mx-auto relative z-10">
+          <FadeIn>
+            <GlassCard className="p-8 sm:p-10">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
+                Missed Calls = <span className="text-red-500">Lost Jobs</span>
+              </h2>
+              
+              <ul className="space-y-4 text-lg text-slate-700">
+                {[
+                  "Customers call the next contractor",
+                  "After-hours leads go cold",
+                  "You're stuck answering the phone",
+                  "Hiring help is expensive",
+                ].map((item, i) => (
+                  <FadeIn key={i} delay={i * 100}>
+                    <li className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50/50 transition-colors">
+                      <span className="w-2 h-2 bg-red-400 rounded-full flex-shrink-0" />
+                      {item}
+                    </li>
+                  </FadeIn>
+                ))}
+              </ul>
+              
+              <FadeIn delay={500}>
+                <div className="mt-8 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border border-red-100">
+                  <p className="text-lg text-slate-700">
+                    Miss 5 calls a week? That's{' '}
+                    <span className="font-bold text-red-600 text-xl">$2,000–5,000/month</span>{' '}
+                    gone.
+                  </p>
+                </div>
+              </FadeIn>
+            </GlassCard>
+          </FadeIn>
         </div>
       </section>
 
       {/* ==================== */}
       {/* SECTION 3: WHAT BOOKFOX DOES */}
       {/* ==================== */}
-      <section className="py-16 px-6">
-        <div className="max-w-2xl mx-auto">
+      <section className="relative py-20 px-6">
+        <div className="max-w-2xl mx-auto relative z-10">
+          <FadeIn>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 text-center">
+              What <span className="text-emerald-600">BookFox</span> Does
+            </h2>
+          </FadeIn>
           
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
-            What BookFox Does
-          </h2>
-          
-          {/* Stacked cards */}
           <div className="space-y-4">
-            {[
-              { icon: "📞", title: "Answers Every Call", desc: "Even nights and weekends." },
-              { icon: "📅", title: "Books Jobs Automatically", desc: "Sends you confirmed, qualified leads." },
-              { icon: "🚫", title: "Filters Bad Calls", desc: "No tire-kickers or spam." },
-              { icon: "💰", title: "Costs Less Than Hiring", desc: "No payroll. No sick days." },
-            ].map((item, i) => (
-              <div key={i} className="bg-slate-50 rounded-xl p-6">
-                <div className="flex items-start gap-4">
-                  <span className="text-3xl">{item.icon}</span>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-lg">{item.title}</h3>
-                    <p className="text-slate-600">{item.desc}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+            <FeatureCard icon="📞" title="Answers Every Call" desc="Even nights and weekends." delay={100} />
+            <FeatureCard icon="📅" title="Books Jobs Automatically" desc="Sends you confirmed, qualified leads." delay={200} />
+            <FeatureCard icon="🚫" title="Filters Bad Calls" desc="No tire-kickers or spam." delay={300} />
+            <FeatureCard icon="💰" title="Costs Less Than Hiring" desc="No payroll. No sick days." delay={400} />
           </div>
           
-          <div className="mt-10">
-            <CTAButton>See It In Action</CTAButton>
-          </div>
+          <FadeIn delay={500}>
+            <div className="mt-10">
+              <CTAButton>See It In Action</CTAButton>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* ==================== */}
       {/* SECTION 4: HOW IT WORKS */}
       {/* ==================== */}
-      <section className="py-16 px-6 bg-blue-900 text-white">
-        <div className="max-w-2xl mx-auto">
+      <section className="relative py-20 px-6 bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 text-white overflow-hidden">
+        {/* Glow effects */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl" />
+        
+        <div className="max-w-2xl mx-auto relative z-10">
+          <FadeIn>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center">
+              How It <span className="text-emerald-400">Works</span>
+            </h2>
+          </FadeIn>
           
-          <h2 className="text-2xl sm:text-3xl font-bold mb-8">
-            How It Works
-          </h2>
-          
-          {/* Numbered list - no diagrams */}
-          <ol className="space-y-6 text-lg">
-            <li className="flex items-start gap-4">
-              <span className="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center font-bold">1</span>
-              <span className="pt-2">Customer calls your business</span>
-            </li>
-            <li className="flex items-start gap-4">
-              <span className="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center font-bold">2</span>
-              <span className="pt-2">BookFox answers instantly</span>
-            </li>
-            <li className="flex items-start gap-4">
-              <span className="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center font-bold">3</span>
-              <span className="pt-2">Asks smart questions</span>
-            </li>
-            <li className="flex items-start gap-4">
-              <span className="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center font-bold">4</span>
-              <span className="pt-2">Books the job or sends you the lead</span>
-            </li>
+          <ol className="space-y-6">
+            <StepItem num="1" text="Customer calls your business" delay={100} />
+            <StepItem num="2" text="BookFox answers instantly" delay={200} />
+            <StepItem num="3" text="Asks smart questions" delay={300} />
+            <StepItem num="4" text="Books the job or sends you the lead" delay={400} />
           </ol>
         </div>
       </section>
@@ -161,66 +305,92 @@ export default function Landing() {
       {/* ==================== */}
       {/* SECTION 5: PROOF / ROI */}
       {/* ==================== */}
-      <section className="py-16 px-6">
-        <div className="max-w-2xl mx-auto">
+      <section className="relative py-20 px-6">
+        <div className="max-w-2xl mx-auto relative z-10">
+          <FadeIn>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 text-center">
+              Just <span className="text-emerald-600">1 Extra Job</span> Per Week Pays for BookFox
+            </h2>
+          </FadeIn>
           
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-6">
-            Just 1 Extra Job Per Week Pays for BookFox
-          </h2>
+          <FadeIn delay={100}>
+            <p className="text-lg text-slate-600 mb-4 text-center">
+              Most trade jobs are worth $200–$1,000+.
+            </p>
+          </FadeIn>
           
-          <p className="text-lg text-slate-600 mb-6">
-            Most trade jobs are worth $200–$1,000+.
-          </p>
+          <FadeIn delay={200}>
+            <p className="text-lg text-slate-600 mb-10 text-center">
+              Missing just a few calls costs you thousands every month.
+            </p>
+          </FadeIn>
           
-          <p className="text-lg text-slate-600 mb-8">
-            Missing just a few calls costs you thousands every month.
-          </p>
+          <FadeIn delay={300}>
+            <GlassCard glow className="p-8 text-center bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700">
+              <p className="text-slate-400 mb-2">BookFox costs</p>
+              <p className="text-5xl font-bold text-white mb-3">$299<span className="text-2xl text-slate-400">/month</span></p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/20 rounded-full">
+                <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                <span className="text-emerald-400 font-medium">One job pays for 3+ months</span>
+              </div>
+            </GlassCard>
+          </FadeIn>
           
-          {/* Simple math box */}
-          <div className="bg-slate-900 text-white rounded-xl p-6 text-center">
-            <p className="text-slate-400 mb-2">BookFox costs</p>
-            <p className="text-4xl font-bold mb-2">$299/month</p>
-            <p className="text-emerald-400">One job pays for 3+ months</p>
-          </div>
-          
-          <div className="mt-10">
-            <CTAButton>See It In Action</CTAButton>
-          </div>
+          <FadeIn delay={400}>
+            <div className="mt-10">
+              <CTAButton>See It In Action</CTAButton>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* ==================== */}
       {/* SECTION 6: WHO IT'S FOR */}
       {/* ==================== */}
-      <section className="py-16 px-6 bg-slate-50">
-        <div className="max-w-2xl mx-auto">
+      <section className="relative py-20 px-6">
+        <div className="max-w-2xl mx-auto relative z-10">
+          <FadeIn>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 text-center">
+              Is BookFox <span className="text-blue-600">Right For You?</span>
+            </h2>
+          </FadeIn>
           
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
-            Is BookFox Right For You?
-          </h2>
-          
-          {/* Two lists */}
-          <div className="space-y-8">
-            
+          <div className="grid sm:grid-cols-2 gap-6">
             {/* Great for */}
-            <div>
-              <h3 className="font-bold text-emerald-700 text-lg mb-4">✓ Great for:</h3>
-              <ul className="space-y-2 text-lg text-slate-700">
-                <li>• Plumbers</li>
-                <li>• HVAC</li>
-                <li>• Electricians</li>
-                <li>• Contractors</li>
-              </ul>
-            </div>
+            <FadeIn delay={100}>
+              <GlassCard className="p-6 border-emerald-200/50 hover:shadow-[0_8px_40px_rgba(16,185,129,0.1)] transition-shadow">
+                <h3 className="font-bold text-emerald-700 text-lg mb-5 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">✓</span>
+                  Great for:
+                </h3>
+                <ul className="space-y-3 text-lg text-slate-700">
+                  {["Plumbers", "HVAC", "Electricians", "Contractors"].map((item, i) => (
+                    <li key={i} className="flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </GlassCard>
+            </FadeIn>
             
             {/* Not for */}
-            <div>
-              <h3 className="font-bold text-slate-500 text-lg mb-4">✕ Not for:</h3>
-              <ul className="space-y-2 text-lg text-slate-500">
-                <li>• One-off handyman gigs</li>
-                <li>• Businesses without steady calls</li>
-              </ul>
-            </div>
+            <FadeIn delay={200}>
+              <GlassCard className="p-6 hover:shadow-lg transition-shadow">
+                <h3 className="font-bold text-slate-500 text-lg mb-5 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">✕</span>
+                  Not for:
+                </h3>
+                <ul className="space-y-3 text-lg text-slate-500">
+                  {["One-off handyman gigs", "No steady calls"].map((item, i) => (
+                    <li key={i} className="flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </GlassCard>
+            </FadeIn>
           </div>
         </div>
       </section>
@@ -228,75 +398,97 @@ export default function Landing() {
       {/* ==================== */}
       {/* SECTION 7: FAQ */}
       {/* ==================== */}
-      <section className="py-16 px-6">
-        <div className="max-w-2xl mx-auto">
+      <section className="relative py-20 px-6">
+        <div className="max-w-2xl mx-auto relative z-10">
+          <FadeIn>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 text-center">
+              Questions
+            </h2>
+          </FadeIn>
           
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
-            Questions
-          </h2>
-          
-          <div className="bg-slate-50 rounded-xl p-6">
-            <FAQ 
-              q="Does it sound robotic?" 
-              a="No. Customers can't tell it's AI. It sounds natural and friendly." 
-            />
-            <FAQ 
-              q="Can I customize it?" 
-              a="Yes. Tell it your services, hours, and how to handle calls." 
-            />
-            <FAQ 
-              q="What if it makes a mistake?" 
-              a="It confirms details before booking. If unsure, it sends you the lead." 
-            />
-            <FAQ 
-              q="How fast can I start?" 
-              a="15 minutes. We set it up together. Live same day." 
-            />
-            <FAQ 
-              q="What's the cost?" 
-              a="$299/month after a 14-day free trial. Cancel anytime." 
-            />
-          </div>
+          <FadeIn delay={100}>
+            <GlassCard className="p-6 sm:p-8">
+              <FAQ 
+                q="Does it sound robotic?" 
+                a="No. Customers can't tell it's AI. It sounds natural and friendly." 
+              />
+              <FAQ 
+                q="Can I customize it?" 
+                a="Yes. Tell it your services, hours, and how to handle calls." 
+              />
+              <FAQ 
+                q="What if it makes a mistake?" 
+                a="It confirms details before booking. If unsure, it sends you the lead." 
+              />
+              <FAQ 
+                q="How fast can I start?" 
+                a="15 minutes. We set it up together. Live same day." 
+              />
+              <FAQ 
+                q="What's the cost?" 
+                a="$299/month after a 14-day free trial. Cancel anytime." 
+              />
+            </GlassCard>
+          </FadeIn>
         </div>
       </section>
 
       {/* ==================== */}
       {/* SECTION 8: FINAL CTA */}
       {/* ==================== */}
-      <section className="py-16 px-6 bg-blue-900 text-white">
-        <div className="max-w-2xl mx-auto text-center">
+      <section className="relative py-20 px-6 bg-gradient-to-br from-blue-900 via-slate-900 to-slate-900 text-white overflow-hidden">
+        {/* Glow effects */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-3xl" />
+        
+        <div className="max-w-2xl mx-auto text-center relative z-10">
+          <FadeIn>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+              Every Missed Call Is a <span className="text-red-400">Lost Job</span>
+            </h2>
+          </FadeIn>
           
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-            Every Missed Call Is a Lost Job
-          </h2>
+          <FadeIn delay={100}>
+            <p className="text-xl text-slate-400 mb-10">
+              Your competitors answer their phones. Do you?
+            </p>
+          </FadeIn>
           
-          <p className="text-lg text-blue-200 mb-8">
-            Your competitors answer their phones. Do you?
-          </p>
+          <FadeIn delay={200}>
+            <CTAButton className="shadow-[0_8px_48px_rgba(16,185,129,0.5)]">
+              See It In Action
+            </CTAButton>
+          </FadeIn>
           
-          <CTAButton className="bg-emerald-500 hover:bg-emerald-400">
-            See It In Action
-          </CTAButton>
-          
-          <p className="text-blue-300 text-sm mt-4">
-            Free trial · No credit card · 15 min setup
-          </p>
+          <FadeIn delay={300}>
+            <p className="text-slate-500 text-sm mt-6 flex items-center justify-center gap-3 flex-wrap">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+                Free trial
+              </span>
+              <span>•</span>
+              <span>No credit card</span>
+              <span>•</span>
+              <span>15 min setup</span>
+            </p>
+          </FadeIn>
         </div>
       </section>
 
       {/* ==================== */}
       {/* FOOTER */}
       {/* ==================== */}
-      <footer className="py-8 px-6 border-t border-slate-200">
+      <footer className="relative py-10 px-6 bg-white border-t border-slate-100">
         <div className="max-w-2xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <img src="/logo.png" alt="BookFox" className="w-8 h-8" />
-            <span className="font-bold">Book<span className="text-blue-600">Fox</span></span>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="relative">
+              <img src="/logo.png" alt="BookFox" className="w-8 h-8" />
+            </div>
+            <span className="font-bold text-lg">Book<span className="text-blue-600">Fox</span></span>
           </div>
-          <p className="text-slate-400 text-sm mb-2">© 2026 BookFox</p>
+          <p className="text-slate-400 text-sm mb-3">© 2026 BookFox</p>
           <div className="flex justify-center gap-6 text-slate-400 text-sm">
-            <a href="#" className="hover:text-slate-600">Privacy</a>
-            <a href="#" className="hover:text-slate-600">Terms</a>
+            <a href="#" className="hover:text-slate-600 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-slate-600 transition-colors">Terms</a>
           </div>
         </div>
       </footer>
@@ -304,17 +496,22 @@ export default function Landing() {
       {/* ==================== */}
       {/* STICKY MOBILE CTA */}
       {/* ==================== */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur border-t border-slate-200 z-50 lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-xl border-t border-slate-200/50 z-50 lg:hidden">
         <Link 
           to="/signup" 
-          className="block w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xl py-4 rounded-xl text-center transition active:scale-[0.98]"
+          className="
+            block w-full py-4 rounded-2xl text-center font-bold text-xl text-white
+            bg-gradient-to-r from-emerald-500 to-emerald-600
+            shadow-[0_4px_24px_rgba(16,185,129,0.4)]
+            active:scale-[0.98] transition-transform
+          "
         >
           Get Demo
         </Link>
       </div>
       
       {/* Spacer for sticky CTA */}
-      <div className="h-24 lg:hidden"></div>
+      <div className="h-24 lg:hidden" />
     </div>
   );
 }
