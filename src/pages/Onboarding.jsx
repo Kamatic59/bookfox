@@ -1,568 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
-// Premium step indicator
-function StepIndicator({ currentStep, totalSteps }) {
+// Progress bar
+function Progress({ step, total }) {
   return (
-    <div className="flex items-center justify-center gap-2 md:gap-3 mb-6 md:mb-8 px-4 overflow-x-auto">
-      {[...Array(totalSteps)].map((_, i) => (
-        <div key={i} className="flex items-center flex-shrink-0">
-          <div
-            className={`relative flex items-center justify-center transition-all duration-500 ${
-              i <= currentStep ? 'scale-100' : 'scale-90 opacity-50'
-            }`}
-          >
-            <div
-              className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-semibold text-xs md:text-sm transition-all duration-500 ${
-                i < currentStep
-                  ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-lg shadow-emerald-500/40'
-                  : i === currentStep
-                  ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/50 ring-4 ring-blue-400/30'
-                  : 'bg-stone-200 text-stone-400'
-              }`}
-            >
-              {i < currentStep ? (
-                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                i + 1
-              )}
-            </div>
-          </div>
-          {i < totalSteps - 1 && (
-            <div className={`w-6 md:w-12 h-1 mx-1 md:mx-2 rounded-full transition-all duration-500 ${
-              i < currentStep ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-stone-200'
-            }`} />
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// Business name step
-function BusinessNameStep({ value, onChange }) {
-  return (
-    <div className="animate-fadeIn">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/40 mb-4">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
-        </div>
-        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-2">What's your business called?</h2>
-        <p className="text-stone-500 text-base md:text-lg">
-          This is how customers will see you
-        </p>
-      </div>
-      
-      <div className="max-w-md mx-auto">
-        <div className="relative">
-          <input
-            type="text"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="Smith's Plumbing"
-            className="w-full px-5 py-4 bg-gradient-to-r from-stone-50 to-blue-50 border-2 border-stone-200 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:from-white focus:to-blue-50 outline-none transition-all text-lg font-medium"
-            autoFocus
-          />
-        </div>
-        <p className="text-stone-400 text-sm mt-3 text-center">
-          You can change this later in settings
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// Trade type selection
-function TradeTypeStep({ value, onChange }) {
-  const trades = [
-    { id: 'plumber', icon: '🔧', label: 'Plumbing', color: 'from-blue-500 to-cyan-500' },
-    { id: 'hvac', icon: '❄️', label: 'HVAC', color: 'from-sky-500 to-blue-500' },
-    { id: 'electrician', icon: '⚡', label: 'Electrical', color: 'from-amber-500 to-orange-500' },
-    { id: 'roofer', icon: '🏠', label: 'Roofing', color: 'from-stone-500 to-stone-600' },
-    { id: 'landscaper', icon: '🌿', label: 'Landscaping', color: 'from-emerald-500 to-green-500' },
-    { id: 'handyman', icon: '🛠️', label: 'Handyman', color: 'from-orange-500 to-red-500' },
-    { id: 'painter', icon: '🎨', label: 'Painting', color: 'from-purple-500 to-pink-500' },
-    { id: 'other', icon: '📦', label: 'Other', color: 'from-indigo-500 to-purple-500' },
-  ];
-
-  return (
-    <div className="animate-fadeIn">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-orange-500/40 mb-4">
-          <span className="text-3xl">🛠️</span>
-        </div>
-        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-2">What's your trade?</h2>
-        <p className="text-stone-500 text-base md:text-lg">
-          We'll customize your AI for your industry
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {trades.map((trade) => (
-          <button
-            key={trade.id}
-            onClick={() => onChange(trade.id)}
-            className={`group relative p-4 md:p-5 rounded-2xl border-2 transition-all duration-300 active:scale-95 overflow-hidden ${
-              value === trade.id
-                ? 'border-transparent shadow-xl scale-[1.02]'
-                : 'border-stone-200 hover:border-stone-300 hover:shadow-lg bg-white'
-            }`}
-          >
-            {/* Background gradient when selected */}
-            {value === trade.id && (
-              <div className={`absolute inset-0 bg-gradient-to-br ${trade.color} opacity-10`} />
-            )}
-            
-            <div className="relative">
-              <div className={`text-3xl md:text-4xl mb-2 transition-transform duration-300 ${
-                value === trade.id ? 'scale-110' : 'group-hover:scale-110'
-              }`}>
-                {trade.icon}
-              </div>
-              <div className={`font-semibold text-sm md:text-base transition-colors ${
-                value === trade.id ? 'text-stone-800' : 'text-stone-700'
-              }`}>
-                {trade.label}
-              </div>
-            </div>
-            
-            {value === trade.id && (
-              <div className={`absolute top-2 right-2 w-6 h-6 bg-gradient-to-br ${trade.color} rounded-full flex items-center justify-center shadow-lg`}>
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Business hours - mobile optimized
-function HoursStep({ value, onChange }) {
-  const days = [
-    { id: 'monday', label: 'Monday', short: 'Mon' },
-    { id: 'tuesday', label: 'Tuesday', short: 'Tue' },
-    { id: 'wednesday', label: 'Wednesday', short: 'Wed' },
-    { id: 'thursday', label: 'Thursday', short: 'Thu' },
-    { id: 'friday', label: 'Friday', short: 'Fri' },
-    { id: 'saturday', label: 'Saturday', short: 'Sat' },
-    { id: 'sunday', label: 'Sunday', short: 'Sun' },
-  ];
-
-  const toggleDay = (dayId) => {
-    const newValue = { ...value };
-    if (newValue[dayId]) {
-      newValue[dayId] = { ...newValue[dayId], enabled: !newValue[dayId].enabled };
-    } else {
-      newValue[dayId] = { enabled: true, start: '08:00', end: '17:00' };
-    }
-    onChange(newValue);
-  };
-
-  const updateTime = (dayId, field, time) => {
-    const newValue = { ...value };
-    if (!newValue[dayId]) {
-      newValue[dayId] = { enabled: true, start: '08:00', end: '17:00' };
-    }
-    newValue[dayId][field] = time;
-    onChange(newValue);
-  };
-
-  const setQuickHours = (type) => {
-    const newValue = {};
-    days.forEach(day => {
-      if (type === 'weekdays') {
-        newValue[day.id] = {
-          enabled: !['saturday', 'sunday'].includes(day.id),
-          start: '08:00',
-          end: '17:00'
-        };
-      } else if (type === 'allweek') {
-        newValue[day.id] = { enabled: true, start: '08:00', end: '18:00' };
-      }
-    });
-    onChange(newValue);
-  };
-
-  return (
-    <div className="animate-fadeIn">
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/40 mb-4">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-2">Your business hours</h2>
-        <p className="text-stone-500 text-base md:text-lg">
-          When should BookFox catch your calls?
-        </p>
-      </div>
-
-      {/* Quick select */}
-      <div className="flex gap-2 justify-center mb-4">
-        <button
-          onClick={() => setQuickHours('weekdays')}
-          className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 text-blue-700 text-sm font-semibold transition-all active:scale-95 border border-blue-200"
-        >
-          Mon-Fri
-        </button>
-        <button
-          onClick={() => setQuickHours('allweek')}
-          className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 text-blue-700 text-sm font-semibold transition-all active:scale-95 border border-blue-200"
-        >
-          7 Days
-        </button>
-      </div>
-      <p className="text-center text-stone-400 text-xs mb-4">Tap a day to toggle</p>
-      
-      <div className="space-y-2 max-w-lg mx-auto">
-        {days.map((day) => {
-          const dayData = value[day.id] || { enabled: !['saturday', 'sunday'].includes(day.id), start: '08:00', end: '17:00' };
-          
-          return (
-            <div
-              key={day.id}
-              className={`p-3 rounded-2xl transition-all duration-300 ${
-                dayData.enabled 
-                  ? 'bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.25)]' 
-                  : 'bg-stone-50 border-2 border-stone-200'
-              }`}
-            >
-              <button
-                onClick={() => toggleDay(day.id)}
-                className="w-full flex items-center justify-between min-h-[44px]"
-              >
-                <span className={`font-semibold transition-colors ${dayData.enabled ? 'text-stone-800' : 'text-stone-400'}`}>
-                  <span className="md:hidden">{day.short}</span>
-                  <span className="hidden md:inline">{day.label}</span>
-                </span>
-                
-                {!dayData.enabled && (
-                  <span className="text-stone-400 text-sm">Closed</span>
-                )}
-              </button>
-              
-              {dayData.enabled && (
-                <div className="flex items-center gap-2 mt-3">
-                  <input
-                    type="time"
-                    value={dayData.start}
-                    onChange={(e) => updateTime(day.id, 'start', e.target.value)}
-                    className="flex-1 min-w-0 px-3 py-2.5 border border-blue-300 rounded-xl bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  />
-                  <span className="text-blue-500 text-sm font-semibold">to</span>
-                  <input
-                    type="time"
-                    value={dayData.end}
-                    onChange={(e) => updateTime(day.id, 'end', e.target.value)}
-                    className="flex-1 min-w-0 px-3 py-2.5 border border-blue-300 rounded-xl bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  />
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// AI Behavior customization
-function AiBehaviorStep({ value, onChange }) {
-  const tones = [
-    { id: 'friendly', label: 'Friendly', emoji: '😊', color: 'from-amber-400 to-orange-500' },
-    { id: 'professional', label: 'Pro', emoji: '👔', color: 'from-blue-500 to-indigo-600' },
-    { id: 'casual', label: 'Casual', emoji: '🤙', color: 'from-emerald-400 to-teal-500' },
-  ];
-
-  const updateField = (field, val) => {
-    onChange({ ...value, [field]: val });
-  };
-
-  const options = [
-    {
-      id: 'requireApproval',
-      title: 'Require approval before booking',
-      desc: 'AI confirms with you before adding appointments',
-      icon: '📋',
-      color: 'from-purple-500 to-pink-500'
-    },
-    {
-      id: 'handleEmergencies',
-      title: 'Handle emergencies after hours',
-      desc: 'Escalate urgent issues outside business hours',
-      icon: '🚨',
-      color: 'from-red-500 to-orange-500'
-    },
-    {
-      id: 'autoQualify',
-      title: 'Auto-qualify leads',
-      desc: 'Ask about service, urgency, and property type',
-      icon: '✅',
-      color: 'from-emerald-500 to-green-500'
-    },
-  ];
-
-  return (
-    <div className="animate-fadeIn">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/40 mb-4">
-          <span className="text-3xl">🤖</span>
-        </div>
-        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-2">How should your AI behave?</h2>
-        <p className="text-stone-500 text-base md:text-lg">
-          Customize how BookFox handles customers
-        </p>
-      </div>
-      
-      <div className="max-w-lg mx-auto space-y-6">
-        {/* Tone selection */}
-        <div>
-          <label className="block text-sm font-semibold text-stone-600 mb-3 uppercase tracking-wide">Response Tone</label>
-          <div className="grid grid-cols-3 gap-3">
-            {tones.map((tone) => (
-              <button
-                key={tone.id}
-                onClick={() => updateField('tone', tone.id)}
-                className={`relative p-4 rounded-xl border-2 transition-all text-center active:scale-95 overflow-hidden ${
-                  value.tone === tone.id
-                    ? 'border-transparent shadow-lg scale-[1.02]'
-                    : 'border-stone-200 hover:border-stone-300'
-                }`}
-              >
-                {value.tone === tone.id && (
-                  <div className={`absolute inset-0 bg-gradient-to-br ${tone.color} opacity-15`} />
-                )}
-                <div className="relative">
-                  <div className="text-2xl mb-1">{tone.emoji}</div>
-                  <div className={`font-semibold text-sm ${value.tone === tone.id ? 'text-stone-800' : 'text-stone-600'}`}>
-                    {tone.label}
-                  </div>
-                </div>
-                {value.tone === tone.id && (
-                  <div className={`absolute top-1.5 right-1.5 w-5 h-5 bg-gradient-to-br ${tone.color} rounded-full flex items-center justify-center`}>
-                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Toggle options - whole card glows */}
-        <p className="text-stone-400 text-xs mb-2">Tap to toggle</p>
-        <div className="space-y-3">
-          {options.map((option) => {
-            const isOn = option.id === 'autoQualify' ? value[option.id] !== false : value[option.id] || false;
-            
-            return (
-              <button
-                key={option.id}
-                onClick={() => updateField(option.id, !isOn)}
-                className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 active:scale-[0.98] ${
-                  isOn
-                    ? 'bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.3)]'
-                    : 'bg-stone-50 border-2 border-stone-200 hover:border-stone-300'
-                }`}
-              >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${option.color} flex items-center justify-center text-xl shadow-lg transition-all duration-300 ${isOn ? '' : 'opacity-40 grayscale'}`}>
-                  {option.icon}
-                </div>
-                <div className="flex-1 min-w-0 text-left">
-                  <div className={`font-semibold transition-colors ${isOn ? 'text-stone-800' : 'text-stone-400'}`}>{option.title}</div>
-                  <div className={`text-sm transition-colors ${isOn ? 'text-stone-600' : 'text-stone-400'}`}>{option.desc}</div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Custom instructions
-function CustomInstructionsStep({ value, onChange, businessName }) {
-  const examples = [
-    "Always mention we offer free estimates",
-    "We don't do commercial properties",
-    "Mention our 24/7 emergency line",
-    "We're family-owned since 1985",
-  ];
-
-  return (
-    <div className="animate-fadeIn">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/40 mb-4">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-        </div>
-        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-2">Anything else to know?</h2>
-        <p className="text-stone-500 text-base md:text-lg">
-          Give your AI special instructions
-        </p>
-      </div>
-      
-      <div className="max-w-lg mx-auto space-y-5">
-        <div>
-          <textarea
-            value={value.customInstructions || ''}
-            onChange={(e) => onChange({ ...value, customInstructions: e.target.value })}
-            placeholder="Add any special instructions for how the AI should respond..."
-            rows={4}
-            className="w-full px-4 py-3 bg-gradient-to-r from-stone-50 to-indigo-50 border-2 border-stone-200 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none text-stone-700"
-          />
-        </div>
-
-        {/* Quick add suggestions */}
-        <div className="flex flex-wrap gap-2">
-          {examples.map((example, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                const current = value.customInstructions || '';
-                const newValue = current ? `${current}\n${example}` : example;
-                onChange({ ...value, customInstructions: newValue });
-              }}
-              className="px-3 py-1.5 rounded-full bg-gradient-to-r from-indigo-500/10 to-purple-500/10 hover:from-indigo-500/20 hover:to-purple-500/20 text-indigo-700 text-xs font-semibold transition-all border border-indigo-200"
-            >
-              + {example}
-            </button>
-          ))}
-        </div>
-
-        {/* Preview */}
-        {value.customInstructions && (
-          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-200">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <img src="/logo.png" alt="" className="w-4 h-4" />
-              </div>
-              <span className="font-semibold text-indigo-800 text-sm">AI will remember</span>
-            </div>
-            <p className="text-indigo-700 text-sm">
-              "{value.customInstructions.slice(0, 150)}{value.customInstructions.length > 150 ? '...' : ''}"
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// AI name step
-function AiNameStep({ value, onChange, businessName }) {
-  const names = ['BookFox', 'Alex', 'Sam', 'Jamie', 'Casey', 'Riley'];
-
-  return (
-    <div className="animate-fadeIn">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/40 mb-4">
-          <img src="/logo.png" alt="" className="w-10 h-10" />
-        </div>
-        <h2 className="text-2xl md:text-3xl font-bold text-stone-800 mb-2">Name your AI assistant</h2>
-        <p className="text-stone-500 text-base md:text-lg">
-          Give it a personality that matches your brand
-        </p>
-      </div>
-      
-      <div className="max-w-lg mx-auto space-y-6">
-        <input
-          type="text"
-          value={value.name}
-          onChange={(e) => onChange({ ...value, name: e.target.value })}
-          placeholder="BookFox"
-          className="w-full px-5 py-4 bg-gradient-to-r from-stone-50 to-blue-50 border-2 border-stone-200 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-lg font-medium text-center"
+    <div className="flex items-center gap-2 mb-8">
+      <div className="flex-1 h-2 bg-stone-200 rounded-full overflow-hidden">
+        <div 
+          className="h-full bg-blue-600 transition-all duration-500" 
+          style={{ width: `${(step / total) * 100}%` }}
         />
-
-        {/* Quick select names */}
-        <div className="flex flex-wrap gap-2 justify-center">
-          {names.map((name) => (
-            <button
-              key={name}
-              onClick={() => onChange({ ...value, name })}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all active:scale-95 ${
-                value.name === name
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/40'
-                  : 'bg-gradient-to-r from-blue-500/10 to-indigo-500/10 text-blue-700 hover:from-blue-500/20 hover:to-indigo-500/20 border border-blue-200'
-              }`}
-            >
-              {name}
-            </button>
-          ))}
-        </div>
-
-        {/* Message preview */}
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-200">
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/40">
-              <img src="/logo.png" alt="" className="w-7 h-7" />
-            </div>
-            <div className="bg-white rounded-2xl rounded-tl-md p-4 shadow-sm flex-1 border border-blue-100">
-              <p className="text-stone-700 leading-relaxed">
-                Hi! This is <span className="font-bold text-blue-600">{value.name || 'BookFox'}</span> from {businessName || 'your business'}. 
-                I noticed we missed your call. How can I help? 🦊
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
-  );
-}
-
-// Success step
-function SuccessStep({ businessName }) {
-  return (
-    <div className="text-center animate-fadeIn">
-      <div className="relative mb-6">
-        <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-400 to-green-500 shadow-2xl shadow-emerald-500/50 mb-4">
-          <span className="text-5xl">🎉</span>
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-32 h-32 bg-emerald-500/20 rounded-full animate-ping" />
-        </div>
-      </div>
-      
-      <h2 className="text-3xl md:text-4xl font-bold text-stone-800 mb-3">You're all set!</h2>
-      <p className="text-stone-600 text-lg mb-8">
-        BookFox is ready for <span className="font-bold text-blue-600">{businessName}</span>
-      </p>
-      
-      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-2xl p-6 text-left max-w-md mx-auto shadow-lg shadow-emerald-500/20">
-        <h4 className="font-bold text-emerald-800 text-lg mb-4 flex items-center gap-2">
-          <span className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-500/40">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </span>
-          Next steps
-        </h4>
-        <ul className="space-y-3">
-          {[
-            { text: 'Set up call forwarding', icon: '📞' },
-            { text: 'Test your BookFox number', icon: '✅' },
-            { text: 'Watch the leads roll in!', icon: '🚀' },
-          ].map((step, i) => (
-            <li key={i} className="flex items-center gap-3 text-emerald-700 font-medium">
-              <span className="text-xl">{step.icon}</span>
-              <span>{step.text}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <span className="text-sm text-stone-500 font-medium">Step {step} of {total}</span>
     </div>
   );
 }
@@ -573,257 +24,604 @@ export default function Onboarding() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [businessName, setBusinessName] = useState('');
   
-  const [tradeType, setTradeType] = useState('');
-  const [hours, setHours] = useState({
-    monday: { enabled: true, start: '08:00', end: '17:00' },
-    tuesday: { enabled: true, start: '08:00', end: '17:00' },
-    wednesday: { enabled: true, start: '08:00', end: '17:00' },
-    thursday: { enabled: true, start: '08:00', end: '17:00' },
-    friday: { enabled: true, start: '08:00', end: '17:00' },
-    saturday: { enabled: false, start: '09:00', end: '14:00' },
-    sunday: { enabled: false, start: null, end: null },
+  // Get first name from signup
+  const firstName = localStorage.getItem('bookfox_firstName') || 'there';
+
+  // Form data
+  const [data, setData] = useState({
+    companyName: '',
+    serviceType: '',
+    serviceArea: '',
+    phone: '',
+    useExistingPhone: true,
+    leadSources: [],
+    responseTime: 'same_day',
+    freeEstimates: 'yes',
+    priceMin: 500,
+    priceMax: 10000,
+    emergencyService: 'business_hours',
+    schedule: {
+      monday: { open: '09:00', close: '17:00', enabled: true },
+      tuesday: { open: '09:00', close: '17:00', enabled: true },
+      wednesday: { open: '09:00', close: '17:00', enabled: true },
+      thursday: { open: '09:00', close: '17:00', enabled: true },
+      friday: { open: '09:00', close: '17:00', enabled: true },
+      saturday: { open: '09:00', close: '17:00', enabled: false },
+      sunday: { open: '09:00', close: '17:00', enabled: false },
+    },
+    appointmentDuration: 60,
+    bufferTime: 30,
   });
-  const [aiBehavior, setAiBehavior] = useState({
-    tone: 'friendly',
-    requireApproval: false,
-    handleEmergencies: true,
-    autoQualify: true,
-    customInstructions: '',
-  });
-  const [aiSettings, setAiSettings] = useState({ name: 'BookFox' });
 
-  const needsBusinessCreation = !business;
-  const totalSteps = needsBusinessCreation ? 7 : 6;
+  const update = (key, value) => setData(d => ({ ...d, [key]: value }));
+  const totalSteps = 7;
 
-  const canContinue = () => {
-    const offset = needsBusinessCreation ? 0 : 1;
-    const actualStep = step + offset;
-    
-    switch (actualStep) {
-      case 0: return businessName.trim().length >= 2;
-      case 1: return !!tradeType;
-      case 2: return true;
-      case 3: return true;
-      case 4: return true;
-      case 5: return !!aiSettings.name;
-      case 6: return true;
-      default: return false;
-    }
-  };
-
-  const handleNext = async () => {
+  const next = () => {
     setError(null);
-    
     if (step < totalSteps - 1) {
       setStep(step + 1);
-    } else {
-      setLoading(true);
-      
-      try {
-        let currentBusiness = business;
-        
-        if (!currentBusiness && user) {
-          console.log('Creating business via Edge Function...');
-          
-          // Get the current session for the auth token
-          const { data: { session } } = await supabase.auth.getSession();
-          
-          if (!session) {
-            throw new Error('No active session. Please sign in again.');
-          }
-          
-          // Call the Edge Function to create business (bypasses RLS)
-          const response = await fetch(
-            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-business`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${session.access_token}`,
-              },
-              body: JSON.stringify({
-                name: businessName.trim(),
-                trade_type: tradeType,
-                business_hours: hours,
-              }),
-            }
-          );
-          
-          const result = await response.json();
-          
-          if (!response.ok) {
-            console.error('Edge Function error:', result);
-            throw new Error(result.error || 'Failed to create business');
-          }
-          
-          console.log('Business created:', result.business.id);
-          currentBusiness = result.business;
+    }
+  };
+  const back = () => step > 0 && setStep(step - 1);
+
+  // Final save
+  const finish = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Get session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No session');
+
+      // Create or update business via Edge Function
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-business`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            name: data.companyName,
+            trade_type: data.serviceType,
+            business_hours: data.schedule,
+          }),
         }
-        
-        if (currentBusiness) {
-          console.log('Updating business settings...');
-          const { error: updateError } = await supabase
-            .from('businesses')
-            .update({
-              trade_type: tradeType,
-              business_hours: hours,
-            })
-            .eq('id', currentBusiness.id);
+      );
 
-          if (updateError) {
-            console.error('Business update error:', updateError);
-            throw new Error(`Failed to update business: ${updateError.message}`);
-          }
-
-          console.log('Updating AI settings...');
-          await supabase
-            .from('ai_settings')
-            .update({ assistant_name: aiSettings.name })
-            .eq('business_id', currentBusiness.id);
-        }
-
-        await refreshBusiness();
-        navigate('/dashboard');
-        
-      } catch (err) {
-        console.error('Onboarding error:', err);
-        setError(err.message || 'Something went wrong. Please try again.');
-        setLoading(false);
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(result.error || 'Failed to save');
       }
+
+      await refreshBusiness();
+      localStorage.removeItem('bookfox_firstName');
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Save error:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleBack = () => {
-    if (step > 0) setStep(step - 1);
-  };
-
-  const renderStep = () => {
-    const offset = needsBusinessCreation ? 0 : 1;
-    const actualStep = step + offset;
-    const displayName = needsBusinessCreation ? businessName : business?.name;
-
-    switch (actualStep) {
-      case 0: return <BusinessNameStep value={businessName} onChange={setBusinessName} />;
-      case 1: return <TradeTypeStep value={tradeType} onChange={setTradeType} />;
-      case 2: return <HoursStep value={hours} onChange={setHours} />;
-      case 3: return <AiBehaviorStep value={aiBehavior} onChange={setAiBehavior} />;
-      case 4: return <CustomInstructionsStep value={aiBehavior} onChange={setAiBehavior} businessName={displayName} />;
-      case 5: return <AiNameStep value={aiSettings} onChange={setAiSettings} businessName={displayName} />;
-      case 6: return <SuccessStep businessName={displayName} />;
-      default: return null;
-    }
-  };
-
-  const isSuccessStep = step === totalSteps - 1;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
-      {/* Colorful background shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-blue-400/30 to-indigo-400/30 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-gradient-to-br from-amber-300/20 to-orange-300/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-gradient-to-br from-emerald-300/20 to-teal-300/20 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 py-8">
-        <div className="w-full max-w-2xl">
-          {/* Logo */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-3 px-5 py-2 bg-white/60 backdrop-blur-sm rounded-full shadow-lg border border-white/50">
-              <img src="/logo.png" alt="BookFox" className="w-10 h-10" />
-              <span className="text-2xl font-bold text-stone-800">
-                Book<span className="text-blue-600">Fox</span>
-              </span>
-            </div>
+  // STEP 0: Welcome
+  if (step === 0) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-6">
+        <div className="max-w-md text-center">
+          <div className="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <img src="/logo.png" alt="BookFox" className="w-14 h-14" />
           </div>
-
-          <StepIndicator currentStep={step} totalSteps={totalSteps} />
-
-          {/* Card */}
-          <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-2xl shadow-indigo-500/10 p-5 md:p-10 border border-white/60">
-            {error && (
-              <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 rounded-xl text-red-700 text-sm flex items-start gap-3">
-                <span className="text-xl">⚠️</span>
-                <div>
-                  <p className="font-semibold">Something went wrong</p>
-                  <p className="text-red-600">{error}</p>
+          <h1 className="text-3xl font-bold text-stone-800 mb-3">Welcome to BookFox, {firstName}!</h1>
+          <p className="text-stone-600 mb-8">
+            We're going to get you set up in about 10 minutes. Here's what we'll do:
+          </p>
+          <div className="space-y-3 text-left mb-8">
+            {[
+              { icon: '🔗', text: 'Connect your lead sources', time: '3 min' },
+              { icon: '💼', text: 'Teach BookFox about your business', time: '5 min' },
+              { icon: '✅', text: 'See it respond to a test lead', time: '2 min' },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center justify-between bg-stone-50 rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">{item.icon}</span>
+                  <span className="text-stone-700 font-medium">{item.text}</span>
                 </div>
+                <span className="text-stone-400 text-sm">{item.time}</span>
               </div>
-            )}
-
-            <div className="min-h-[380px] md:min-h-[420px]">
-              {renderStep()}
-            </div>
-
-            {/* Navigation */}
-            <div className="flex items-center justify-between mt-8 pt-5 border-t border-stone-200/50">
-              {step > 0 && !isSuccessStep ? (
-                <button
-                  onClick={handleBack}
-                  className="flex items-center gap-2 px-5 py-3 text-stone-600 font-semibold hover:text-stone-800 hover:bg-stone-100/50 rounded-xl transition-all"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  <span className="hidden md:inline">Back</span>
-                </button>
-              ) : (
-                <div />
-              )}
-              
-              <button
-                onClick={handleNext}
-                disabled={!canContinue() || loading}
-                className="flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/40 hover:shadow-xl hover:shadow-blue-500/50 hover:-translate-y-0.5 active:translate-y-0 active:scale-95"
-              >
-                {loading ? (
-                  <>
-                    <img src="/logo.png" alt="" className="w-5 h-5 animate-spin" />
-                    <span>Saving...</span>
-                  </>
-                ) : isSuccessStep ? (
-                  <>
-                    Go to Dashboard
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </>
-                ) : (
-                  <>
-                    Continue
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </>
-                )}
-              </button>
-            </div>
+            ))}
           </div>
-
-          {!isSuccessStep && (
-            <div className="text-center mt-4 flex items-center justify-center gap-4">
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="text-stone-400 hover:text-stone-600 text-sm font-medium transition-colors underline"
-              >
-                Skip for now
-              </button>
-              <button
-                onClick={async () => {
-                  await supabase.auth.signOut();
-                  navigate('/login');
-                }}
-                className="px-4 py-2 text-red-500 hover:text-white hover:bg-red-500 text-sm font-medium transition-all rounded-lg border border-red-300"
-              >
-                Sign out
-              </button>
-            </div>
-          )}
+          <button
+            onClick={next}
+            className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition"
+          >
+            Let's Get Started
+          </button>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // STEP 1: Business Basics
+  if (step === 1) {
+    return (
+      <div className="min-h-screen bg-white p-6">
+        <div className="max-w-lg mx-auto pt-8">
+          <Progress step={1} total={6} />
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Tell Us About Your Business</h2>
+          <p className="text-stone-500 mb-8">Just the basics — takes 60 seconds.</p>
+
+          <div className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">Company Name</label>
+              <input
+                type="text"
+                value={data.companyName}
+                onChange={(e) => update('companyName', e.target.value)}
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                placeholder="Acme Plumbing"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">What service do you provide?</label>
+              <select
+                value={data.serviceType}
+                onChange={(e) => update('serviceType', e.target.value)}
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+              >
+                <option value="">Select a service...</option>
+                <option value="hvac">HVAC</option>
+                <option value="roofing">Roofing</option>
+                <option value="plumbing">Plumbing</option>
+                <option value="electrical">Electrical</option>
+                <option value="solar">Solar Installation</option>
+                <option value="general">General Contracting</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">What area do you serve?</label>
+              <input
+                type="text"
+                value={data.serviceArea}
+                onChange={(e) => update('serviceArea', e.target.value)}
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                placeholder="Salt Lake County"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-8">
+            <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
+            <button
+              onClick={next}
+              disabled={!data.companyName || !data.serviceType}
+              className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // STEP 2: Phone Number
+  if (step === 2) {
+    return (
+      <div className="min-h-screen bg-white p-6">
+        <div className="max-w-lg mx-auto pt-8">
+          <Progress step={2} total={6} />
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Your Business Phone Number</h2>
+          <p className="text-stone-500 mb-8">BookFox will text leads from this number.</p>
+
+          <div className="space-y-4 mb-6">
+            <label 
+              className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition ${
+                data.useExistingPhone ? 'border-blue-500 bg-blue-50' : 'border-stone-200 hover:border-stone-300'
+              }`}
+              onClick={() => update('useExistingPhone', true)}
+            >
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                data.useExistingPhone ? 'border-blue-500' : 'border-stone-300'
+              }`}>
+                {data.useExistingPhone && <div className="w-3 h-3 bg-blue-500 rounded-full" />}
+              </div>
+              <div>
+                <p className="font-medium text-stone-800">Use my existing number</p>
+                <p className="text-sm text-stone-500">Free — works with your current business line</p>
+              </div>
+            </label>
+
+            <label 
+              className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition ${
+                !data.useExistingPhone ? 'border-blue-500 bg-blue-50' : 'border-stone-200 hover:border-stone-300'
+              }`}
+              onClick={() => update('useExistingPhone', false)}
+            >
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                !data.useExistingPhone ? 'border-blue-500' : 'border-stone-300'
+              }`}>
+                {!data.useExistingPhone && <div className="w-3 h-3 bg-blue-500 rounded-full" />}
+              </div>
+              <div>
+                <p className="font-medium text-stone-800">Get a new local number from BookFox</p>
+                <p className="text-sm text-stone-500">+$15/month — separate line for leads</p>
+              </div>
+            </label>
+          </div>
+
+          {data.useExistingPhone && (
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">Your Phone Number</label>
+              <input
+                type="tel"
+                value={data.phone}
+                onChange={(e) => update('phone', e.target.value)}
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                placeholder="(555) 123-4567"
+              />
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-8">
+            <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
+            <button onClick={next} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // STEP 3: Lead Sources
+  if (step === 3) {
+    const sources = [
+      { id: 'website', label: 'Website contact form', icon: '🌐' },
+      { id: 'facebook', label: 'Facebook/Instagram messages', icon: '📘' },
+      { id: 'google', label: 'Google Business messages', icon: '🔍' },
+      { id: 'missed_calls', label: 'Missed phone calls', icon: '📞' },
+      { id: 'email', label: 'Email leads', icon: '📧' },
+      { id: 'yelp', label: 'Yelp messages', icon: '⭐' },
+      { id: 'homeadvisor', label: 'HomeAdvisor/Angi', icon: '🏠' },
+    ];
+
+    const toggle = (id) => {
+      const current = data.leadSources;
+      if (current.includes(id)) {
+        update('leadSources', current.filter(s => s !== id));
+      } else {
+        update('leadSources', [...current, id]);
+      }
+    };
+
+    return (
+      <div className="min-h-screen bg-white p-6">
+        <div className="max-w-lg mx-auto pt-8">
+          <Progress step={3} total={6} />
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Where Do Your Leads Come From?</h2>
+          <p className="text-stone-500 mb-6">Check all that apply. We'll help you connect them.</p>
+
+          <div className="space-y-2">
+            {sources.map(s => (
+              <button
+                key={s.id}
+                onClick={() => toggle(s.id)}
+                className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-left transition ${
+                  data.leadSources.includes(s.id) 
+                    ? 'border-blue-500 bg-blue-50' 
+                    : 'border-stone-200 hover:border-stone-300'
+                }`}
+              >
+                <span className="text-xl">{s.icon}</span>
+                <span className="font-medium text-stone-700 flex-1">{s.label}</span>
+                {data.leadSources.includes(s.id) && (
+                  <span className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex gap-3 mt-8">
+            <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
+            <button onClick={next} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">
+              Next
+            </button>
+          </div>
+
+          <button onClick={next} className="w-full text-stone-400 text-sm mt-4 hover:text-stone-600">
+            I'll do this later
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // STEP 4: Business Questions
+  if (step === 4) {
+    return (
+      <div className="min-h-screen bg-white p-6">
+        <div className="max-w-lg mx-auto pt-8">
+          <Progress step={4} total={6} />
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">How Should BookFox Talk To Leads?</h2>
+          <p className="text-stone-500 mb-6">Quick questions so BookFox knows what to say.</p>
+
+          <div className="space-y-6">
+            {/* Response Time */}
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">Typical response time for quotes?</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { value: 'same_day', label: 'Same day' },
+                  { value: '24_hours', label: 'Within 24 hours' },
+                  { value: '2_3_days', label: '2-3 days' },
+                  { value: 'depends', label: 'Depends' },
+                ].map(o => (
+                  <button
+                    key={o.value}
+                    onClick={() => update('responseTime', o.value)}
+                    className={`p-3 rounded-xl border-2 text-sm font-medium transition ${
+                      data.responseTime === o.value 
+                        ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                        : 'border-stone-200 text-stone-600 hover:border-stone-300'
+                    }`}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Free Estimates */}
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">Free estimates?</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { value: 'yes', label: 'Yes, always' },
+                  { value: 'sometimes', label: 'Sometimes' },
+                  { value: 'no', label: 'No' },
+                ].map(o => (
+                  <button
+                    key={o.value}
+                    onClick={() => update('freeEstimates', o.value)}
+                    className={`p-3 rounded-xl border-2 text-sm font-medium transition ${
+                      data.freeEstimates === o.value 
+                        ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                        : 'border-stone-200 text-stone-600 hover:border-stone-300'
+                    }`}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Emergency Service */}
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">Emergency service available?</label>
+              <div className="grid grid-cols-1 gap-2">
+                {[
+                  { value: '24_7', label: 'Yes, 24/7 emergency service' },
+                  { value: 'business_hours', label: 'Yes, during business hours only' },
+                  { value: 'no', label: 'No, appointments only' },
+                ].map(o => (
+                  <button
+                    key={o.value}
+                    onClick={() => update('emergencyService', o.value)}
+                    className={`p-3 rounded-xl border-2 text-sm font-medium text-left transition ${
+                      data.emergencyService === o.value 
+                        ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                        : 'border-stone-200 text-stone-600 hover:border-stone-300'
+                    }`}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-8">
+            <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
+            <button onClick={next} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // STEP 5: Availability
+  if (step === 5) {
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const dayLabels = { monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed', thursday: 'Thu', friday: 'Fri', saturday: 'Sat', sunday: 'Sun' };
+
+    const toggleDay = (day) => {
+      const newSchedule = { ...data.schedule };
+      newSchedule[day].enabled = !newSchedule[day].enabled;
+      update('schedule', newSchedule);
+    };
+
+    const copyToAll = () => {
+      const mon = data.schedule.monday;
+      const newSchedule = { ...data.schedule };
+      days.forEach(d => {
+        if (d !== 'saturday' && d !== 'sunday') {
+          newSchedule[d] = { ...mon };
+        }
+      });
+      update('schedule', newSchedule);
+    };
+
+    return (
+      <div className="min-h-screen bg-white p-6">
+        <div className="max-w-lg mx-auto pt-8">
+          <Progress step={5} total={6} />
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">When Can You Take Jobs?</h2>
+          <p className="text-stone-500 mb-6">BookFox will only book during these times.</p>
+
+          <div className="space-y-2 mb-6">
+            {days.map(day => (
+              <div 
+                key={day}
+                className={`flex items-center gap-3 p-3 rounded-xl border transition ${
+                  data.schedule[day].enabled ? 'border-blue-200 bg-blue-50' : 'border-stone-200 bg-stone-50'
+                }`}
+              >
+                <button
+                  onClick={() => toggleDay(day)}
+                  className={`w-6 h-6 rounded border-2 flex items-center justify-center transition ${
+                    data.schedule[day].enabled ? 'bg-blue-500 border-blue-500 text-white' : 'border-stone-300'
+                  }`}
+                >
+                  {data.schedule[day].enabled && '✓'}
+                </button>
+                <span className="w-10 font-medium text-stone-700">{dayLabels[day]}</span>
+                {data.schedule[day].enabled ? (
+                  <div className="flex items-center gap-2 flex-1">
+                    <input
+                      type="time"
+                      value={data.schedule[day].open}
+                      onChange={(e) => {
+                        const newSchedule = { ...data.schedule };
+                        newSchedule[day].open = e.target.value;
+                        update('schedule', newSchedule);
+                      }}
+                      className="px-2 py-1 border border-stone-300 rounded-lg text-sm"
+                    />
+                    <span className="text-stone-400">to</span>
+                    <input
+                      type="time"
+                      value={data.schedule[day].close}
+                      onChange={(e) => {
+                        const newSchedule = { ...data.schedule };
+                        newSchedule[day].close = e.target.value;
+                        update('schedule', newSchedule);
+                      }}
+                      className="px-2 py-1 border border-stone-300 rounded-lg text-sm"
+                    />
+                  </div>
+                ) : (
+                  <span className="text-stone-400 text-sm">Closed</span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <button onClick={copyToAll} className="text-blue-600 text-sm font-medium mb-6 hover:underline">
+            Copy Monday to all weekdays
+          </button>
+
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">Appointment length</label>
+              <select
+                value={data.appointmentDuration}
+                onChange={(e) => update('appointmentDuration', Number(e.target.value))}
+                className="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm"
+              >
+                <option value={30}>30 min</option>
+                <option value={60}>1 hour</option>
+                <option value={120}>2 hours</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">Buffer between</label>
+              <select
+                value={data.bufferTime}
+                onChange={(e) => update('bufferTime', Number(e.target.value))}
+                className="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm"
+              >
+                <option value={0}>None</option>
+                <option value={15}>15 min</option>
+                <option value={30}>30 min</option>
+                <option value={60}>1 hour</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-8">
+            <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
+            <button onClick={next} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // STEP 6: Test & Finish
+  if (step === 6) {
+    return (
+      <div className="min-h-screen bg-white p-6">
+        <div className="max-w-lg mx-auto pt-8">
+          <Progress step={6} total={6} />
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">You're All Set! Let's Test It.</h2>
+          <p className="text-stone-500 mb-6">Here's how BookFox will respond to leads:</p>
+
+          {/* Conversation Preview */}
+          <div className="bg-stone-100 rounded-2xl p-4 mb-6">
+            <p className="text-xs text-stone-500 text-center mb-3">Sample Conversation</p>
+            <div className="space-y-3">
+              <div className="bg-stone-200 rounded-2xl rounded-tl-sm px-4 py-2 max-w-[80%]">
+                <p className="text-sm">"Hey, my AC isn't working"</p>
+              </div>
+              <div className="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] ml-auto">
+                <p className="text-sm">Hi! I can help with that. I'm with {data.companyName || 'your company'}. Is this an emergency or can it wait until tomorrow?</p>
+              </div>
+              <div className="bg-stone-200 rounded-2xl rounded-tl-sm px-4 py-2 max-w-[80%]">
+                <p className="text-sm">"Pretty urgent, it's really hot"</p>
+              </div>
+              <div className="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] ml-auto">
+                <p className="text-sm">Got it. I have availability today at 2pm or 4pm. Which works better?</p>
+              </div>
+              <div className="bg-stone-200 rounded-2xl rounded-tl-sm px-4 py-2 max-w-[80%]">
+                <p className="text-sm">"2pm works"</p>
+              </div>
+              <div className="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] ml-auto">
+                <p className="text-sm">Perfect! You're booked for 2pm. I'll send a reminder. See you then! 🙂</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <span className="text-xl">✅</span>
+              <div>
+                <p className="font-semibold text-emerald-800">Your customers won't know it's AI</p>
+                <p className="text-sm text-emerald-700">Natural language • Books appointments • Works 24/7</p>
+              </div>
+            </div>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
+          <div className="flex gap-3">
+            <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
+            <button
+              onClick={finish}
+              disabled={loading}
+              className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition disabled:opacity-50"
+            >
+              {loading ? 'Saving...' : 'Go To Dashboard'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
