@@ -1,108 +1,140 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { AnimateOnScroll, AnimatedCounter, FadeIn } from '../components/Animations';
 
-// Animated counter component
-function AnimatedNumber({ target, duration = 2000, suffix = '' }) {
-  const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    let start = 0;
-    const increment = target / (duration / 16);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [target, duration]);
-  
-  return <span>{count.toLocaleString()}{suffix}</span>;
-}
+// ROI Calculator Component
+function ROICalculator() {
+  const [leads, setLeads] = useState(50);
+  const [jobValue, setJobValue] = useState(3000);
+  const [missRate, setMissRate] = useState(40);
+  const [showResult, setShowResult] = useState(false);
 
-// Feature card component
-function FeatureCard({ icon, title, description, delay = 0 }) {
+  const monthlyLoss = Math.round((leads * (missRate / 100) * jobValue));
+  const yearlyLoss = monthlyLoss * 12;
+  const roi = Math.round(monthlyLoss / 299);
+
   return (
-    <AnimateOnScroll animation="fade-up">
-      <div 
-        className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-stone-100 hover:shadow-lg hover:border-blue-100 transition-all duration-300 hover:-translate-y-1 active:translate-y-0 h-full"
-        style={{ animationDelay: `${delay}ms` }}
-      >
-        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-xl sm:text-2xl mb-4 sm:mb-5 shadow-lg shadow-blue-500/20">
-          {icon}
-        </div>
-        <h3 className="text-lg sm:text-xl font-bold text-stone-800 mb-2 sm:mb-3">{title}</h3>
-        <p className="text-stone-600 leading-relaxed text-sm sm:text-base">{description}</p>
-      </div>
-    </AnimateOnScroll>
-  );
-}
-
-// Testimonial card
-function TestimonialCard({ quote, name, business, image }) {
-  return (
-    <AnimateOnScroll animation="fade-up">
-      <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-stone-100 h-full">
-        <div className="flex gap-1 mb-3 sm:mb-4">
-          {[...Array(5)].map((_, i) => (
-            <span key={i} className="text-amber-400 text-sm sm:text-base">★</span>
-          ))}
-        </div>
-        <p className="text-stone-700 text-base sm:text-lg mb-4 sm:mb-6 leading-relaxed">"{quote}"</p>
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-lg shadow-blue-500/20 flex-shrink-0">
-            {name.charAt(0)}
+    <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border border-stone-200">
+      <div className="space-y-8">
+        <div>
+          <div className="flex justify-between mb-2">
+            <label className="font-semibold text-stone-700">How many leads do you get per month?</label>
+            <span className="text-blue-600 font-bold">{leads}</span>
           </div>
-          <div className="min-w-0">
-            <p className="font-semibold text-stone-800 truncate">{name}</p>
-            <p className="text-stone-500 text-sm truncate">{business}</p>
-          </div>
+          <input
+            type="range"
+            min="10"
+            max="200"
+            value={leads}
+            onChange={(e) => setLeads(Number(e.target.value))}
+            className="w-full h-3 bg-stone-200 rounded-full appearance-none cursor-pointer accent-blue-600"
+          />
         </div>
-      </div>
-    </AnimateOnScroll>
-  );
-}
 
-// Pricing card
-function PricingCard({ name, price, description, features, popular = false, cta = "Start Free Trial" }) {
-  return (
-    <AnimateOnScroll animation="scale">
-      <div className={`rounded-2xl p-6 sm:p-8 h-full flex flex-col ${popular ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-xl shadow-blue-500/30 sm:scale-105' : 'bg-white border border-stone-200'}`}>
-        {popular && (
-          <span className="inline-block bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1 rounded-full mb-3 sm:mb-4 self-start">
-            MOST POPULAR
-          </span>
-        )}
-        <h3 className={`text-xl sm:text-2xl font-bold mb-2 ${popular ? 'text-white' : 'text-stone-800'}`}>{name}</h3>
-        <p className={`mb-4 text-sm sm:text-base ${popular ? 'text-blue-100' : 'text-stone-500'}`}>{description}</p>
-        <div className="mb-4 sm:mb-6">
-          <span className={`text-4xl sm:text-5xl font-bold ${popular ? 'text-white' : 'text-stone-800'}`}>${price}</span>
-          <span className={`text-sm sm:text-base ${popular ? 'text-blue-100' : 'text-stone-500'}`}>/month</span>
+        <div>
+          <div className="flex justify-between mb-2">
+            <label className="font-semibold text-stone-700">What's your average job value?</label>
+            <span className="text-blue-600 font-bold">${jobValue.toLocaleString()}</span>
+          </div>
+          <input
+            type="range"
+            min="500"
+            max="20000"
+            step="500"
+            value={jobValue}
+            onChange={(e) => setJobValue(Number(e.target.value))}
+            className="w-full h-3 bg-stone-200 rounded-full appearance-none cursor-pointer accent-blue-600"
+          />
         </div>
-        <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 flex-1">
-          {features.map((feature, i) => (
-            <li key={i} className="flex items-start gap-2 sm:gap-3">
-              <span className={`text-base sm:text-lg flex-shrink-0 ${popular ? 'text-blue-200' : 'text-blue-500'}`}>✓</span>
-              <span className={`text-sm sm:text-base ${popular ? 'text-blue-50' : 'text-stone-600'}`}>{feature}</span>
-            </li>
-          ))}
-        </ul>
-        <Link
-          to="/signup"
-          className={`block w-full py-3 px-4 rounded-xl font-semibold text-center transition-all active:scale-[0.98] ${
-            popular 
-              ? 'bg-white text-blue-600 hover:bg-blue-50 active:bg-blue-100' 
-              : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-lg shadow-blue-500/20'
-          }`}
+
+        <div>
+          <div className="flex justify-between mb-2">
+            <label className="font-semibold text-stone-700">What % of leads do you miss or respond to slowly?</label>
+            <span className="text-blue-600 font-bold">{missRate}%</span>
+          </div>
+          <input
+            type="range"
+            min="10"
+            max="70"
+            value={missRate}
+            onChange={(e) => setMissRate(Number(e.target.value))}
+            className="w-full h-3 bg-stone-200 rounded-full appearance-none cursor-pointer accent-blue-600"
+          />
+        </div>
+
+        <button
+          onClick={() => setShowResult(true)}
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/30"
         >
-          {cta}
-        </Link>
+          Calculate My Losses
+        </button>
+
+        {showResult && (
+          <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-2xl p-6 text-center animate-fadeIn">
+            <p className="text-stone-600 mb-2">You're losing approximately</p>
+            <p className="text-5xl font-bold text-red-600 mb-2">${monthlyLoss.toLocaleString()}</p>
+            <p className="text-stone-600 mb-4">per month in missed opportunities</p>
+            
+            <div className="bg-white rounded-xl p-4 mb-4">
+              <p className="text-stone-500 text-sm">BookFox costs <span className="font-bold text-stone-800">$299/month</span></p>
+              <p className="text-3xl font-bold text-emerald-600">ROI: {roi}x</p>
+              <p className="text-stone-500 text-sm mt-1">That's <span className="font-bold text-red-600">${yearlyLoss.toLocaleString()}</span> left on the table every year</p>
+            </div>
+
+            <Link
+              to="/signup"
+              className="inline-block w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/30"
+            >
+              Start Free Trial — Stop Losing Money
+            </Link>
+          </div>
+        )}
       </div>
-    </AnimateOnScroll>
+    </div>
+  );
+}
+
+// Testimonial with results
+function TestimonialCard({ quote, name, business, location, result, resultLabel }) {
+  return (
+    <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-stone-100 h-full flex flex-col">
+      <div className="flex gap-1 mb-4">
+        {[...Array(5)].map((_, i) => (
+          <span key={i} className="text-amber-400">★</span>
+        ))}
+      </div>
+      <p className="text-stone-700 text-lg mb-6 leading-relaxed flex-1">"{quote}"</p>
+      <div className="border-t border-stone-100 pt-4 mt-auto">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-bold text-stone-800">{name}</p>
+            <p className="text-stone-500 text-sm">{business}, {location}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-2xl font-bold text-emerald-600">{result}</p>
+            <p className="text-xs text-stone-500">{resultLabel}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// FAQ Item
+function FAQItem({ question, answer }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-stone-200">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full py-5 flex items-center justify-between text-left"
+      >
+        <span className="font-semibold text-stone-800 pr-4">{question}</span>
+        <span className={`text-blue-600 text-2xl transition-transform ${open ? 'rotate-45' : ''}`}>+</span>
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${open ? 'max-h-96 pb-5' : 'max-h-0'}`}>
+        <p className="text-stone-600 leading-relaxed">{answer}</p>
+      </div>
+    </div>
   );
 }
 
@@ -111,8 +143,13 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-stone-50">
+      {/* Urgency Banner */}
+      <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-center py-2.5 px-4 text-sm font-medium">
+        ⚠️ Limited Availability: Only taking <span className="font-bold">15 new clients</span> this month to ensure quality service. <span className="font-bold">7 spots remaining.</span>
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-stone-200">
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2.5">
@@ -122,21 +159,19 @@ export default function Landing() {
               </span>
             </Link>
             
-            {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-stone-600 hover:text-stone-800 transition">Features</a>
+              <a href="#how-it-works" className="text-stone-600 hover:text-stone-800 transition">How It Works</a>
               <a href="#pricing" className="text-stone-600 hover:text-stone-800 transition">Pricing</a>
-              <a href="#testimonials" className="text-stone-600 hover:text-stone-800 transition">Reviews</a>
+              <a href="#faq" className="text-stone-600 hover:text-stone-800 transition">FAQ</a>
               <Link to="/login" className="text-stone-600 hover:text-stone-800 transition">Sign In</Link>
               <Link 
                 to="/signup" 
-                className="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 transition shadow-lg shadow-blue-500/20"
+                className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-500/25"
               >
                 Start Free Trial
               </Link>
             </div>
 
-            {/* Mobile menu button */}
             <button 
               className="md:hidden p-2"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -152,358 +187,537 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* Mobile menu */}
-        <div 
-          className={`md:hidden bg-white border-t border-stone-200 overflow-hidden transition-all duration-300 ${
-            mobileMenuOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
-          }`}
-        >
-          <div className="py-4 px-4 space-y-1">
-            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block py-3 px-4 text-stone-600 hover:bg-stone-50 active:bg-stone-100 rounded-xl transition-colors">Features</a>
-            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block py-3 px-4 text-stone-600 hover:bg-stone-50 active:bg-stone-100 rounded-xl transition-colors">Pricing</a>
-            <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block py-3 px-4 text-stone-600 hover:bg-stone-50 active:bg-stone-100 rounded-xl transition-colors">Reviews</a>
-            <Link to="/login" className="block py-3 px-4 text-stone-600 hover:bg-stone-50 active:bg-stone-100 rounded-xl transition-colors">Sign In</Link>
-            <Link to="/signup" className="block bg-blue-600 text-white py-3 px-4 rounded-xl font-medium text-center hover:bg-blue-700 active:bg-blue-800 transition-colors mt-2">
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-t border-stone-200 py-4 px-4 space-y-1">
+            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block py-3 px-4 text-stone-600 hover:bg-stone-50 rounded-xl">How It Works</a>
+            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block py-3 px-4 text-stone-600 hover:bg-stone-50 rounded-xl">Pricing</a>
+            <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="block py-3 px-4 text-stone-600 hover:bg-stone-50 rounded-xl">FAQ</a>
+            <Link to="/login" className="block py-3 px-4 text-stone-600 hover:bg-stone-50 rounded-xl">Sign In</Link>
+            <Link to="/signup" className="block bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold text-center mt-2">
               Start Free Trial
             </Link>
           </div>
-        </div>
+        )}
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-24 sm:pt-32 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-8">
+      {/* HERO SECTION - FIX #1 */}
+      <section className="pt-12 sm:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-stone-50">
         <div className="max-w-7xl mx-auto">
-          <FadeIn className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-              </span>
-              AI-powered lead qualification
-            </div>
-            
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-stone-800 mb-4 sm:mb-6 leading-[1.1]">
-              Never Miss a
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400"> Lead </span>
-              Again
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-800 mb-6 leading-[1.1]">
+              Stop Losing <span className="text-red-500">$10,000+</span> Every Month In Leads That Go To Your Competitors
             </h1>
             
-            <p className="text-base sm:text-xl text-stone-600 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed px-2">
-              BookFox answers your missed calls instantly via SMS, qualifies leads with AI, 
-              and books appointments — so you can focus on the job, not the phone.
+            <p className="text-lg sm:text-xl text-stone-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+              BookFox responds to every lead in under 60 seconds — even when you're on a roof, in a crawl space, or with a customer. Built specifically for <span className="font-semibold text-stone-800">HVAC, Roofing, and Plumbing contractors</span> in Utah.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12 px-2">
-              <Link 
-                to="/signup" 
-                className="w-full sm:w-auto bg-blue-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-blue-700 active:bg-blue-800 transition-all shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0"
-              >
-                Start Free 14-Day Trial
-              </Link>
-              <a 
-                href="#demo" 
-                className="w-full sm:w-auto flex items-center justify-center gap-2 text-stone-700 font-medium hover:text-blue-600 active:text-blue-700 transition px-6 sm:px-8 py-3.5 sm:py-4"
-              >
-                <span className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </span>
-                Watch Demo
-              </a>
-            </div>
-
-            <p className="text-stone-500 text-sm">
-              No credit card required • Setup in 5 minutes • Cancel anytime
-            </p>
-          </FadeIn>
-
-          {/* App Preview */}
-          <div className="mt-16 relative">
-            <div className="absolute inset-0 bg-gradient-to-t from-stone-50 via-transparent to-transparent z-10 pointer-events-none"></div>
-            <div className="bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden max-w-5xl mx-auto">
-              <div className="bg-stone-100 px-4 py-3 flex items-center gap-2">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                  <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                </div>
-                <div className="flex-1 flex justify-center">
-                  <div className="bg-white rounded-lg px-4 py-1 text-sm text-stone-500">bookfox.ai/dashboard</div>
-                </div>
-              </div>
-              <div className="p-6 bg-gradient-to-br from-stone-50 to-blue-50">
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  {[
-                    { label: 'Leads Today', value: '12', trend: '+23%', color: 'blue' },
-                    { label: 'Calls Caught', value: '8', trend: '+15%', color: 'green' },
-                    { label: 'Booked', value: '5', trend: '+40%', color: 'amber' },
-                    { label: 'Response Rate', value: '94%', trend: '+5%', color: 'purple' },
-                  ].map((stat, i) => (
-                    <div key={i} className="bg-white rounded-xl p-4 shadow-sm">
-                      <p className="text-stone-500 text-sm">{stat.label}</p>
-                      <p className="text-2xl font-bold text-stone-800">{stat.value}</p>
-                      <p className="text-green-600 text-sm font-medium">{stat.trend}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="col-span-2 bg-white rounded-xl p-4 shadow-sm h-48"></div>
-                  <div className="bg-white rounded-xl p-4 shadow-sm h-48"></div>
-                </div>
-              </div>
+            <Link 
+              to="/signup" 
+              className="inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 sm:px-10 py-4 sm:py-5 rounded-xl font-bold text-lg sm:text-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:-translate-y-0.5 active:translate-y-0"
+            >
+              Start Free 14-Day Trial — No Credit Card Required
+            </Link>
+            
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6 text-stone-500 text-sm">
+              <span className="flex items-center gap-1.5">⚡ Setup in 15 minutes</span>
+              <span className="flex items-center gap-1.5">💬 Books appointments while you work</span>
+              <span className="flex items-center gap-1.5">❌ Cancel anytime</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="py-12 bg-white border-y border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <p className="text-4xl font-bold text-blue-600"><AnimatedNumber target={2500} suffix="+" /></p>
-              <p className="text-stone-600 mt-1">Trade Businesses</p>
-            </div>
-            <div>
-              <p className="text-4xl font-bold text-blue-600"><AnimatedNumber target={50000} suffix="+" /></p>
-              <p className="text-stone-600 mt-1">Leads Captured</p>
-            </div>
-            <div>
-              <p className="text-4xl font-bold text-blue-600"><AnimatedNumber target={98} suffix="%" /></p>
-              <p className="text-stone-600 mt-1">Response Rate</p>
-            </div>
-            <div>
-              <p className="text-4xl font-bold text-blue-600"><AnimatedNumber target={4.9} suffix="/5" duration={1500} /></p>
-              <p className="text-stone-600 mt-1">Customer Rating</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Problem Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-stone-900 text-white">
+      {/* SOCIAL PROOF - FIX #2 */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="max-w-3xl">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-              Every missed call is a missed opportunity
-            </h2>
-            <p className="text-xl text-stone-300 mb-8 leading-relaxed">
-              You're on a job. The phone rings. You can't answer. That customer calls your competitor instead.
-            </p>
-            <div className="space-y-4">
-              {[
-                '85% of callers won\'t leave a voicemail',
-                '75% won\'t call back if you don\'t answer',
-                'Average missed call costs trade businesses $200-500',
-              ].map((stat, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center">
-                    <span className="text-red-400">✕</span>
-                  </div>
-                  <span className="text-stone-300">{stat}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 mb-4">
-              Everything you need to capture every lead
-            </h2>
-            <p className="text-xl text-stone-600 max-w-2xl mx-auto">
-              BookFox works 24/7 so you don't have to. Here's how it turns missed calls into booked jobs.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <FeatureCard
-              icon="📱"
-              title="Instant SMS Response"
-              description="Within seconds of a missed call, BookFox texts your customer automatically. No more lost leads while you're on a job."
-              delay={0}
-            />
-            <FeatureCard
-              icon="🤖"
-              title="AI Lead Qualification"
-              description="Our AI asks the right questions — service needed, urgency, property type — so you know exactly what you're walking into."
-              delay={100}
-            />
-            <FeatureCard
-              icon="📅"
-              title="Auto-Booking"
-              description="Customers can book directly into your calendar. BookFox knows your availability and handles the scheduling."
-              delay={200}
-            />
-            <FeatureCard
-              icon="💬"
-              title="Smart Conversations"
-              description="The AI maintains natural conversations, answers common questions, and knows when to hand off to you."
-              delay={300}
-            />
-            <FeatureCard
-              icon="📊"
-              title="Lead Dashboard"
-              description="See all your leads in one place. Track status, view conversations, and never let a lead slip through the cracks."
-              delay={400}
-            />
-            <FeatureCard
-              icon="🔔"
-              title="Instant Notifications"
-              description="Get notified immediately for hot leads or urgent jobs. Stay in control while the AI handles the rest."
-              delay={500}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* How it Works */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-stone-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 mb-4">
-              How BookFox Works
-            </h2>
-            <p className="text-xl text-stone-600">Setup takes 5 minutes. Then it just works.</p>
-          </div>
-
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { step: '1', title: 'Customer Calls', desc: 'They call your business but you\'re busy on a job' },
-              { step: '2', title: 'Instant Text', desc: 'BookFox texts them within seconds of the missed call' },
-              { step: '3', title: 'AI Qualifies', desc: 'Our AI asks smart questions and captures lead details' },
-              { step: '4', title: 'Job Booked', desc: 'Customer books an appointment or you get notified to follow up' },
-            ].map((item, i) => (
-              <div key={i} className="text-center">
-                <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-2xl font-bold text-white mx-auto mb-4 shadow-lg shadow-blue-500/30">
-                  {item.step}
-                </div>
-                <h3 className="text-lg font-bold text-stone-800 mb-2">{item.title}</h3>
-                <p className="text-stone-600">{item.desc}</p>
-                {i < 3 && (
-                  <div className="hidden md:block absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2">
-                    <svg className="w-8 h-8 text-blue-300" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                    </svg>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 mb-4">
-              Trusted by trade pros everywhere
-            </h2>
-            <p className="text-xl text-stone-600">Don't just take our word for it</p>
-          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 text-center mb-4">
+            Contractors Are Booking More Jobs With BookFox
+          </h2>
+          <p className="text-stone-500 text-center mb-12">Real results from real contractors in Utah</p>
 
           <div className="grid md:grid-cols-3 gap-6">
             <TestimonialCard
-              quote="BookFox paid for itself in the first week. I booked 3 jobs that I would have completely missed before."
-              name="Mike Johnson"
-              business="Johnson Plumbing Co."
+              quote="We were losing leads left and right because I couldn't respond fast enough. BookFox booked 8 extra jobs in the first 3 weeks. Paid for itself 40x over."
+              name="Mike Peterson"
+              business="Peterson HVAC"
+              location="Lehi UT"
+              result="+$18,000"
+              resultLabel="first month revenue"
             />
             <TestimonialCard
-              quote="I used to lose 5-10 calls a day. Now every single one gets followed up automatically. Game changer."
-              name="Sarah Martinez"
-              business="Cool Air HVAC"
+              quote="I was skeptical about AI, but customers love the instant response. Nobody realizes it's not me texting. Game changer."
+              name="Sarah Chen"
+              business="Summit Roofing"
+              location="Draper UT"
+              result="73%"
+              resultLabel="response rate (up from 31%)"
             />
             <TestimonialCard
-              quote="The AI is scary good. It asks better questions than my old receptionist did. Customers love the quick response."
-              name="Dave Thompson"
-              business="Thompson Electric"
+              quote="Setup took 12 minutes. Now I never miss a lead even when I'm elbow-deep in a furnace repair."
+              name="Carlos Martinez"
+              business="Wasatch Plumbing"
+              location="Salt Lake City"
+              result="127"
+              resultLabel="leads handled, month 1"
             />
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8 bg-stone-100">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 mb-4">
-              Simple, transparent pricing
-            </h2>
-            <p className="text-xl text-stone-600">Start free, upgrade when you're ready</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
-            <PricingCard
-              name="Starter"
-              price="49"
-              description="Perfect for solo operators"
-              features={[
-                'Up to 100 leads/month',
-                'AI SMS responses',
-                'Basic lead qualification',
-                'Email notifications',
-                'Mobile app access',
-              ]}
-            />
-            <PricingCard
-              name="Professional"
-              price="99"
-              description="For growing businesses"
-              popular={true}
-              features={[
-                'Unlimited leads',
-                'AI SMS + voice responses',
-                'Advanced qualification',
-                'Calendar integration',
-                'Priority support',
-                'Custom AI training',
-              ]}
-            />
-            <PricingCard
-              name="Enterprise"
-              price="199"
-              description="For multi-truck operations"
-              features={[
-                'Everything in Pro',
-                'Multiple phone numbers',
-                'Team management',
-                'API access',
-                'Dedicated account manager',
-                'Custom integrations',
-              ]}
-              cta="Contact Sales"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 to-blue-700">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-            Ready to stop losing leads?
+      {/* ROI CALCULATOR - FIX #3 */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-stone-100 to-blue-50">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 text-center mb-4">
+            How Much Are You Losing Right Now?
           </h2>
-          <p className="text-xl text-blue-100 mb-10">
-            Join 2,500+ trade businesses already using BookFox to capture more customers.
+          <p className="text-stone-500 text-center mb-10">Adjust the sliders to see your potential losses</p>
+          <ROICalculator />
+        </div>
+      </section>
+
+      {/* FEATURES - FIX #4 */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 text-center mb-4">
+            How BookFox Gets You More Jobs
+          </h2>
+          <p className="text-stone-500 text-center mb-12 max-w-2xl mx-auto">
+            Built by contractors, for contractors. Every feature designed to put more money in your pocket.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Feature 1 */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-lg shadow-blue-500/30">
+                ⚡
+              </div>
+              <h3 className="text-xl font-bold text-stone-800 mb-3">Instant Response (Even When You're Busy)</h3>
+              <p className="text-stone-600 mb-4">
+                Lead comes in while you're up on a roof? BookFox responds in under 60 seconds via text. No more losing jobs because you called back 3 hours later.
+              </p>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-emerald-500">✓</span> Works 24/7 — nights, weekends, holidays
+                </li>
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-emerald-500">✓</span> Responds via text (how customers actually want to communicate)
+                </li>
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-emerald-500">✓</span> Never forgets to follow up
+                </li>
+              </ul>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8 border border-amber-100">
+              <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-lg shadow-amber-500/30">
+                🎯
+              </div>
+              <h3 className="text-xl font-bold text-stone-800 mb-3">Smart Qualification (Only Sends You Hot Leads)</h3>
+              <p className="text-stone-600 mb-4">
+                Not every lead is ready to buy. BookFox asks the right questions to figure out:
+              </p>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-amber-500">•</span> Is this an emergency or just browsing?
+                </li>
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-amber-500">•</span> What's their timeline?
+                </li>
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-amber-500">•</span> What's their budget range?
+                </li>
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-amber-500">•</span> Are they talking to other contractors?
+                </li>
+              </ul>
+              <p className="text-stone-600 mt-4 font-medium">You only get notified when they're ready to book. No more wasting time on tire-kickers.</p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-8 border border-emerald-100">
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-lg shadow-emerald-500/30">
+                📅
+              </div>
+              <h3 className="text-xl font-bold text-stone-800 mb-3">Books Appointments Directly Into Your Calendar</h3>
+              <p className="text-stone-600 mb-4">
+                Once BookFox qualifies the lead, it checks your availability and books them into your calendar — without you touching your phone.
+              </p>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-emerald-500">✓</span> Integrates with Google Calendar, Outlook, or any calendar
+                </li>
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-emerald-500">✓</span> Sends automatic reminders so they show up
+                </li>
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-emerald-500">✓</span> Handles rescheduling if they need to move it
+                </li>
+              </ul>
+              <p className="text-stone-600 mt-4 font-medium">You just show up to jobs that are already booked.</p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-lg shadow-purple-500/30">
+                💬
+              </div>
+              <h3 className="text-xl font-bold text-stone-800 mb-3">Sounds Like A Real Person (Not A Robot)</h3>
+              <p className="text-stone-600 mb-4">
+                Your customers have no idea they're talking to AI. BookFox:
+              </p>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-purple-500">•</span> Uses natural, conversational language
+                </li>
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-purple-500">•</span> Adapts to how they text (formal or casual)
+                </li>
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-purple-500">•</span> Remembers context from earlier in the conversation
+                </li>
+                <li className="flex items-center gap-2 text-stone-700">
+                  <span className="text-purple-500">•</span> Never sounds scripted or robotic
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS - FIX #5 */}
+      <section id="how-it-works" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 to-blue-700">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white text-center mb-4">
+            Get Started In 3 Simple Steps
+          </h2>
+          <p className="text-blue-100 text-center mb-12">You'll be live and catching leads today</p>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center text-4xl mx-auto mb-5">
+                📞
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">15-Minute Setup Call</h3>
+              <p className="text-blue-100">We connect BookFox to your existing lead sources (website forms, Facebook, Google, missed calls). Takes 15 minutes, we do it with you.</p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center text-4xl mx-auto mb-5">
+                🤖
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">BookFox Learns Your Business</h3>
+              <p className="text-blue-100">We customize how BookFox talks based on your services, pricing, and availability. You approve the script before it goes live.</p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center text-4xl mx-auto mb-5">
+                💰
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Start Booking More Jobs</h3>
+              <p className="text-blue-100">BookFox handles every lead 24/7. You get real-time notifications when someone's ready to book. That's it.</p>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <Link 
+              to="/signup" 
+              className="inline-block bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition shadow-xl"
+            >
+              Start Free 14-Day Trial
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* GUARANTEE - FIX #6 */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 mb-8">
+            Try BookFox Risk-Free
+          </h2>
+          
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-3xl p-8 sm:p-12">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-emerald-500 rounded-full text-white text-4xl mb-6 shadow-lg shadow-emerald-500/30">
+              ✓
+            </div>
+            
+            <div className="space-y-4 text-lg text-stone-700 mb-8">
+              <p className="flex items-center justify-center gap-3">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>14-Day Free Trial — No Credit Card Required</span>
+              </p>
+              <p className="flex items-center justify-center gap-3">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>If BookFox Doesn't Book At Least One Extra Job In Your First Month, We'll Refund You 100%</span>
+              </p>
+              <p className="flex items-center justify-center gap-3">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>Cancel Anytime — No Contracts, No Hassle</span>
+              </p>
+              <p className="flex items-center justify-center gap-3">
+                <span className="text-emerald-500 font-bold">✓</span>
+                <span>Setup Included — We Do It With You On A Call</span>
+              </p>
+            </div>
+
+            <p className="text-stone-600 max-w-2xl mx-auto">
+              We're so confident BookFox will book you more jobs that we're putting our money where our mouth is. Try it completely free for 14 days. If you don't see results, you pay nothing.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* COMPARISON TABLE - FIX #14 */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-stone-100">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 text-center mb-12">
+            BookFox vs. Doing It Yourself vs. Hiring Someone
+          </h2>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full bg-white rounded-2xl shadow-lg overflow-hidden">
+              <thead className="bg-stone-800 text-white">
+                <tr>
+                  <th className="py-4 px-6 text-left font-semibold"></th>
+                  <th className="py-4 px-6 text-center font-semibold">Doing It Yourself</th>
+                  <th className="py-4 px-6 text-center font-semibold">Hiring A Person</th>
+                  <th className="py-4 px-6 text-center font-semibold bg-blue-600">BookFox</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-200">
+                <tr>
+                  <td className="py-4 px-6 font-medium text-stone-700">Response Time</td>
+                  <td className="py-4 px-6 text-center text-stone-500">2-4 hours</td>
+                  <td className="py-4 px-6 text-center text-stone-500">10-30 minutes</td>
+                  <td className="py-4 px-6 text-center font-bold text-blue-600 bg-blue-50">Under 60 seconds</td>
+                </tr>
+                <tr className="bg-stone-50">
+                  <td className="py-4 px-6 font-medium text-stone-700">Cost</td>
+                  <td className="py-4 px-6 text-center text-stone-500">Your time + lost leads</td>
+                  <td className="py-4 px-6 text-center text-stone-500">$3,000-5,000/month</td>
+                  <td className="py-4 px-6 text-center font-bold text-blue-600 bg-blue-50">$299/month</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-6 font-medium text-stone-700">Works 24/7?</td>
+                  <td className="py-4 px-6 text-center text-red-500">❌ No</td>
+                  <td className="py-4 px-6 text-center text-red-500">❌ No</td>
+                  <td className="py-4 px-6 text-center text-emerald-500 bg-blue-50">✓ Yes</td>
+                </tr>
+                <tr className="bg-stone-50">
+                  <td className="py-4 px-6 font-medium text-stone-700">Never Misses A Lead?</td>
+                  <td className="py-4 px-6 text-center text-red-500">❌ No</td>
+                  <td className="py-4 px-6 text-center text-red-500">❌ Sometimes</td>
+                  <td className="py-4 px-6 text-center text-emerald-500 bg-blue-50">✓ Yes</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-6 font-medium text-stone-700">Qualifies Leads?</td>
+                  <td className="py-4 px-6 text-center text-emerald-500">✓ Yes</td>
+                  <td className="py-4 px-6 text-center text-emerald-500">✓ Yes</td>
+                  <td className="py-4 px-6 text-center text-emerald-500 bg-blue-50">✓ Yes</td>
+                </tr>
+                <tr className="bg-stone-50">
+                  <td className="py-4 px-6 font-medium text-stone-700">Books Appointments?</td>
+                  <td className="py-4 px-6 text-center text-emerald-500">✓ Yes</td>
+                  <td className="py-4 px-6 text-center text-emerald-500">✓ Yes</td>
+                  <td className="py-4 px-6 text-center text-emerald-500 bg-blue-50">✓ Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING - FIX #10 */}
+      <section id="pricing" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 text-center mb-4">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="text-stone-500 text-center mb-12">All plans include a 14-day free trial</p>
+
+          <div className="grid md:grid-cols-3 gap-6 items-start">
+            {/* Starter */}
+            <div className="bg-white rounded-2xl p-8 border-2 border-stone-200 hover:border-blue-200 transition-colors">
+              <h3 className="text-2xl font-bold text-stone-800 mb-2">Starter</h3>
+              <p className="text-stone-500 mb-4">Best for solo contractors</p>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-stone-800">$197</span>
+                <span className="text-stone-500">/month</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {[
+                  'Up to 50 leads/month',
+                  'Text & email response',
+                  'Basic qualification',
+                  'Calendar integration',
+                  'Setup included',
+                ].map((f, i) => (
+                  <li key={i} className="flex items-center gap-2 text-stone-600">
+                    <span className="text-emerald-500">✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/signup"
+                className="block w-full py-3 text-center bg-stone-100 text-stone-700 rounded-xl font-semibold hover:bg-stone-200 transition"
+              >
+                Start Free Trial
+              </Link>
+            </div>
+
+            {/* Professional */}
+            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 text-white shadow-2xl shadow-blue-500/30 scale-105 relative">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                <span className="bg-amber-400 text-amber-900 text-xs font-bold px-4 py-1.5 rounded-full">⭐ MOST POPULAR</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-2 mt-2">Professional</h3>
+              <p className="text-blue-100 mb-4">For contractors serious about growth</p>
+              <div className="mb-6">
+                <span className="text-5xl font-bold">$397</span>
+                <span className="text-blue-100">/month</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {[
+                  'Unlimited leads',
+                  'Advanced qualification',
+                  'Missed call text-back',
+                  'Custom AI training',
+                  'Priority support',
+                  'Setup included',
+                ].map((f, i) => (
+                  <li key={i} className="flex items-center gap-2 text-blue-50">
+                    <span className="text-blue-200">✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/signup"
+                className="block w-full py-3 text-center bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition"
+              >
+                Start Free Trial
+              </Link>
+            </div>
+
+            {/* Enterprise */}
+            <div className="bg-white rounded-2xl p-8 border-2 border-stone-200 hover:border-blue-200 transition-colors">
+              <h3 className="text-2xl font-bold text-stone-800 mb-2">Enterprise</h3>
+              <p className="text-stone-500 mb-4">For multi-location companies</p>
+              <div className="mb-6">
+                <span className="text-5xl font-bold text-stone-800">$697</span>
+                <span className="text-stone-500">/month</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {[
+                  'Everything in Professional',
+                  'Multi-location support',
+                  'Custom integrations',
+                  'Dedicated account manager',
+                  'Monthly strategy calls',
+                  'White-glove setup',
+                ].map((f, i) => (
+                  <li key={i} className="flex items-center gap-2 text-stone-600">
+                    <span className="text-emerald-500">✓</span> {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/signup"
+                className="block w-full py-3 text-center bg-stone-100 text-stone-700 rounded-xl font-semibold hover:bg-stone-200 transition"
+              >
+                Contact Sales
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ - FIX #7 */}
+      <section id="faq" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-stone-50">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-stone-800 text-center mb-12">
+            Common Questions
+          </h2>
+
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg">
+            <FAQItem
+              question="Will my customers know they're talking to AI?"
+              answer="Nope. BookFox sounds completely natural and conversational. 90%+ of customers have no idea. They just appreciate the instant response."
+            />
+            <FAQItem
+              question="What if BookFox says something wrong or makes a mistake?"
+              answer="You review and approve all responses before BookFox goes live. Plus, if it's ever unsure about something, it automatically escalates to you. You stay in full control."
+            />
+            <FAQItem
+              question="Is this hard to set up?"
+              answer="Not at all. We do a 15-minute setup call with you where we connect everything. You'll be live and responding to leads the same day."
+            />
+            <FAQItem
+              question="What happens to leads that come in right now?"
+              answer="BookFox responds to every lead — website forms, Facebook messages, Google leads, even missed phone calls (we can set it to auto-text people you miss)."
+            />
+            <FAQItem
+              question="Do I need to change my phone number or website?"
+              answer="No. BookFox works with whatever you're already using. No changes needed."
+            />
+            <FAQItem
+              question="What if I'm already responding to leads quickly?"
+              answer="Even if you respond in 30 minutes, you're still losing leads. Studies show the first company to respond gets the job 78% of the time. Unless you're responding in under 60 seconds (even at 2am), you're leaving money on the table."
+            />
+            <FAQItem
+              question="Can I customize what BookFox says?"
+              answer="Absolutely. We customize it to match your brand, services, and how you like to communicate. You approve everything before it goes live."
+            />
+            <FAQItem
+              question="What if I get a lead while BookFox is talking to another lead?"
+              answer="BookFox handles unlimited simultaneous conversations. It can talk to 50 people at once if needed. You'll never miss a lead because you're 'busy.'"
+            />
+            <FAQItem
+              question="How much does it cost after the trial?"
+              answer="Plans start at $197/month. If BookFox books you even one extra $3,000 job per month, it's paid for itself 15x over. Most contractors book 5-10 extra jobs per month."
+            />
+            <FAQItem
+              question="What if I want to cancel?"
+              answer="Cancel anytime with one click. No contracts, no cancellation fees, no questions asked."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* TRUST BADGES - FIX #11 */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white border-y border-stone-200">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-wrap items-center justify-center gap-8 text-stone-400 text-sm">
+            <span className="flex items-center gap-2">🏔️ Built in Utah, for Utah contractors</span>
+            <span className="flex items-center gap-2">🔒 Bank-level security & encryption</span>
+            <span className="flex items-center gap-2">✓ TCPA compliant</span>
+            <span className="flex items-center gap-2">⭐ Trusted by 50+ contractors</span>
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-stone-900 to-stone-800">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            Every Day You Wait Costs You $300-500 In Lost Leads
+          </h2>
+          <p className="text-xl text-stone-300 mb-8">
+            Your competitors are responding to leads in 60 seconds. How fast are you responding?
           </p>
           <Link 
             to="/signup" 
-            className="inline-block bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-blue-50 transition shadow-xl"
+            className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white px-10 py-5 rounded-xl font-bold text-xl hover:from-blue-600 hover:to-blue-700 transition-all shadow-xl shadow-blue-500/30"
           >
-            Start Your Free 14-Day Trial
+            Start Free 14-Day Trial — No Credit Card Required
           </Link>
-          <p className="text-blue-200 text-sm mt-4">No credit card required</p>
+          <p className="text-stone-400 text-sm mt-4">Setup in 15 minutes • Cancel anytime • 100% money-back guarantee</p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-stone-900 text-stone-400 py-12 px-4 sm:px-6 lg:px-8">
+      <footer className="bg-stone-900 text-stone-400 py-12 px-4 sm:px-6 lg:px-8 border-t border-stone-800">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
@@ -520,10 +734,9 @@ export default function Landing() {
             <div>
               <h4 className="font-semibold text-white mb-4">Product</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#features" className="hover:text-white transition">Features</a></li>
+                <li><a href="#how-it-works" className="hover:text-white transition">How It Works</a></li>
                 <li><a href="#pricing" className="hover:text-white transition">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition">Integrations</a></li>
-                <li><a href="#" className="hover:text-white transition">API</a></li>
+                <li><a href="#faq" className="hover:text-white transition">FAQ</a></li>
               </ul>
             </div>
             <div>
@@ -531,7 +744,6 @@ export default function Landing() {
               <ul className="space-y-2 text-sm">
                 <li><a href="#" className="hover:text-white transition">About</a></li>
                 <li><a href="#" className="hover:text-white transition">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition">Careers</a></li>
                 <li><a href="#" className="hover:text-white transition">Contact</a></li>
               </ul>
             </div>
@@ -540,23 +752,11 @@ export default function Landing() {
               <ul className="space-y-2 text-sm">
                 <li><a href="#" className="hover:text-white transition">Privacy Policy</a></li>
                 <li><a href="#" className="hover:text-white transition">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-white transition">Cookie Policy</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-stone-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm">© 2026 BookFox. All rights reserved.</p>
-            <div className="flex items-center gap-4">
-              <a href="#" className="hover:text-white transition">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
-              </a>
-              <a href="#" className="hover:text-white transition">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-              </a>
-              <a href="#" className="hover:text-white transition">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-              </a>
-            </div>
+          <div className="border-t border-stone-800 pt-8 text-center text-sm">
+            <p>© 2026 BookFox. All rights reserved. Built with ❤️ in Utah.</p>
           </div>
         </div>
       </footer>
