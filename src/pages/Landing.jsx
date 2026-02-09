@@ -71,12 +71,12 @@ function CTAButton({ children, className = '', full = true }) {
       to="/signup" 
       className={`
         relative block overflow-hidden
-        bg-gradient-to-r from-blue-600 to-blue-700 
-        hover:from-blue-500 hover:to-blue-600
+        bg-gradient-to-r from-orange-500 to-orange-600 
+        hover:from-orange-400 hover:to-orange-500
         text-white font-bold text-xl px-8 py-5 rounded-2xl text-center 
         transition-all duration-300 active:scale-[0.98]
-        shadow-[0_8px_32px_rgba(37,99,235,0.4)]
-        hover:shadow-[0_12px_48px_rgba(37,99,235,0.5)]
+        shadow-[0_8px_32px_rgba(249,115,22,0.4)]
+        hover:shadow-[0_12px_48px_rgba(249,115,22,0.5)]
         hover:-translate-y-0.5
         ${full ? 'w-full' : ''} 
         ${className}
@@ -454,7 +454,7 @@ export default function Landing() {
           </FadeIn>
           
           <FadeIn delay={200}>
-            <CTAButton className="shadow-[0_8px_48px_rgba(37,99,235,0.5)]">
+            <CTAButton className="shadow-[0_8px_48px_rgba(249,115,22,0.5)]">
               See It In Action
             </CTAButton>
           </FadeIn>
@@ -501,8 +501,8 @@ export default function Landing() {
           to="/signup" 
           className="
             block w-full py-4 rounded-2xl text-center font-bold text-xl text-white
-            bg-gradient-to-r from-blue-600 to-blue-700
-            shadow-[0_4px_24px_rgba(37,99,235,0.4)]
+            bg-gradient-to-r from-orange-500 to-orange-600
+            shadow-[0_4px_24px_rgba(249,115,22,0.4)]
             active:scale-[0.98] transition-transform
           "
         >
