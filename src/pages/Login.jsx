@@ -33,8 +33,8 @@ export default function Login() {
           <span className="text-xl font-bold text-stone-800">Book<span className="text-blue-600">Fox</span></span>
         </Link>
 
-        <h1 className="text-3xl font-bold text-stone-800 mb-2">Welcome back</h1>
-        <p className="text-stone-500 mb-8">Sign in to your account</p>
+        <h1 className="text-3xl font-bold text-stone-800 mb-2">Welcome <span className="text-blue-600">back</span></h1>
+        <p className="text-stone-500 mb-8">Sign in to your <span className="text-indigo-600 font-medium">account</span></p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (

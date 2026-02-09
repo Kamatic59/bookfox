@@ -39,8 +39,8 @@ export default function Signup() {
             <span className="text-xl font-bold text-stone-800">Book<span className="text-blue-600">Fox</span></span>
           </Link>
 
-          <h1 className="text-3xl font-bold text-stone-800 mb-2">Start Your Free Trial</h1>
-          <p className="text-stone-500 mb-8">No credit card required. Setup in 10 minutes.</p>
+          <h1 className="text-3xl font-bold text-stone-800 mb-2">Start Your <span className="text-blue-600">Free Trial</span></h1>
+          <p className="text-stone-500 mb-8">No credit card required. Setup in <span className="text-indigo-600 font-medium">10 minutes</span>.</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (

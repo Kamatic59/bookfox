@@ -116,9 +116,9 @@ export default function Onboarding() {
           <div className="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <img src="/logo.png" alt="BookFox" className="w-14 h-14" />
           </div>
-          <h1 className="text-3xl font-bold text-stone-800 mb-3">Welcome to BookFox, {firstName}!</h1>
+          <h1 className="text-3xl font-bold text-stone-800 mb-3">Welcome to <span className="text-blue-600">BookFox</span>, {firstName}!</h1>
           <p className="text-stone-600 mb-8">
-            We're going to get you set up in about 10 minutes. Here's what we'll do:
+            We're going to get you set up in about <span className="text-indigo-600 font-semibold">10 minutes</span>. Here's what we'll do:
           </p>
           <div className="space-y-3 text-left mb-8">
             {[
@@ -152,8 +152,8 @@ export default function Onboarding() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={1} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Tell Us About Your Business</h2>
-          <p className="text-stone-500 mb-8">Just the basics — takes 60 seconds.</p>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Tell Us About Your <span className="text-blue-600">Business</span></h2>
+          <p className="text-stone-500 mb-8">Just the basics — takes <span className="text-indigo-600 font-medium">60 seconds</span>.</p>
 
           <div className="space-y-5">
             <div>
@@ -218,7 +218,7 @@ export default function Onboarding() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={2} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Your Business Phone Number</h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Your Business <span className="text-blue-600">Phone Number</span></h2>
           <p className="text-stone-500 mb-8">BookFox will text leads from this number.</p>
 
           <div className="space-y-4 mb-6">
@@ -306,7 +306,7 @@ export default function Onboarding() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={3} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Where Do Your Leads Come From?</h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Where Do Your <span className="text-purple-600">Leads</span> Come From?</h2>
           <p className="text-stone-500 mb-6">Check all that apply. We'll help you connect them.</p>
 
           <div className="space-y-2">
@@ -350,7 +350,7 @@ export default function Onboarding() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={4} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">How Should BookFox Talk To Leads?</h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">How Should <span className="text-blue-600">BookFox</span> Talk To Leads?</h2>
           <p className="text-stone-500 mb-6">Quick questions so BookFox knows what to say.</p>
 
           <div className="space-y-6">
@@ -465,7 +465,7 @@ export default function Onboarding() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={5} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">When Can You Take Jobs?</h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">When Can You Take <span className="text-emerald-600">Jobs</span>?</h2>
           <p className="text-stone-500 mb-6">BookFox will only book during these times.</p>
 
           <div className="space-y-2 mb-6">
@@ -565,7 +565,7 @@ export default function Onboarding() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={6} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">You're All Set! Let's Test It.</h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">You're <span className="text-emerald-600">All Set</span>! Let's <span className="text-blue-600">Test It</span>.</h2>
           <p className="text-stone-500 mb-6">Here's how BookFox will respond to leads:</p>
 
           {/* Conversation Preview */}

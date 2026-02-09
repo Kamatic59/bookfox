@@ -225,7 +225,7 @@ export default function Dashboard() {
           </h1>
         </div>
         <p className="text-stone-500 text-lg">
-          Here's what's happening with <span className="font-medium text-stone-700">{business?.name || 'your business'}</span> today.
+          Here's what's happening with <span className="font-semibold text-blue-600">{business?.name || 'your business'}</span> today.
         </p>
       </div>
 
@@ -273,8 +273,8 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-stone-100 animate-fadeIn" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-bold text-stone-800">Weekly Performance</h2>
-              <p className="text-stone-500 text-sm">Lead capture trends</p>
+              <h2 className="text-lg font-bold text-stone-800">Weekly <span className="text-blue-600">Performance</span></h2>
+              <p className="text-stone-500 text-sm">Lead capture <span className="text-indigo-500">trends</span></p>
             </div>
             <select className="text-sm border-2 border-stone-200 rounded-xl px-3 py-2 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all cursor-pointer">
               <option>This Week</option>
@@ -297,7 +297,7 @@ export default function Dashboard() {
 
         {/* Quick Actions */}
         <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-stone-100 animate-fadeIn" style={{ animationDelay: '150ms' }}>
-          <h2 className="text-lg font-bold text-stone-800 mb-4">Quick Actions</h2>
+          <h2 className="text-lg font-bold text-stone-800 mb-4">Quick <span className="text-purple-600">Actions</span></h2>
           <div className="space-y-3">
             <QuickAction 
               icon="💬" 
@@ -337,7 +337,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden animate-fadeIn" style={{ animationDelay: '200ms' }}>
           <div className="p-5 sm:p-6 border-b border-stone-100">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-stone-800">Recent Activity</h2>
+              <h2 className="text-lg font-bold text-stone-800">Recent <span className="text-emerald-600">Activity</span></h2>
               <button className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center gap-1 transition-colors">
                 View All
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -357,7 +357,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden animate-fadeIn" style={{ animationDelay: '250ms' }}>
           <div className="p-5 sm:p-6 border-b border-stone-100">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-stone-800">Recent Leads</h2>
+              <h2 className="text-lg font-bold text-stone-800">Recent <span className="text-amber-600">Leads</span></h2>
               <Link to="/dashboard/leads" className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center gap-1 transition-colors">
                 View All
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
