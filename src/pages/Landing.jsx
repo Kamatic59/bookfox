@@ -93,9 +93,9 @@ export default function Landing() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-blue-50 to-indigo-100">
       {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-b border-stone-100">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-lg border-b border-white/50">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="BookFox" className="w-9 h-9" />
@@ -116,7 +116,7 @@ export default function Landing() {
           </button>
         </div>
         {menuOpen && (
-          <div className="md:hidden bg-white border-t border-stone-100 p-4 space-y-2">
+          <div className="md:hidden bg-white/90 backdrop-blur-lg border-t border-white/50 p-4 space-y-2">
             <a href="#how-it-works" onClick={() => setMenuOpen(false)} className="block py-2 text-stone-600">How It Works</a>
             <a href="#pricing" onClick={() => setMenuOpen(false)} className="block py-2 text-stone-600">Pricing</a>
             <Link to="/login" className="block py-2 text-stone-600">Sign In</Link>
@@ -126,8 +126,13 @@ export default function Landing() {
       </nav>
 
       {/* SECTION 1: HERO */}
-      <section className="pt-24 pb-16 sm:pt-32 sm:pb-24 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="pt-24 pb-16 sm:pt-32 sm:pb-24 px-4 relative overflow-hidden">
+        {/* Decorative gradient blobs */}
+        <div className="absolute top-20 left-1/4 w-72 h-72 bg-blue-300/30 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-40 right-1/4 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-64 bg-cyan-200/30 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-800 mb-4 leading-tight">
             Never Miss Another Lead
           </h1>
@@ -152,7 +157,7 @@ export default function Landing() {
       </section>
 
       {/* SECTION 2: SOCIAL PROOF */}
-      <section className="py-16 px-4 bg-stone-50">
+      <section className="py-16 px-4 bg-white/40 backdrop-blur-sm">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-stone-800 text-center mb-10">
             Contractors Are Booking More Jobs With BookFox
@@ -290,7 +295,7 @@ export default function Landing() {
       </section>
 
       {/* SECTION 6: FEATURES */}
-      <section className="py-16 px-4 bg-stone-50">
+      <section className="py-16 px-4 bg-white/30 backdrop-blur-sm">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-stone-800 text-center mb-10">
             Everything You Need To Capture Every Lead
@@ -329,7 +334,7 @@ export default function Landing() {
       </section>
 
       {/* SECTION 8: COMPARISON TABLE */}
-      <section className="py-16 px-4 bg-stone-50">
+      <section className="py-16 px-4 bg-white/30 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-stone-800 text-center mb-10">
             BookFox vs. Doing It Yourself vs. Hiring Someone
@@ -397,7 +402,7 @@ export default function Landing() {
       </section>
 
       {/* SECTION 10: FAQ */}
-      <section className="py-16 px-4 bg-stone-50">
+      <section className="py-16 px-4 bg-white/30 backdrop-blur-sm">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-stone-800 text-center mb-8">Common Questions</h2>
           <div className="bg-white rounded-xl p-6 shadow-sm">
