@@ -93,7 +93,8 @@ export default function Onboarding() {
 
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.error || 'Failed to save');
+        console.error('Edge Function error:', response.status, result);
+        throw new Error(result.details || result.error || `Failed to save (${response.status})`);
       }
 
       await refreshBusiness();

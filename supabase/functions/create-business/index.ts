@@ -65,9 +65,17 @@ Deno.serve(async (req) => {
       .single();
 
     if (existingMember) {
+      // User already has a business - fetch it and return success
+      const { data: existingBusiness } = await adminClient
+        .from('businesses')
+        .select('*')
+        .eq('id', existingMember.business_id)
+        .single();
+      
+      console.log(`User ${user.id} already has business ${existingMember.business_id}`);
       return new Response(
-        JSON.stringify({ error: 'User already has a business' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ business: existingBusiness, existing: true }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
