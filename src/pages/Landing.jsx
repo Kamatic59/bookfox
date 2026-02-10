@@ -153,7 +153,7 @@ export default function Landing() {
       {/* SECTION 1: HERO */}
       {/* ==================== */}
       <section className="relative min-h-[100svh] flex flex-col justify-center px-6 py-12">
-        <div className="max-w-2xl mx-auto w-full relative z-10">
+        <div className="max-w-4xl mx-auto w-full relative z-10">
           
           {/* Logo */}
           <FadeIn delay={0}>
@@ -168,7 +168,7 @@ export default function Landing() {
           
           {/* Headline */}
           <FadeIn delay={100}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 leading-tight mb-6">
               Never Miss Another{' '}
               <span className="relative">
                 <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-700">Job Call</span>
@@ -180,7 +180,7 @@ export default function Landing() {
           
           {/* Subheadline */}
           <FadeIn delay={200}>
-            <p className="text-xl text-slate-600 mb-10 leading-relaxed">
+            <p className="text-lg sm:text-xl lg:text-2xl text-slate-600 mb-10 leading-relaxed">
               BookFox answers calls and books jobs for trade businesses — <span className="font-semibold text-slate-800">24/7</span>.
             </p>
           </FadeIn>
@@ -215,7 +215,7 @@ export default function Landing() {
       {/* SECTION 2: PAIN */}
       {/* ==================== */}
       <section className="relative py-20 px-6">
-        <div className="max-w-2xl mx-auto relative z-10">
+        <div className="max-w-4xl mx-auto relative z-10">
           <FadeIn>
             <GlassCard className="p-8 sm:p-10">
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8">
@@ -256,14 +256,14 @@ export default function Landing() {
       {/* SECTION 3: WHAT BOOKFOX DOES */}
       {/* ==================== */}
       <section className="relative py-20 px-6">
-        <div className="max-w-2xl mx-auto relative z-10">
+        <div className="max-w-6xl mx-auto relative z-10">
           <FadeIn>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-10 text-center">
               What <span className="text-primary-700">BookFox</span> Does
             </h2>
           </FadeIn>
           
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
             <FeatureCard icon="📞" title="Answers Every Call" desc="Even nights and weekends." delay={100} />
             <FeatureCard icon="📅" title="Books Jobs Automatically" desc="Sends you confirmed, qualified leads." delay={200} />
             <FeatureCard icon="🚫" title="Filters Bad Calls" desc="No tire-kickers or spam." delay={300} />
@@ -286,9 +286,9 @@ export default function Landing() {
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-primary-400/20 rounded-full blur-3xl" />
         
-        <div className="max-w-2xl mx-auto relative z-10">
+        <div className="max-w-4xl mx-auto relative z-10">
           <FadeIn>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-10 text-center">
               How It <span className="text-primary-500">Works</span>
             </h2>
           </FadeIn>
@@ -306,9 +306,9 @@ export default function Landing() {
       {/* SECTION 5: PROOF / ROI */}
       {/* ==================== */}
       <section className="relative py-20 px-6">
-        <div className="max-w-2xl mx-auto relative z-10">
+        <div className="max-w-4xl mx-auto relative z-10">
           <FadeIn>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-8 text-center">
               Just <span className="text-primary-700">1 Extra Job</span> Per Week Pays for BookFox
             </h2>
           </FadeIn>
@@ -348,14 +348,14 @@ export default function Landing() {
       {/* SECTION 6: WHO IT'S FOR */}
       {/* ==================== */}
       <section className="relative py-20 px-6">
-        <div className="max-w-2xl mx-auto relative z-10">
+        <div className="max-w-4xl mx-auto relative z-10">
           <FadeIn>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-10 text-center">
               Is BookFox <span className="text-primary-600">Right For You?</span>
             </h2>
           </FadeIn>
           
-          <div className="grid sm:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
             {/* Great for */}
             <FadeIn delay={100}>
               <GlassCard className="p-6 border-primary-200/50 hover:shadow-[0_8px_40px_rgba(37,99,235,0.1)] transition-shadow">
@@ -399,9 +399,9 @@ export default function Landing() {
       {/* SECTION 7: FAQ */}
       {/* ==================== */}
       <section className="relative py-20 px-6">
-        <div className="max-w-2xl mx-auto relative z-10">
+        <div className="max-w-3xl mx-auto relative z-10">
           <FadeIn>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-10 text-center">
               Questions
             </h2>
           </FadeIn>
@@ -440,15 +440,15 @@ export default function Landing() {
         {/* Glow effects */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary-600/10 rounded-full blur-3xl" />
         
-        <div className="max-w-2xl mx-auto text-center relative z-10">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <FadeIn>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
               Every Missed Call Is a <span className="text-orange-400">Lost Job</span>
             </h2>
           </FadeIn>
           
           <FadeIn delay={100}>
-            <p className="text-xl text-slate-400 mb-10">
+            <p className="text-lg sm:text-xl text-slate-400 mb-10">
               Your competitors answer their phones. Do you?
             </p>
           </FadeIn>
