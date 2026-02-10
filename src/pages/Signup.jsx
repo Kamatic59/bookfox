@@ -30,16 +30,16 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 flex">
       {/* Left - Form */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
           <Link to="/" className="inline-flex items-center gap-2 mb-8">
             <img src="/logo.png" alt="BookFox" className="w-10 h-10" />
-            <span className="text-xl font-bold text-stone-800">Book<span className="text-blue-600">Fox</span></span>
+            <span className="text-xl font-bold text-stone-800">Book<span className="text-primary-600">Fox</span></span>
           </Link>
 
-          <h1 className="text-3xl font-bold text-stone-800 mb-2">Start Your <span className="text-blue-600">Free Trial</span></h1>
+          <h1 className="text-3xl font-bold text-stone-800 mb-2">Start Your <span className="text-primary-600">Free Trial</span></h1>
           <p className="text-stone-500 mb-8">No credit card required. Setup in <span className="text-indigo-600 font-medium">10 minutes</span>.</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -55,7 +55,7 @@ export default function Signup() {
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
                 placeholder="John"
                 required
               />
@@ -67,7 +67,7 @@ export default function Signup() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
                 placeholder="you@company.com"
                 required
               />
@@ -79,7 +79,7 @@ export default function Signup() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
                 placeholder="••••••••"
                 minLength={6}
                 required
@@ -90,23 +90,23 @@ export default function Signup() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
+              className="w-full py-3.5 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition disabled:opacity-50"
             >
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
 
             <p className="text-center text-sm text-stone-500">
-              Already have an account? <Link to="/login" className="text-blue-600 font-medium hover:underline">Log in</Link>
+              Already have an account? <Link to="/login" className="text-primary-600 font-medium hover:underline">Log in</Link>
             </p>
           </form>
         </div>
       </div>
 
       {/* Right - Benefits (hidden on mobile) */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-blue-600 to-blue-700 items-center justify-center p-12">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary-600 to-primary-700 items-center justify-center p-12">
         <div className="max-w-md text-white">
           <h2 className="text-3xl font-bold mb-6">Get started in 10 minutes</h2>
-          <p className="text-blue-100 text-lg mb-8">We'll walk you through everything. Here's what we'll do:</p>
+          <p className="text-primary-100 text-lg mb-8">We'll walk you through everything. Here's what we'll do:</p>
           
           <div className="space-y-4">
             {[
@@ -116,12 +116,12 @@ export default function Signup() {
             ].map((item, i) => (
               <div key={i} className="flex items-center justify-between bg-white/10 rounded-xl p-4">
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  <span className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                     {item.check}
                   </span>
                   <span>{item.text}</span>
                 </div>
-                <span className="text-blue-200 text-sm">{item.time}</span>
+                <span className="text-primary-200 text-sm">{item.time}</span>
               </div>
             ))}
           </div>
@@ -129,7 +129,7 @@ export default function Signup() {
           <div className="mt-10 pt-8 border-t border-white/20">
             <div className="flex gap-1 mb-3">{'★★★★★'.split('').map((s, i) => <span key={i} className="text-amber-400">{s}</span>)}</div>
             <p className="text-white/90 italic mb-3">"Setup took 12 minutes. Now I never miss a lead."</p>
-            <p className="text-blue-200 text-sm">— Carlos Martinez, Wasatch Plumbing</p>
+            <p className="text-primary-200 text-sm">— Carlos Martinez, Wasatch Plumbing</p>
           </div>
         </div>
       </div>

@@ -46,11 +46,11 @@ function FAQ({ q, a }) {
         onClick={() => setOpen(!open)} 
         className="w-full py-5 flex justify-between items-center text-left gap-4 group"
       >
-        <span className="font-semibold text-slate-800 text-lg group-hover:text-blue-700 transition-colors">{q}</span>
+        <span className="font-semibold text-slate-800 text-lg group-hover:text-primary-700 transition-colors">{q}</span>
         <span className={`
-          w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 
+          w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 
           text-white flex items-center justify-center text-xl font-bold
-          transition-all duration-300 shadow-lg shadow-blue-600/25
+          transition-all duration-300 shadow-lg shadow-primary-600/25
           ${open ? 'rotate-45 scale-110' : 'group-hover:scale-110'}
         `}>+</span>
       </button>
@@ -98,7 +98,7 @@ function FeatureCard({ icon, title, desc, delay = 0 }) {
         border border-white/50 
         shadow-[0_4px_24px_rgba(0,0,0,0.06)]
         hover:shadow-[0_8px_40px_rgba(37,99,235,0.15)]
-        hover:border-blue-200/50
+        hover:border-primary-200/50
         hover:-translate-y-1
         transition-all duration-300
       ">
@@ -106,11 +106,11 @@ function FeatureCard({ icon, title, desc, delay = 0 }) {
           <span className="
             text-3xl p-3 rounded-xl 
             bg-gradient-to-br from-slate-100 to-slate-50
-            group-hover:from-blue-100 group-hover:to-blue-50
+            group-hover:from-primary-100 group-hover:to-primary-50
             transition-colors duration-300
           ">{icon}</span>
           <div>
-            <h3 className="font-bold text-slate-900 text-lg group-hover:text-blue-800 transition-colors">{title}</h3>
+            <h3 className="font-bold text-slate-900 text-lg group-hover:text-primary-800 transition-colors">{title}</h3>
             <p className="text-slate-600 mt-1">{desc}</p>
           </div>
         </div>
@@ -126,13 +126,13 @@ function StepItem({ num, text, delay = 0 }) {
       <li className="flex items-start gap-4 group">
         <span className="
           flex-shrink-0 w-12 h-12 
-          bg-gradient-to-br from-blue-500 to-blue-700 
+          bg-gradient-to-br from-primary-500 to-primary-700 
           rounded-full flex items-center justify-center font-bold text-lg text-white
-          shadow-lg shadow-blue-600/30
-          group-hover:scale-110 group-hover:shadow-blue-600/50
+          shadow-lg shadow-primary-600/30
+          group-hover:scale-110 group-hover:shadow-primary-600/50
           transition-all duration-300
         ">{num}</span>
-        <span className="pt-3 text-lg text-blue-100 group-hover:text-white transition-colors">{text}</span>
+        <span className="pt-3 text-lg text-primary-100 group-hover:text-white transition-colors">{text}</span>
       </li>
     </FadeIn>
   );
@@ -144,9 +144,9 @@ export default function Landing() {
       
       {/* Background decorative elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-blue-200/30 to-blue-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-blue-200/30 to-purple-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
-        <div className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-gradient-to-br from-blue-100/20 to-cyan-100/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-primary-200/30 to-primary-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-primary-200/30 to-purple-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
+        <div className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-gradient-to-br from-primary-100/20 to-cyan-100/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
       </div>
 
       {/* ==================== */}
@@ -160,9 +160,9 @@ export default function Landing() {
             <div className="flex items-center gap-3 mb-8">
               <div className="relative">
                 <img src="/logo.png" alt="BookFox" className="w-12 h-12 relative z-10" />
-                <div className="absolute inset-0 bg-blue-400/30 rounded-full blur-xl scale-150" />
+                <div className="absolute inset-0 bg-primary-400/30 rounded-full blur-xl scale-150" />
               </div>
-              <span className="text-2xl font-bold">Book<span className="text-blue-600">Fox</span></span>
+              <span className="text-2xl font-bold">Book<span className="text-primary-600">Fox</span></span>
             </div>
           </FadeIn>
           
@@ -171,7 +171,7 @@ export default function Landing() {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
               Never Miss Another{' '}
               <span className="relative">
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-700">Job Call</span>
+                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-700">Job Call</span>
                 <span className="absolute bottom-2 left-0 right-0 h-3 bg-orange-200/60 -z-10 rounded" />
               </span>
               {' '}Again
@@ -259,7 +259,7 @@ export default function Landing() {
         <div className="max-w-2xl mx-auto relative z-10">
           <FadeIn>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 text-center">
-              What <span className="text-blue-700">BookFox</span> Does
+              What <span className="text-primary-700">BookFox</span> Does
             </h2>
           </FadeIn>
           
@@ -281,15 +281,15 @@ export default function Landing() {
       {/* ==================== */}
       {/* SECTION 4: HOW IT WORKS */}
       {/* ==================== */}
-      <section className="relative py-20 px-6 bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 text-white overflow-hidden">
+      <section className="relative py-20 px-6 bg-gradient-to-br from-primary-900 via-blue-800 to-slate-900 text-white overflow-hidden">
         {/* Glow effects */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-primary-400/20 rounded-full blur-3xl" />
         
         <div className="max-w-2xl mx-auto relative z-10">
           <FadeIn>
             <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center">
-              How It <span className="text-blue-500">Works</span>
+              How It <span className="text-primary-500">Works</span>
             </h2>
           </FadeIn>
           
@@ -309,7 +309,7 @@ export default function Landing() {
         <div className="max-w-2xl mx-auto relative z-10">
           <FadeIn>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 text-center">
-              Just <span className="text-blue-700">1 Extra Job</span> Per Week Pays for BookFox
+              Just <span className="text-primary-700">1 Extra Job</span> Per Week Pays for BookFox
             </h2>
           </FadeIn>
           
@@ -351,22 +351,22 @@ export default function Landing() {
         <div className="max-w-2xl mx-auto relative z-10">
           <FadeIn>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-10 text-center">
-              Is BookFox <span className="text-blue-600">Right For You?</span>
+              Is BookFox <span className="text-primary-600">Right For You?</span>
             </h2>
           </FadeIn>
           
           <div className="grid sm:grid-cols-2 gap-6">
             {/* Great for */}
             <FadeIn delay={100}>
-              <GlassCard className="p-6 border-blue-200/50 hover:shadow-[0_8px_40px_rgba(37,99,235,0.1)] transition-shadow">
-                <h3 className="font-bold text-blue-700 text-lg mb-5 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">✓</span>
+              <GlassCard className="p-6 border-primary-200/50 hover:shadow-[0_8px_40px_rgba(37,99,235,0.1)] transition-shadow">
+                <h3 className="font-bold text-primary-700 text-lg mb-5 flex items-center gap-2">
+                  <span className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-primary-600">✓</span>
                   Great for:
                 </h3>
                 <ul className="space-y-3 text-lg text-slate-700">
                   {["Plumbers", "HVAC", "Electricians", "Contractors"].map((item, i) => (
                     <li key={i} className="flex items-center gap-3">
-                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+                      <span className="w-1.5 h-1.5 bg-primary-600 rounded-full" />
                       {item}
                     </li>
                   ))}
@@ -436,9 +436,9 @@ export default function Landing() {
       {/* ==================== */}
       {/* SECTION 8: FINAL CTA */}
       {/* ==================== */}
-      <section className="relative py-20 px-6 bg-gradient-to-br from-blue-900 via-slate-900 to-slate-900 text-white overflow-hidden">
+      <section className="relative py-20 px-6 bg-gradient-to-br from-primary-900 via-slate-900 to-slate-900 text-white overflow-hidden">
         {/* Glow effects */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary-600/10 rounded-full blur-3xl" />
         
         <div className="max-w-2xl mx-auto text-center relative z-10">
           <FadeIn>
@@ -483,7 +483,7 @@ export default function Landing() {
             <div className="relative">
               <img src="/logo.png" alt="BookFox" className="w-8 h-8" />
             </div>
-            <span className="font-bold text-lg">Book<span className="text-blue-600">Fox</span></span>
+            <span className="font-bold text-lg">Book<span className="text-primary-600">Fox</span></span>
           </div>
           <p className="text-slate-400 text-sm mb-3">© 2026 BookFox</p>
           <div className="flex justify-center gap-6 text-slate-400 text-sm">

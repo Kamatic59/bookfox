@@ -66,8 +66,8 @@ export function StatCard({
   className = '',
 }) {
   const colorClasses = {
-    blue: 'from-blue-500 to-blue-600 shadow-blue-500/20',
-    green: 'from-emerald-500 to-emerald-600 shadow-emerald-500/20',
+    blue: 'from-primary-500 to-primary-600 shadow-primary-500/20',
+    green: 'from-green-500 to-green-600 shadow-green-500/20',
     amber: 'from-amber-500 to-amber-600 shadow-amber-500/20',
     purple: 'from-purple-500 to-purple-600 shadow-purple-500/20',
     red: 'from-red-500 to-red-600 shadow-red-500/20',
@@ -81,7 +81,7 @@ export function StatCard({
         </div>
         {trend && (
           <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-            trendUp ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'
+            trendUp ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'
           }`}>
             {trendUp ? '↑' : '↓'} {trend}
           </span>
@@ -104,7 +104,7 @@ export function FeatureCard({
 }) {
   return (
     <Card hover className={`group ${className}`}>
-      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform">
+      <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center text-2xl mb-5 shadow-lg shadow-primary-500/20 group-hover:scale-110 transition-transform">
         {icon}
       </div>
       <h3 className="text-xl font-bold text-stone-800 mb-3">{title}</h3>

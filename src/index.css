@@ -316,15 +316,15 @@ body.no-bounce {
    ======================================== */
 
 .gradient-text {
-  @apply bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent;
 }
 
 .gradient-primary {
-  @apply bg-gradient-to-r from-blue-600 to-blue-500;
+  @apply bg-gradient-to-r from-primary-600 to-primary-500;
 }
 
 .gradient-hero {
-  @apply bg-gradient-to-br from-stone-50 via-blue-50/50 to-stone-50;
+  @apply bg-gradient-to-br from-stone-50 via-orange-50/50 to-stone-50;
 }
 
 /* ========================================
@@ -348,7 +348,7 @@ body.no-bounce {
 .input-focus {
   @apply transition-all duration-200 
          border-stone-300 
-         focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none;
+         focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none;
 }
 
 /* ========================================
@@ -360,12 +360,12 @@ body.no-bounce {
               0 4px 16px -4px rgba(0, 0, 0, 0.1);
 }
 
-.shadow-glow-blue {
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+.shadow-glow-orange {
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
 }
 
-.shadow-glow-green {
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+.shadow-glow-primary {
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
 }
 
 /* ========================================

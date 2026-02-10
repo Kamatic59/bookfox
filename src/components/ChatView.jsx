@@ -15,7 +15,7 @@ function MessageBubble({ message }) {
           className={`px-4 py-2.5 rounded-2xl ${
             isOutbound
               ? isAI
-                ? 'bg-blue-500 text-white rounded-br-md'
+                ? 'bg-primary-500 text-white rounded-br-md'
                 : 'bg-stone-700 text-white rounded-br-md'
               : 'bg-stone-100 text-stone-800 rounded-bl-md'
           }`}
@@ -108,7 +108,7 @@ export default function ChatView({
             onClick={() => onSetMode(isAIMode ? 'human' : 'ai')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
               isAIMode
-                ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                ? 'bg-primary-50 text-primary-700 hover:bg-primary-100'
                 : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
             }`}
           >
@@ -150,7 +150,7 @@ export default function ChatView({
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-stone-50">
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+            <Loader2 className="w-6 h-6 text-primary-500 animate-spin" />
           </div>
         ) : messages.length === 0 ? (
           <div className="text-center py-8 text-stone-400">
@@ -172,13 +172,13 @@ export default function ChatView({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={isAIMode ? "Type to take over (switches to human mode)" : "Type a message..."}
-            className="flex-1 px-4 py-2.5 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            className="flex-1 px-4 py-2.5 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
             disabled={sending}
           />
           <button
             type="submit"
             disabled={!input.trim() || sending}
-            className="p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="p-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             {sending ? (
               <Loader2 className="w-5 h-5 animate-spin" />

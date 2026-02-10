@@ -49,7 +49,7 @@ export function Logo({ size = 'md', showText = true, className = '' }) {
       />
       {showText && (
         <span className={`font-bold text-stone-800 ${text}`}>
-          Book<span className="text-blue-600">Fox</span>
+          Book<span className="text-primary-600">Fox</span>
         </span>
       )}
     </div>
@@ -93,7 +93,7 @@ export function LogoLight({ size = 'md', showText = true, className = '' }) {
       />
       {showText && (
         <span className={`font-bold text-white ${text}`}>
-          Book<span className="text-blue-300">Fox</span>
+          Book<span className="text-primary-300">Fox</span>
         </span>
       )}
     </div>

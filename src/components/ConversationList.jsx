@@ -25,18 +25,18 @@ export default function ConversationList({ conversations, selectedId, onSelect }
             key={convo.id}
             onClick={() => onSelect(convo)}
             className={`w-full p-4 text-left hover:bg-stone-50 transition ${
-              isSelected ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+              isSelected ? 'bg-primary-50 border-l-4 border-primary-500' : ''
             }`}
           >
             <div className="flex items-start gap-3">
               {/* Avatar */}
               <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                isHumanMode ? 'bg-amber-100' : 'bg-blue-100'
+                isHumanMode ? 'bg-amber-100' : 'bg-primary-100'
               }`}>
                 {isHumanMode ? (
                   <User className="w-5 h-5 text-amber-600" />
                 ) : (
-                  <Bot className="w-5 h-5 text-blue-600" />
+                  <Bot className="w-5 h-5 text-primary-600" />
                 )}
               </div>
 
@@ -53,7 +53,7 @@ export default function ConversationList({ conversations, selectedId, onSelect }
 
                 {/* Service needed */}
                 {lead?.service_needed && (
-                  <p className="text-xs text-blue-600 truncate mt-0.5">
+                  <p className="text-xs text-primary-600 truncate mt-0.5">
                     {lead.service_needed}
                   </p>
                 )}

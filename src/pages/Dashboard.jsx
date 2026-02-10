@@ -7,15 +7,15 @@ import { useConversations } from '../hooks/useConversations';
 // Premium stat card with gradient background
 function StatCard({ icon, label, value, trend, trendUp, color = 'blue', delay = 0 }) {
   const colorClasses = {
-    blue: 'from-blue-500 to-blue-600',
-    green: 'from-emerald-500 to-emerald-600',
+    blue: 'from-primary-500 to-primary-600',
+    green: 'from-green-500 to-green-600',
     amber: 'from-amber-500 to-amber-600',
     purple: 'from-violet-500 to-violet-600',
   };
 
   const bgClasses = {
-    blue: 'bg-blue-50 border-blue-100/50',
-    green: 'bg-emerald-50 border-emerald-100/50',
+    blue: 'bg-primary-50 border-primary-100/50',
+    green: 'bg-green-50 border-green-100/50',
     amber: 'bg-amber-50 border-amber-100/50',
     purple: 'bg-violet-50 border-violet-100/50',
   };
@@ -32,7 +32,7 @@ function StatCard({ icon, label, value, trend, trendUp, color = 'blue', delay = 
         {trend && (
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
             trendUp 
-              ? 'text-emerald-700 bg-emerald-100' 
+              ? 'text-green-700 bg-green-100' 
               : 'text-red-700 bg-red-100'
           }`}>
             {trendUp ? '↑' : '↓'} {trend}
@@ -51,8 +51,8 @@ function StatCard({ icon, label, value, trend, trendUp, color = 'blue', delay = 
 // Activity timeline item
 function ActivityItem({ icon, title, description, time, type }) {
   const typeColors = {
-    call: 'bg-blue-100 text-blue-600 ring-blue-500/20',
-    message: 'bg-emerald-100 text-emerald-600 ring-emerald-500/20',
+    call: 'bg-primary-100 text-primary-600 ring-primary-500/20',
+    message: 'bg-green-100 text-green-600 ring-green-500/20',
     booking: 'bg-amber-100 text-amber-600 ring-amber-500/20',
     lead: 'bg-violet-100 text-violet-600 ring-violet-500/20',
   };
@@ -63,7 +63,7 @@ function ActivityItem({ icon, title, description, time, type }) {
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-stone-800 group-hover:text-blue-600 transition-colors">{title}</p>
+        <p className="font-medium text-stone-800 group-hover:text-primary-600 transition-colors">{title}</p>
         <p className="text-stone-500 text-sm truncate">{description}</p>
       </div>
       <span className="text-stone-400 text-sm whitespace-nowrap">{time}</span>
@@ -74,8 +74,8 @@ function ActivityItem({ icon, title, description, time, type }) {
 // Quick action button
 function QuickAction({ icon, title, description, to, color = 'blue' }) {
   const hoverColors = {
-    blue: 'hover:border-blue-300 hover:shadow-blue-100',
-    green: 'hover:border-emerald-300 hover:shadow-emerald-100',
+    blue: 'hover:border-primary-300 hover:shadow-primary-100',
+    green: 'hover:border-green-300 hover:shadow-green-100',
     amber: 'hover:border-amber-300 hover:shadow-amber-100',
     purple: 'hover:border-violet-300 hover:shadow-violet-100',
   };
@@ -88,10 +88,10 @@ function QuickAction({ icon, title, description, to, color = 'blue' }) {
       <div className="flex items-center gap-4">
         <span className="text-2xl group-hover:scale-110 transition-transform duration-200">{icon}</span>
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-stone-800 group-hover:text-blue-600 transition-colors">{title}</p>
+          <p className="font-semibold text-stone-800 group-hover:text-primary-600 transition-colors">{title}</p>
           <p className="text-stone-500 text-sm truncate">{description}</p>
         </div>
-        <svg className="w-5 h-5 text-stone-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-stone-300 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
       </div>
@@ -102,14 +102,14 @@ function QuickAction({ icon, title, description, to, color = 'blue' }) {
 // Lead card with avatar
 function LeadCard({ lead }) {
   const statusColors = {
-    new: 'bg-blue-100 text-blue-700 ring-blue-500/20',
+    new: 'bg-primary-100 text-primary-700 ring-primary-500/20',
     contacted: 'bg-amber-100 text-amber-700 ring-amber-500/20',
-    qualified: 'bg-emerald-100 text-emerald-700 ring-emerald-500/20',
+    qualified: 'bg-green-100 text-green-700 ring-green-500/20',
     converted: 'bg-violet-100 text-violet-700 ring-violet-500/20',
     lost: 'bg-stone-100 text-stone-700 ring-stone-500/20',
   };
 
-  const bgColors = ['from-blue-400 to-blue-600', 'from-emerald-400 to-emerald-600', 'from-amber-400 to-amber-600', 'from-violet-400 to-violet-600', 'from-rose-400 to-rose-600'];
+  const bgColors = ['from-primary-400 to-primary-600', 'from-green-400 to-green-600', 'from-amber-400 to-amber-600', 'from-violet-400 to-violet-600', 'from-rose-400 to-rose-600'];
   const bgColor = bgColors[lead.name?.charCodeAt(0) % bgColors.length || 0];
 
   return (
@@ -119,7 +119,7 @@ function LeadCard({ lead }) {
           {(lead.name || lead.phone || '?').charAt(0).toUpperCase()}
         </div>
         <div>
-          <p className="font-semibold text-stone-800 group-hover:text-blue-600 transition-colors">{lead.name || 'Unknown'}</p>
+          <p className="font-semibold text-stone-800 group-hover:text-primary-600 transition-colors">{lead.name || 'Unknown'}</p>
           <p className="text-stone-500 text-sm">{lead.phone}</p>
         </div>
       </div>
@@ -142,7 +142,7 @@ function MiniBarChart({ data }) {
         <div key={i} className="flex-1 flex flex-col items-center gap-2">
           <div className="w-full relative h-full flex items-end">
             <div 
-              className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-lg transition-all duration-500 hover:from-blue-700 hover:to-blue-500 cursor-pointer"
+              className="w-full bg-gradient-to-t from-primary-600 to-primary-400 rounded-t-lg transition-all duration-500 hover:from-primary-700 hover:to-primary-500 cursor-pointer"
               style={{ 
                 height: `${(item.value / max) * 100}%`, 
                 minHeight: item.value > 0 ? '12px' : '0',
@@ -225,7 +225,7 @@ export default function Dashboard() {
           </h1>
         </div>
         <p className="text-stone-500 text-lg">
-          Here's what's happening with <span className="font-semibold text-blue-600">{business?.name || 'your business'}</span> today.
+          Here's what's happening with <span className="font-semibold text-primary-600">{business?.name || 'your business'}</span> today.
         </p>
       </div>
 
@@ -273,10 +273,10 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-stone-100 animate-fadeIn" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-bold text-stone-800">Weekly <span className="text-blue-600">Performance</span></h2>
+              <h2 className="text-lg font-bold text-stone-800">Weekly <span className="text-primary-600">Performance</span></h2>
               <p className="text-stone-500 text-sm">Lead capture <span className="text-indigo-500">trends</span></p>
             </div>
-            <select className="text-sm border-2 border-stone-200 rounded-xl px-3 py-2 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all cursor-pointer">
+            <select className="text-sm border-2 border-stone-200 rounded-xl px-3 py-2 bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all cursor-pointer">
               <option>This Week</option>
               <option>This Month</option>
               <option>This Year</option>
@@ -288,9 +288,9 @@ export default function Dashboard() {
               <p className="text-2xl font-bold text-stone-800">38</p>
               <p className="text-stone-500 text-sm">Total leads this week</p>
             </div>
-            <div className="text-right bg-emerald-50 rounded-xl px-4 py-2">
-              <p className="text-emerald-700 font-semibold">+15%</p>
-              <p className="text-emerald-600 text-sm">vs last week</p>
+            <div className="text-right bg-green-50 rounded-xl px-4 py-2">
+              <p className="text-green-700 font-semibold">+15%</p>
+              <p className="text-green-600 text-sm">vs last week</p>
             </div>
           </div>
         </div>
@@ -337,8 +337,8 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden animate-fadeIn" style={{ animationDelay: '200ms' }}>
           <div className="p-5 sm:p-6 border-b border-stone-100">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-stone-800">Recent <span className="text-emerald-600">Activity</span></h2>
-              <button className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center gap-1 transition-colors">
+              <h2 className="text-lg font-bold text-stone-800">Recent <span className="text-green-600">Activity</span></h2>
+              <button className="text-primary-600 text-sm font-medium hover:text-primary-700 flex items-center gap-1 transition-colors">
                 View All
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -358,7 +358,7 @@ export default function Dashboard() {
           <div className="p-5 sm:p-6 border-b border-stone-100">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-stone-800">Recent <span className="text-amber-600">Leads</span></h2>
-              <Link to="/dashboard/leads" className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center gap-1 transition-colors">
+              <Link to="/dashboard/leads" className="text-primary-600 text-sm font-medium hover:text-primary-700 flex items-center gap-1 transition-colors">
                 View All
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

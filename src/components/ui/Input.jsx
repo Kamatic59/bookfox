@@ -32,7 +32,7 @@ const Input = forwardRef(({
             bg-white border rounded-xl
             transition-all duration-200
             placeholder:text-stone-400
-            focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+            focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500
             disabled:bg-stone-100 disabled:text-stone-500 disabled:cursor-not-allowed
             ${error ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-stone-300'}
             ${hasIcon && iconPosition === 'left' ? 'pl-10' : ''}
@@ -87,7 +87,7 @@ export const Textarea = forwardRef(({
           transition-all duration-200
           placeholder:text-stone-400
           resize-none
-          focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+          focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500
           disabled:bg-stone-100 disabled:text-stone-500 disabled:cursor-not-allowed
           ${error ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-stone-300'}
           ${className}
@@ -132,7 +132,7 @@ export const Select = forwardRef(({
           w-full px-4 py-3 
           bg-white border rounded-xl
           transition-all duration-200
-          focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+          focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500
           disabled:bg-stone-100 disabled:text-stone-500 disabled:cursor-not-allowed
           ${error ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-stone-300'}
           ${className}
@@ -174,7 +174,7 @@ export function SearchInput({ className = '', ...props }) {
         </svg>
       }
       placeholder="Search..."
-      className={`bg-stone-100 border-transparent focus:bg-white focus:border-blue-300 ${className}`}
+      className={`bg-stone-100 border-transparent focus:bg-white focus:border-primary-300 ${className}`}
       {...props}
     />
   );

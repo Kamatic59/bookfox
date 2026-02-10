@@ -9,7 +9,7 @@ function Progress({ step, total }) {
     <div className="flex items-center gap-2 mb-8">
       <div className="flex-1 h-2 bg-stone-200 rounded-full overflow-hidden">
         <div 
-          className="h-full bg-blue-600 transition-all duration-500" 
+          className="h-full bg-primary-600 transition-all duration-500" 
           style={{ width: `${(step / total) * 100}%` }}
         />
       </div>
@@ -111,12 +111,12 @@ export default function Onboarding() {
   // STEP 0: Welcome
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 flex items-center justify-center p-6">
         <div className="max-w-md text-center">
-          <div className="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <img src="/logo.png" alt="BookFox" className="w-14 h-14" />
           </div>
-          <h1 className="text-3xl font-bold text-stone-800 mb-3">Welcome to <span className="text-blue-600">BookFox</span>, {firstName}!</h1>
+          <h1 className="text-3xl font-bold text-stone-800 mb-3">Welcome to <span className="text-primary-600">BookFox</span>, {firstName}!</h1>
           <p className="text-stone-600 mb-8">
             We're going to get you set up in about <span className="text-indigo-600 font-semibold">10 minutes</span>. Here's what we'll do:
           </p>
@@ -137,7 +137,7 @@ export default function Onboarding() {
           </div>
           <button
             onClick={next}
-            className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition"
+            className="w-full bg-primary-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-primary-700 transition"
           >
             Let's Get Started
           </button>
@@ -149,10 +149,10 @@ export default function Onboarding() {
   // STEP 1: Business Basics
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={1} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Tell Us About Your <span className="text-blue-600">Business</span></h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Tell Us About Your <span className="text-primary-600">Business</span></h2>
           <p className="text-stone-500 mb-8">Just the basics — takes <span className="text-indigo-600 font-medium">60 seconds</span>.</p>
 
           <div className="space-y-5">
@@ -162,7 +162,7 @@ export default function Onboarding() {
                 type="text"
                 value={data.companyName}
                 onChange={(e) => update('companyName', e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 placeholder="Acme Plumbing"
               />
             </div>
@@ -172,7 +172,7 @@ export default function Onboarding() {
               <select
                 value={data.serviceType}
                 onChange={(e) => update('serviceType', e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white"
               >
                 <option value="">Select a service...</option>
                 <option value="hvac">HVAC</option>
@@ -191,7 +191,7 @@ export default function Onboarding() {
                 type="text"
                 value={data.serviceArea}
                 onChange={(e) => update('serviceArea', e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 placeholder="Salt Lake County"
               />
             </div>
@@ -202,7 +202,7 @@ export default function Onboarding() {
             <button
               onClick={next}
               disabled={!data.companyName || !data.serviceType}
-              className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+              className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition disabled:opacity-50"
             >
               Next
             </button>
@@ -215,23 +215,23 @@ export default function Onboarding() {
   // STEP 2: Phone Number
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={2} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Your Business <span className="text-blue-600">Phone Number</span></h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Your Business <span className="text-primary-600">Phone Number</span></h2>
           <p className="text-stone-500 mb-8">BookFox will text leads from this number.</p>
 
           <div className="space-y-4 mb-6">
             <label 
               className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition ${
-                data.useExistingPhone ? 'border-blue-500 bg-blue-50' : 'border-stone-200 hover:border-stone-300'
+                data.useExistingPhone ? 'border-primary-500 bg-primary-50' : 'border-stone-200 hover:border-stone-300'
               }`}
               onClick={() => update('useExistingPhone', true)}
             >
               <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                data.useExistingPhone ? 'border-blue-500' : 'border-stone-300'
+                data.useExistingPhone ? 'border-primary-500' : 'border-stone-300'
               }`}>
-                {data.useExistingPhone && <div className="w-3 h-3 bg-blue-500 rounded-full" />}
+                {data.useExistingPhone && <div className="w-3 h-3 bg-primary-500 rounded-full" />}
               </div>
               <div>
                 <p className="font-medium text-stone-800">Use my existing number</p>
@@ -241,14 +241,14 @@ export default function Onboarding() {
 
             <label 
               className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition ${
-                !data.useExistingPhone ? 'border-blue-500 bg-blue-50' : 'border-stone-200 hover:border-stone-300'
+                !data.useExistingPhone ? 'border-primary-500 bg-primary-50' : 'border-stone-200 hover:border-stone-300'
               }`}
               onClick={() => update('useExistingPhone', false)}
             >
               <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                !data.useExistingPhone ? 'border-blue-500' : 'border-stone-300'
+                !data.useExistingPhone ? 'border-primary-500' : 'border-stone-300'
               }`}>
-                {!data.useExistingPhone && <div className="w-3 h-3 bg-blue-500 rounded-full" />}
+                {!data.useExistingPhone && <div className="w-3 h-3 bg-primary-500 rounded-full" />}
               </div>
               <div>
                 <p className="font-medium text-stone-800">Get a new local number from BookFox</p>
@@ -264,7 +264,7 @@ export default function Onboarding() {
                 type="tel"
                 value={data.phone}
                 onChange={(e) => update('phone', e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 placeholder="(555) 123-4567"
               />
             </div>
@@ -272,7 +272,7 @@ export default function Onboarding() {
 
           <div className="flex gap-3 mt-8">
             <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
-            <button onClick={next} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">
+            <button onClick={next} className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition">
               Next
             </button>
           </div>
@@ -303,7 +303,7 @@ export default function Onboarding() {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={3} total={6} />
           <h2 className="text-2xl font-bold text-stone-800 mb-2">Where Do Your <span className="text-purple-600">Leads</span> Come From?</h2>
@@ -316,14 +316,14 @@ export default function Onboarding() {
                 onClick={() => toggle(s.id)}
                 className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-left transition ${
                   data.leadSources.includes(s.id) 
-                    ? 'border-blue-500 bg-blue-50' 
+                    ? 'border-primary-500 bg-primary-50' 
                     : 'border-stone-200 hover:border-stone-300'
                 }`}
               >
                 <span className="text-xl">{s.icon}</span>
                 <span className="font-medium text-stone-700 flex-1">{s.label}</span>
                 {data.leadSources.includes(s.id) && (
-                  <span className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">✓</span>
+                  <span className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm">✓</span>
                 )}
               </button>
             ))}
@@ -331,7 +331,7 @@ export default function Onboarding() {
 
           <div className="flex gap-3 mt-8">
             <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
-            <button onClick={next} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">
+            <button onClick={next} className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition">
               Next
             </button>
           </div>
@@ -347,10 +347,10 @@ export default function Onboarding() {
   // STEP 4: Business Questions
   if (step === 4) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={4} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">How Should <span className="text-blue-600">BookFox</span> Talk To Leads?</h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">How Should <span className="text-primary-600">BookFox</span> Talk To Leads?</h2>
           <p className="text-stone-500 mb-6">Quick questions so BookFox knows what to say.</p>
 
           <div className="space-y-6">
@@ -369,7 +369,7 @@ export default function Onboarding() {
                     onClick={() => update('responseTime', o.value)}
                     className={`p-3 rounded-xl border-2 text-sm font-medium transition ${
                       data.responseTime === o.value 
-                        ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                        ? 'border-primary-500 bg-primary-50 text-primary-700' 
                         : 'border-stone-200 text-stone-600 hover:border-stone-300'
                     }`}
                   >
@@ -393,7 +393,7 @@ export default function Onboarding() {
                     onClick={() => update('freeEstimates', o.value)}
                     className={`p-3 rounded-xl border-2 text-sm font-medium transition ${
                       data.freeEstimates === o.value 
-                        ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                        ? 'border-primary-500 bg-primary-50 text-primary-700' 
                         : 'border-stone-200 text-stone-600 hover:border-stone-300'
                     }`}
                   >
@@ -417,7 +417,7 @@ export default function Onboarding() {
                     onClick={() => update('emergencyService', o.value)}
                     className={`p-3 rounded-xl border-2 text-sm font-medium text-left transition ${
                       data.emergencyService === o.value 
-                        ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                        ? 'border-primary-500 bg-primary-50 text-primary-700' 
                         : 'border-stone-200 text-stone-600 hover:border-stone-300'
                     }`}
                   >
@@ -430,7 +430,7 @@ export default function Onboarding() {
 
           <div className="flex gap-3 mt-8">
             <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
-            <button onClick={next} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">
+            <button onClick={next} className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition">
               Next
             </button>
           </div>
@@ -462,10 +462,10 @@ export default function Onboarding() {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={5} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">When Can You Take <span className="text-emerald-600">Jobs</span>?</h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">When Can You Take <span className="text-green-600">Jobs</span>?</h2>
           <p className="text-stone-500 mb-6">BookFox will only book during these times.</p>
 
           <div className="space-y-2 mb-6">
@@ -473,13 +473,13 @@ export default function Onboarding() {
               <div 
                 key={day}
                 className={`flex items-center gap-3 p-3 rounded-xl border transition ${
-                  data.schedule[day].enabled ? 'border-blue-200 bg-blue-50' : 'border-stone-200 bg-stone-50'
+                  data.schedule[day].enabled ? 'border-primary-200 bg-primary-50' : 'border-stone-200 bg-stone-50'
                 }`}
               >
                 <button
                   onClick={() => toggleDay(day)}
                   className={`w-6 h-6 rounded border-2 flex items-center justify-center transition ${
-                    data.schedule[day].enabled ? 'bg-blue-500 border-blue-500 text-white' : 'border-stone-300'
+                    data.schedule[day].enabled ? 'bg-primary-500 border-primary-500 text-white' : 'border-stone-300'
                   }`}
                 >
                   {data.schedule[day].enabled && '✓'}
@@ -516,7 +516,7 @@ export default function Onboarding() {
             ))}
           </div>
 
-          <button onClick={copyToAll} className="text-blue-600 text-sm font-medium mb-6 hover:underline">
+          <button onClick={copyToAll} className="text-primary-600 text-sm font-medium mb-6 hover:underline">
             Copy Monday to all weekdays
           </button>
 
@@ -550,7 +550,7 @@ export default function Onboarding() {
 
           <div className="flex gap-3 mt-8">
             <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
-            <button onClick={next} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition">
+            <button onClick={next} className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition">
               Next
             </button>
           </div>
@@ -562,10 +562,10 @@ export default function Onboarding() {
   // STEP 6: Test & Finish
   if (step === 6) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-lg mx-auto pt-8">
           <Progress step={6} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">You're <span className="text-emerald-600">All Set</span>! Let's <span className="text-blue-600">Test It</span>.</h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">You're <span className="text-green-600">All Set</span>! Let's <span className="text-primary-600">Test It</span>.</h2>
           <p className="text-stone-500 mb-6">Here's how BookFox will respond to leads:</p>
 
           {/* Conversation Preview */}
@@ -575,30 +575,30 @@ export default function Onboarding() {
               <div className="bg-stone-200 rounded-2xl rounded-tl-sm px-4 py-2 max-w-[80%]">
                 <p className="text-sm">"Hey, my AC isn't working"</p>
               </div>
-              <div className="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] ml-auto">
+              <div className="bg-primary-600 text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] ml-auto">
                 <p className="text-sm">Hi! I can help with that. I'm with {data.companyName || 'your company'}. Is this an emergency or can it wait until tomorrow?</p>
               </div>
               <div className="bg-stone-200 rounded-2xl rounded-tl-sm px-4 py-2 max-w-[80%]">
                 <p className="text-sm">"Pretty urgent, it's really hot"</p>
               </div>
-              <div className="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] ml-auto">
+              <div className="bg-primary-600 text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] ml-auto">
                 <p className="text-sm">Got it. I have availability today at 2pm or 4pm. Which works better?</p>
               </div>
               <div className="bg-stone-200 rounded-2xl rounded-tl-sm px-4 py-2 max-w-[80%]">
                 <p className="text-sm">"2pm works"</p>
               </div>
-              <div className="bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] ml-auto">
+              <div className="bg-primary-600 text-white rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] ml-auto">
                 <p className="text-sm">Perfect! You're booked for 2pm. I'll send a reminder. See you then! 🙂</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6">
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
             <div className="flex items-start gap-3">
               <span className="text-xl">✅</span>
               <div>
-                <p className="font-semibold text-emerald-800">Your customers won't know it's AI</p>
-                <p className="text-sm text-emerald-700">Natural language • Books appointments • Works 24/7</p>
+                <p className="font-semibold text-green-800">Your customers won't know it's AI</p>
+                <p className="text-sm text-green-700">Natural language • Books appointments • Works 24/7</p>
               </div>
             </div>
           </div>
@@ -614,7 +614,7 @@ export default function Onboarding() {
             <button
               onClick={finish}
               disabled={loading}
-              className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition disabled:opacity-50"
+              className="flex-1 bg-primary-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-primary-700 transition disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Go To Dashboard'}
             </button>

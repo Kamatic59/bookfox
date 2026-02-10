@@ -26,7 +26,7 @@ function InputField({ label, type = 'text', value, onChange, placeholder, helpTe
         onChange={onChange}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all disabled:bg-stone-100 disabled:text-stone-500"
+        className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all disabled:bg-stone-100 disabled:text-stone-500"
       />
       {helpText && <p className="text-stone-500 text-xs mt-2">{helpText}</p>}
     </div>
@@ -44,7 +44,7 @@ function Toggle({ enabled, onChange, label, description }) {
       <button
         onClick={() => onChange(!enabled)}
         className={`relative w-12 h-6 rounded-full transition-colors ${
-          enabled ? 'bg-blue-600' : 'bg-stone-300'
+          enabled ? 'bg-primary-600' : 'bg-stone-300'
         }`}
       >
         <span
@@ -176,7 +176,7 @@ export default function Settings() {
 
       {/* Success Message */}
       {successMessage && (
-        <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl flex items-center gap-3">
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center gap-3">
           <span className="text-xl">✅</span>
           {successMessage}
         </div>
@@ -190,7 +190,7 @@ export default function Settings() {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
               activeTab === tab.id
-                ? 'bg-blue-100 text-blue-700'
+                ? 'bg-primary-100 text-primary-700'
                 : 'text-stone-600 hover:bg-stone-100'
             }`}
           >
@@ -237,7 +237,7 @@ export default function Settings() {
                 <select
                   value={businessTimezone}
                   onChange={(e) => setBusinessTimezone(e.target.value)}
-                  className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 >
                   <option value="America/New_York">Eastern Time</option>
                   <option value="America/Chicago">Central Time</option>
@@ -250,7 +250,7 @@ export default function Settings() {
               <button
                 onClick={handleSaveBusinessSettings}
                 disabled={saving}
-                className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all"
+                className="px-6 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-all"
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -268,11 +268,11 @@ export default function Settings() {
                 </p>
               </div>
               {business?.twilio_phone ? (
-                <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-sm font-medium rounded-full">
+                <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
                   Active
                 </span>
               ) : (
-                <button className="px-4 py-2 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-all">
+                <button className="px-4 py-2 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 transition-all">
                   Setup Number
                 </button>
               )}
@@ -310,7 +310,7 @@ export default function Settings() {
                   onChange={(e) => setAiSettings({ ...aiSettings, greeting_template: e.target.value })}
                   placeholder="Hi! This is {{assistant_name}} from {{business_name}}. I noticed we missed your call. How can I help you today?"
                   rows={3}
-                  className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                  className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none resize-none"
                 />
                 <p className="text-stone-500 text-xs mt-2">
                   Use {'{{assistant_name}}'} and {'{{business_name}}'} as placeholders
@@ -326,7 +326,7 @@ export default function Settings() {
                     max="300"
                     value={aiSettings.response_delay_seconds}
                     onChange={(e) => setAiSettings({ ...aiSettings, response_delay_seconds: parseInt(e.target.value) })}
-                    className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   />
                   <p className="text-stone-500 text-xs mt-2">Wait before sending the first SMS</p>
                 </div>
@@ -338,7 +338,7 @@ export default function Settings() {
                     max="50"
                     value={aiSettings.max_messages_before_human}
                     onChange={(e) => setAiSettings({ ...aiSettings, max_messages_before_human: parseInt(e.target.value) })}
-                    className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   />
                   <p className="text-stone-500 text-xs mt-2">Auto-escalate to human after this many messages</p>
                 </div>
@@ -348,7 +348,7 @@ export default function Settings() {
               <button
                 onClick={handleSaveAiSettings}
                 disabled={saving}
-                className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all"
+                className="px-6 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-all"
               >
                 {saving ? 'Saving...' : 'Save AI Settings'}
               </button>
@@ -358,7 +358,7 @@ export default function Settings() {
           <SettingsSection title="AI Personality Preview" description="See how your AI will respond to customers">
             <div className="bg-stone-50 rounded-xl p-4">
               <div className="flex gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-lg">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-lg">
                   🦊
                 </div>
                 <div className="flex-1">
@@ -396,7 +396,7 @@ export default function Settings() {
                     </div>
                   </div>
                   {integration.status === 'connected' ? (
-                    <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-sm font-medium rounded-full">
+                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
                       Connected
                     </span>
                   ) : (
@@ -415,20 +415,20 @@ export default function Settings() {
       {activeTab === 'billing' && (
         <div className="space-y-6">
           <SettingsSection title="Current Plan" description="Manage your subscription">
-            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 text-white">
+            <div className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl p-6 text-white">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-blue-200 text-sm">Current Plan</p>
+                  <p className="text-primary-200 text-sm">Current Plan</p>
                   <p className="text-2xl font-bold">14-Day Trial</p>
                 </div>
-                <span className="px-3 py-1 bg-blue-500/30 text-white text-sm font-medium rounded-full">
+                <span className="px-3 py-1 bg-primary-500/30 text-white text-sm font-medium rounded-full">
                   Active
                 </span>
               </div>
-              <p className="text-blue-100 mb-4">
+              <p className="text-primary-100 mb-4">
                 Your trial ends on February 17, 2026. Upgrade now to keep your leads flowing!
               </p>
-              <button className="w-full py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all">
+              <button className="w-full py-3 bg-white text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all">
                 Upgrade to Professional - $99/mo
               </button>
             </div>
@@ -440,14 +440,14 @@ export default function Settings() {
                 <p className="text-stone-500 text-sm">Leads Captured</p>
                 <p className="text-2xl font-bold text-stone-800">23 / 100</p>
                 <div className="mt-2 h-2 bg-stone-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 rounded-full" style={{ width: '23%' }} />
+                  <div className="h-full bg-primary-500 rounded-full" style={{ width: '23%' }} />
                 </div>
               </div>
               <div className="p-4 bg-stone-50 rounded-xl">
                 <p className="text-stone-500 text-sm">SMS Sent</p>
                 <p className="text-2xl font-bold text-stone-800">156 / 500</p>
                 <div className="mt-2 h-2 bg-stone-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: '31%' }} />
+                  <div className="h-full bg-green-500 rounded-full" style={{ width: '31%' }} />
                 </div>
               </div>
               <div className="p-4 bg-stone-50 rounded-xl">
@@ -469,7 +469,7 @@ export default function Settings() {
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 border border-stone-200 rounded-xl">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold">
                     {user?.email?.charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -477,12 +477,12 @@ export default function Settings() {
                     <p className="text-stone-500 text-sm">Owner</p>
                   </div>
                 </div>
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
+                <span className="px-3 py-1 bg-primary-100 text-primary-700 text-sm font-medium rounded-full">
                   You
                 </span>
               </div>
             </div>
-            <button className="mt-4 w-full py-3 border-2 border-dashed border-stone-300 text-stone-500 font-medium rounded-xl hover:border-blue-300 hover:text-blue-600 transition-all">
+            <button className="mt-4 w-full py-3 border-2 border-dashed border-stone-300 text-stone-500 font-medium rounded-xl hover:border-primary-300 hover:text-primary-600 transition-all">
               + Invite Team Member
             </button>
           </SettingsSection>

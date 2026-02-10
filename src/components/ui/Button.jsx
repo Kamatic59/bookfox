@@ -1,11 +1,11 @@
 import { forwardRef } from 'react';
 
 const variants = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30',
+  primary: 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-500/20 hover:shadow-xl hover:shadow-primary-500/30',
   secondary: 'bg-white text-stone-700 border border-stone-300 hover:bg-stone-50 hover:border-stone-400',
   ghost: 'text-stone-600 hover:bg-stone-100 hover:text-stone-800',
   danger: 'bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-500/20',
-  success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20',
+  success: 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-500/20',
 };
 
 const sizes = {

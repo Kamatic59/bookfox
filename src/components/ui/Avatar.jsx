@@ -5,8 +5,8 @@ function stringToColor(str) {
   if (!str) return 'from-stone-400 to-stone-500';
   
   const colors = [
-    'from-blue-400 to-blue-600',
-    'from-emerald-400 to-emerald-600',
+    'from-primary-400 to-primary-600',
+    'from-green-400 to-green-600',
     'from-purple-400 to-purple-600',
     'from-amber-400 to-amber-600',
     'from-rose-400 to-rose-600',
@@ -55,7 +55,7 @@ export default function Avatar({
   const colorClass = stringToColor(name);
   
   const statusColors = {
-    online: 'bg-emerald-500',
+    online: 'bg-green-500',
     offline: 'bg-stone-400',
     busy: 'bg-red-500',
     away: 'bg-amber-500',

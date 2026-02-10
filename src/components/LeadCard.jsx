@@ -2,7 +2,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Phone, Clock, AlertCircle, CheckCircle, MessageSquare } from 'lucide-react';
 
 const STATUS_CONFIG = {
-  new: { label: 'New', color: 'bg-blue-100 text-blue-700', icon: AlertCircle },
+  new: { label: 'New', color: 'bg-primary-100 text-primary-700', icon: AlertCircle },
   contacted: { label: 'Contacted', color: 'bg-amber-100 text-amber-700', icon: MessageSquare },
   qualified: { label: 'Qualified', color: 'bg-purple-100 text-purple-700', icon: CheckCircle },
   appointment_set: { label: 'Appointment Set', color: 'bg-green-100 text-green-700', icon: Clock },
@@ -25,7 +25,7 @@ export default function LeadCard({ lead, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-xl p-4 shadow-sm border border-stone-100 hover:border-blue-200 hover:shadow-md transition cursor-pointer"
+      className="bg-white rounded-xl p-4 shadow-sm border border-stone-100 hover:border-primary-200 hover:shadow-md transition cursor-pointer"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">

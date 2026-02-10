@@ -1,15 +1,15 @@
 const variants = {
   // Status badges
   default: 'bg-stone-100 text-stone-700 border-stone-200',
-  primary: 'bg-blue-100 text-blue-700 border-blue-200',
-  success: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  primary: 'bg-primary-100 text-primary-700 border-primary-200',
+  success: 'bg-green-100 text-green-700 border-green-200',
   warning: 'bg-amber-100 text-amber-700 border-amber-200',
   danger: 'bg-red-100 text-red-700 border-red-200',
   purple: 'bg-purple-100 text-purple-700 border-purple-200',
   
   // Solid variants
-  'solid-primary': 'bg-blue-600 text-white border-transparent',
-  'solid-success': 'bg-emerald-600 text-white border-transparent',
+  'solid-primary': 'bg-primary-600 text-white border-transparent',
+  'solid-success': 'bg-green-600 text-white border-transparent',
   'solid-warning': 'bg-amber-500 text-white border-transparent',
   'solid-danger': 'bg-red-600 text-white border-transparent',
 };
@@ -41,10 +41,10 @@ export default function Badge({
     >
       {dot && (
         <span className={`w-1.5 h-1.5 rounded-full ${
-          variant.includes('success') ? 'bg-emerald-500' :
+          variant.includes('success') ? 'bg-green-500' :
           variant.includes('warning') ? 'bg-amber-500' :
           variant.includes('danger') ? 'bg-red-500' :
-          variant.includes('primary') ? 'bg-blue-500' :
+          variant.includes('primary') ? 'bg-primary-500' :
           'bg-stone-500'
         }`} />
       )}

@@ -126,13 +126,13 @@ export function ConfirmModal({
   const icons = {
     danger: { emoji: '⚠️', color: 'text-red-600' },
     warning: { emoji: '⚡', color: 'text-amber-600' },
-    info: { emoji: 'ℹ️', color: 'text-blue-600' },
+    info: { emoji: 'ℹ️', color: 'text-primary-600' },
   };
 
   const buttonColors = {
     danger: 'bg-red-600 hover:bg-red-700 shadow-red-500/20',
     warning: 'bg-amber-600 hover:bg-amber-700 shadow-amber-500/20',
-    info: 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20',
+    info: 'bg-primary-600 hover:bg-primary-700 shadow-primary-500/20',
   };
 
   const icon = icons[variant];

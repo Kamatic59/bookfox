@@ -63,7 +63,7 @@ function MobileNavItem({ to, icon, label, badge, end = false }) {
       className={({ isActive }) =>
         `relative flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all duration-200 ${
           isActive
-            ? 'text-blue-600 bg-blue-50'
+            ? 'text-primary-600 bg-primary-50'
             : 'text-stone-500 active:bg-stone-100'
         }`
       }
@@ -91,7 +91,7 @@ function SidebarLink({ to, icon, label, badge, end = false, collapsed, onClick }
       className={({ isActive }) =>
         `relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
           isActive
-            ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 font-medium shadow-sm border border-blue-100/50'
+            ? 'bg-gradient-to-r from-primary-50 to-indigo-50 text-primary-600 font-medium shadow-sm border border-primary-100/50'
             : 'text-stone-600 hover:bg-stone-100 hover:text-stone-800 active:bg-stone-200'
         } ${collapsed ? 'justify-center px-3' : ''}`
       }
@@ -146,7 +146,7 @@ export default function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50">
       {/* Mobile sidebar overlay */}
       <div
         className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
@@ -173,7 +173,7 @@ export default function DashboardLayout() {
             <div className="flex items-center gap-2.5">
               <img src="/logo.png" alt="BookFox" className="w-10 h-10" />
               <span className="text-xl font-bold text-stone-800">
-                Book<span className="text-blue-600">Fox</span>
+                Book<span className="text-primary-600">Fox</span>
               </span>
             </div>
           )}
@@ -217,7 +217,7 @@ export default function DashboardLayout() {
               <p className="text-stone-500 text-xs truncate mt-0.5 flex items-center gap-1">
                 {business?.twilio_phone ? (
                   <>
-                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                     {business.twilio_phone}
                   </>
                 ) : (
@@ -238,7 +238,7 @@ export default function DashboardLayout() {
               }}
               className={`w-full flex items-center gap-3 p-2 rounded-xl hover:bg-stone-100 active:bg-stone-200 transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}
             >
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/20">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/20">
                 {user?.email?.charAt(0).toUpperCase() || 'U'}
               </div>
               {!sidebarCollapsed && (
@@ -317,7 +317,7 @@ export default function DashboardLayout() {
                 <input
                   type="text"
                   placeholder="Search leads, conversations..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-stone-100/80 border border-transparent rounded-xl text-sm focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-stone-400"
+                  className="w-full pl-10 pr-4 py-2.5 bg-stone-100/80 border border-transparent rounded-xl text-sm focus:bg-white focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none transition-all placeholder:text-stone-400"
                 />
               </div>
             </div>

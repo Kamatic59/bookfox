@@ -19,7 +19,7 @@ function LoadingScreen() {
       <div className="text-center">
         <div className="relative mb-4">
           <img src="/logo.png" alt="BookFox" className="w-16 h-16 mx-auto animate-bounce" />
-          <div className="absolute inset-0 w-16 h-16 mx-auto bg-blue-400/20 rounded-full blur-xl animate-pulse" />
+          <div className="absolute inset-0 w-16 h-16 mx-auto bg-primary-400/20 rounded-full blur-xl animate-pulse" />
         </div>
         <p className="text-stone-600 font-medium">Loading...</p>
       </div>

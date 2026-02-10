@@ -62,8 +62,8 @@ function ToastItem({ toast, onClose }) {
 
   const styles = {
     success: {
-      bg: 'bg-emerald-50 border-emerald-200',
-      text: 'text-emerald-800',
+      bg: 'bg-green-50 border-green-200',
+      text: 'text-green-800',
       icon: '✅',
     },
     error: {
@@ -72,8 +72,8 @@ function ToastItem({ toast, onClose }) {
       icon: '❌',
     },
     info: {
-      bg: 'bg-blue-50 border-blue-200',
-      text: 'text-blue-800',
+      bg: 'bg-primary-50 border-primary-200',
+      text: 'text-primary-800',
       icon: 'ℹ️',
     },
     warning: {

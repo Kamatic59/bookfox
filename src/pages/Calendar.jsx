@@ -15,15 +15,15 @@ function CalendarDay({ date, isToday, isSelected, hasAppointments, onClick }) {
       onClick={onClick}
       className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm transition-all duration-200 ${
         isSelected
-          ? 'bg-blue-600 text-white font-bold shadow-lg shadow-blue-500/30'
+          ? 'bg-primary-600 text-white font-bold shadow-lg shadow-primary-500/30'
           : isToday
-          ? 'bg-blue-100 text-blue-700 font-medium'
+          ? 'bg-primary-100 text-primary-700 font-medium'
           : 'hover:bg-stone-100 active:bg-stone-200 text-stone-700'
       }`}
     >
       {date.getDate()}
       {hasAppointments && !isSelected && (
-        <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-500" />
+        <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary-500" />
       )}
     </button>
   );
@@ -32,7 +32,7 @@ function CalendarDay({ date, isToday, isSelected, hasAppointments, onClick }) {
 // Appointment card
 function AppointmentCard({ appointment, delay = 0 }) {
   const statusColors = {
-    confirmed: 'border-l-emerald-500 bg-emerald-50/50',
+    confirmed: 'border-l-emerald-500 bg-green-50/50',
     pending: 'border-l-amber-500 bg-amber-50/50',
     cancelled: 'border-l-red-500 bg-red-50/50',
   };
@@ -46,7 +46,7 @@ function AppointmentCard({ appointment, delay = 0 }) {
             <p className="text-stone-600 text-sm truncate">{appointment.customer}</p>
           </div>
           <span className={`text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 ${
-            appointment.status === 'confirmed' ? 'bg-emerald-100 text-emerald-700' :
+            appointment.status === 'confirmed' ? 'bg-green-100 text-green-700' :
             appointment.status === 'pending' ? 'bg-amber-100 text-amber-700' :
             'bg-red-100 text-red-700'
           }`}>
@@ -69,7 +69,7 @@ function AppointmentCard({ appointment, delay = 0 }) {
           <button className="flex-1 py-2 px-3 bg-stone-100 hover:bg-stone-200 active:bg-stone-300 rounded-lg text-sm font-medium text-stone-700 transition-colors">
             Reschedule
           </button>
-          <button className="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg text-sm font-medium transition-colors shadow-lg shadow-blue-500/20">
+          <button className="flex-1 py-2 px-3 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white rounded-lg text-sm font-medium transition-colors shadow-lg shadow-primary-500/20">
             Details
           </button>
         </div>
@@ -134,7 +134,7 @@ export default function Calendar() {
             <h1 className="text-2xl lg:text-3xl font-bold text-stone-800">Calendar</h1>
             <p className="text-stone-500 mt-1 text-sm sm:text-base">Manage your appointments</p>
           </div>
-          <button className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-lg shadow-blue-500/20 sm:w-auto w-full">
+          <button className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 active:bg-primary-800 transition-colors shadow-lg shadow-primary-500/20 sm:w-auto w-full">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
@@ -203,7 +203,7 @@ export default function Calendar() {
             {/* Today button */}
             <button 
               onClick={() => setSelectedDate(today)}
-              className="w-full mt-4 py-2 text-sm text-blue-600 hover:bg-blue-50 active:bg-blue-100 rounded-lg transition-colors font-medium"
+              className="w-full mt-4 py-2 text-sm text-primary-600 hover:bg-primary-50 active:bg-primary-100 rounded-lg transition-colors font-medium"
             >
               Today
             </button>
@@ -252,15 +252,15 @@ export default function Calendar() {
                 {[1, 2, 3].map((_, i) => (
                   <FadeIn key={i} delay={200 + i * 50}>
                     <div className="flex items-center gap-3 sm:gap-4 p-3 hover:bg-stone-50 active:bg-stone-100 rounded-xl transition-colors cursor-pointer">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-100 rounded-xl flex flex-col items-center justify-center flex-shrink-0">
-                        <span className="text-[10px] sm:text-xs text-blue-600 font-medium">Feb</span>
-                        <span className="text-base sm:text-lg font-bold text-blue-700">{5 + i}</span>
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary-100 rounded-xl flex flex-col items-center justify-center flex-shrink-0">
+                        <span className="text-[10px] sm:text-xs text-primary-600 font-medium">Feb</span>
+                        <span className="text-base sm:text-lg font-bold text-primary-700">{5 + i}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-stone-800 truncate">Water Heater Inspection</p>
                         <p className="text-stone-500 text-sm truncate">9:00 AM • Sarah Johnson</p>
                       </div>
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 flex-shrink-0">
+                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-green-100 text-green-700 flex-shrink-0">
                         Confirmed
                       </span>
                     </div>

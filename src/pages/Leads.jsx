@@ -5,9 +5,9 @@ import { FadeIn } from '../components/Animations';
 // Status badge component
 function StatusBadge({ status }) {
   const styles = {
-    new: 'bg-blue-100 text-blue-700',
+    new: 'bg-primary-100 text-primary-700',
     contacted: 'bg-amber-100 text-amber-700',
-    qualified: 'bg-emerald-100 text-emerald-700',
+    qualified: 'bg-green-100 text-green-700',
     converted: 'bg-purple-100 text-purple-700',
     lost: 'bg-stone-100 text-stone-600',
   };
@@ -23,7 +23,7 @@ function StatusBadge({ status }) {
 function SourceBadge({ source }) {
   const styles = {
     missed_call: { bg: 'bg-red-50 text-red-700', icon: '📞' },
-    sms: { bg: 'bg-blue-50 text-blue-700', icon: '💬' },
+    sms: { bg: 'bg-primary-50 text-primary-700', icon: '💬' },
     manual: { bg: 'bg-stone-50 text-stone-700', icon: '✏️' },
     website: { bg: 'bg-purple-50 text-purple-700', icon: '🌐' },
   };
@@ -47,7 +47,7 @@ function LeadCard({ lead, onSelect, delay = 0 }) {
         className="w-full bg-white rounded-xl border border-stone-200 p-4 text-left hover:shadow-md active:shadow-sm transition-all duration-200 active:scale-[0.99]"
       >
         <div className="flex items-start gap-3">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 flex-shrink-0">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold shadow-lg shadow-primary-500/20 flex-shrink-0">
             {(lead.name || lead.phone || '?').charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
@@ -94,7 +94,7 @@ function LeadRow({ lead, onSelect }) {
     >
       <td className="px-4 lg:px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/20">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary-500/20">
             {(lead.name || lead.phone || '?').charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0">
@@ -168,7 +168,7 @@ function LeadDetailSheet({ lead, onClose }) {
         <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-4rem)] lg:max-h-[calc(100vh-4rem)]">
           {/* Contact Info */}
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-xl shadow-blue-500/20">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-xl shadow-xl shadow-primary-500/20">
               {(lead.name || lead.phone || '?').charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
@@ -197,7 +197,7 @@ function LeadDetailSheet({ lead, onClose }) {
           {/* Status */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-stone-700 mb-2">Status</label>
-            <select className="w-full px-4 py-3 border border-stone-300 rounded-xl bg-white text-base focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all">
+            <select className="w-full px-4 py-3 border border-stone-300 rounded-xl bg-white text-base focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all">
               <option value="new">New</option>
               <option value="contacted">Contacted</option>
               <option value="qualified">Qualified</option>
@@ -237,7 +237,7 @@ function LeadDetailSheet({ lead, onClose }) {
           <div className="mt-6">
             <label className="block text-sm font-medium text-stone-700 mb-2">Notes</label>
             <textarea
-              className="w-full px-4 py-3 border border-stone-300 rounded-xl resize-none h-24 text-base focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+              className="w-full px-4 py-3 border border-stone-300 rounded-xl resize-none h-24 text-base focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
               placeholder="Add notes..."
             />
           </div>
@@ -245,7 +245,7 @@ function LeadDetailSheet({ lead, onClose }) {
 
         {/* Footer */}
         <div className="p-4 sm:p-6 border-t border-stone-100 bg-stone-50 flex gap-3">
-          <button className="flex-1 py-3 px-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-lg shadow-blue-500/20">
+          <button className="flex-1 py-3 px-4 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 active:bg-primary-800 transition-colors shadow-lg shadow-primary-500/20">
             Save Changes
           </button>
           <button className="py-3 px-4 text-red-600 font-medium hover:bg-red-50 active:bg-red-100 rounded-xl transition-colors">
@@ -301,7 +301,7 @@ export default function Leads() {
             <h1 className="text-2xl lg:text-3xl font-bold text-stone-800">Leads</h1>
             <p className="text-stone-500 mt-1 text-sm sm:text-base">Manage and track all your leads</p>
           </div>
-          <button className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-lg shadow-blue-500/20 sm:w-auto w-full">
+          <button className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 active:bg-primary-800 transition-colors shadow-lg shadow-primary-500/20 sm:w-auto w-full">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
@@ -341,7 +341,7 @@ export default function Leads() {
                 placeholder="Search leads..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-stone-100 border border-transparent rounded-xl text-base focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-stone-100 border border-transparent rounded-xl text-base focus:bg-white focus:border-primary-300 focus:ring-2 focus:ring-primary-100 outline-none transition-all"
               />
             </div>
 
@@ -349,7 +349,7 @@ export default function Leads() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2.5 bg-stone-100 border border-transparent rounded-xl text-base focus:bg-white focus:border-blue-300 outline-none sm:w-auto"
+              className="px-4 py-2.5 bg-stone-100 border border-transparent rounded-xl text-base focus:bg-white focus:border-primary-300 outline-none sm:w-auto"
             >
               <option value="all">All Statuses</option>
               <option value="new">New</option>
@@ -366,7 +366,7 @@ export default function Leads() {
       {filteredLeads.length === 0 ? (
         <FadeIn delay={150}>
           <div className="bg-white rounded-xl border border-stone-200 p-8 sm:p-12 text-center">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-blue-500/30">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-primary-500/30">
               <span className="text-3xl sm:text-4xl">👥</span>
             </div>
             <h3 className="text-lg sm:text-xl font-bold text-stone-800 mb-2">No leads yet</h3>

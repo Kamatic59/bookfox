@@ -15,11 +15,11 @@ export function NoLeadsEmptyState() {
     <EmptyStateWrapper>
       <div className="relative mb-6">
         {/* Decorative circles */}
-        <div className="absolute -top-4 -left-4 w-24 h-24 bg-blue-100 rounded-full opacity-50" />
+        <div className="absolute -top-4 -left-4 w-24 h-24 bg-primary-100 rounded-full opacity-50" />
         <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-amber-100 rounded-full opacity-50" />
         
         {/* Main icon */}
-        <div className="relative z-10 w-32 h-32 bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-xl shadow-blue-500/30">
+        <div className="relative z-10 w-32 h-32 bg-gradient-to-br from-primary-500 to-primary-600 rounded-3xl flex items-center justify-center shadow-xl shadow-primary-500/30">
           <span className="text-6xl">👥</span>
         </div>
       </div>
@@ -32,7 +32,7 @@ export function NoLeadsEmptyState() {
       <div className="flex gap-3">
         <Link
           to="/dashboard/settings"
-          className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
+          className="px-5 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 transition-colors shadow-lg shadow-primary-500/20"
         >
           Complete Setup
         </Link>
@@ -49,10 +49,10 @@ export function NoConversationsEmptyState() {
   return (
     <EmptyStateWrapper>
       <div className="relative mb-6">
-        <div className="absolute -top-3 -right-3 w-20 h-20 bg-emerald-100 rounded-full opacity-50" />
+        <div className="absolute -top-3 -right-3 w-20 h-20 bg-green-100 rounded-full opacity-50" />
         <div className="absolute -bottom-3 -left-3 w-14 h-14 bg-purple-100 rounded-full opacity-50" />
         
-        <div className="relative z-10 w-32 h-32 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl flex items-center justify-center shadow-xl shadow-emerald-500/30">
+        <div className="relative z-10 w-32 h-32 bg-gradient-to-br from-green-500 to-green-600 rounded-3xl flex items-center justify-center shadow-xl shadow-green-500/30">
           <span className="text-6xl">💬</span>
         </div>
       </div>
@@ -115,7 +115,7 @@ export function ErrorState({ title = 'Something went wrong', message, onRetry })
       {onRetry && (
         <button
           onClick={onRetry}
-          className="px-4 py-2 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 transition-colors"
         >
           Try Again
         </button>
@@ -161,8 +161,8 @@ export function InboxZeroState() {
   return (
     <EmptyStateWrapper>
       <div className="relative mb-6">
-        <div className="absolute inset-0 bg-emerald-100 rounded-full animate-ping opacity-20" />
-        <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30">
+        <div className="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-20" />
+        <div className="relative w-24 h-24 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30">
           <span className="text-5xl">✨</span>
         </div>
       </div>
