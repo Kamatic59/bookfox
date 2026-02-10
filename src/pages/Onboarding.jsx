@@ -2,21 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-
-// Progress bar
-function Progress({ step, total }) {
-  return (
-    <div className="flex items-center gap-2 mb-8">
-      <div className="flex-1 h-2 bg-stone-200 rounded-full overflow-hidden">
-        <div 
-          className="h-full bg-primary-600 transition-all duration-500" 
-          style={{ width: `${(step / total) * 100}%` }}
-        />
-      </div>
-      <span className="text-sm text-stone-500 font-medium">Step {step} of {total}</span>
-    </div>
-  );
-}
+import { FadeIn, GlassCard, CTAButton, Progress } from '../components/shared/Animations';
 
 export default function Onboarding() {
   const { user, business, refreshBusiness } = useAuth();
@@ -111,37 +97,55 @@ export default function Onboarding() {
   // STEP 0: Welcome
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 flex items-center justify-center p-6">
-        <div className="max-w-md text-center">
-          <div className="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <img src="/logo.png" alt="BookFox" className="w-14 h-14" />
-          </div>
-          <h1 className="text-3xl font-bold text-stone-800 mb-3">Welcome to <span className="text-primary-600">BookFox</span>, {firstName}!</h1>
-          <p className="text-stone-600 mb-8">
-            We're going to get you set up in about <span className="text-indigo-600 font-semibold">10 minutes</span>. Here's what we'll do:
-          </p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/30 to-slate-50 flex items-center justify-center p-6 relative overflow-hidden">
+        {/* Background glow effects */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl" />
+        
+        <GlassCard className="max-w-xl w-full p-8 lg:p-12 relative z-10">
+          <FadeIn delay={0}>
+            <div className="relative w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary-500/30">
+              <img src="/logo.png" alt="BookFox" className="w-14 h-14" />
+              <div className="absolute inset-0 bg-primary-400/30 rounded-2xl blur-xl scale-150" />
+            </div>
+          </FadeIn>
+          
+          <FadeIn delay={100}>
+            <h1 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-3 text-center">
+              Welcome to <span className="text-primary-600">BookFox</span>, {firstName}!
+            </h1>
+          </FadeIn>
+          
+          <FadeIn delay={200}>
+            <p className="text-slate-600 text-lg mb-8 text-center">
+              We're going to get you set up in about <span className="text-primary-600 font-semibold">10 minutes</span>. Here's what we'll do:
+            </p>
+          </FadeIn>
+          
           <div className="space-y-3 text-left mb-8">
             {[
               { icon: '🔗', text: 'Connect your lead sources', time: '3 min' },
               { icon: '💼', text: 'Teach BookFox about your business', time: '5 min' },
               { icon: '✅', text: 'See it respond to a test lead', time: '2 min' },
             ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between bg-stone-50 rounded-xl p-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-xl">{item.icon}</span>
-                  <span className="text-stone-700 font-medium">{item.text}</span>
+              <FadeIn key={i} delay={300 + i * 100}>
+                <div className="flex items-center justify-between bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/50 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{item.icon}</span>
+                    <span className="text-slate-700 font-medium">{item.text}</span>
+                  </div>
+                  <span className="text-slate-400 text-sm font-medium">{item.time}</span>
                 </div>
-                <span className="text-stone-400 text-sm">{item.time}</span>
-              </div>
+              </FadeIn>
             ))}
           </div>
-          <button
-            onClick={next}
-            className="w-full bg-primary-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-primary-700 transition"
-          >
-            Let's Get Started
-          </button>
-        </div>
+          
+          <FadeIn delay={600}>
+            <CTAButton onClick={next}>
+              Let's Get Started
+            </CTAButton>
+          </FadeIn>
+        </GlassCard>
       </div>
     );
   }
@@ -149,64 +153,89 @@ export default function Onboarding() {
   // STEP 1: Business Basics
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
-        <div className="max-w-lg mx-auto pt-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/30 to-slate-50 p-6 relative overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute top-20 right-0 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl" />
+        
+        <div className="max-w-2xl mx-auto pt-8 relative z-10">
           <Progress step={1} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Tell Us About Your <span className="text-primary-600">Business</span></h2>
-          <p className="text-stone-500 mb-8">Just the basics — takes <span className="text-indigo-600 font-medium">60 seconds</span>.</p>
+          
+          <FadeIn>
+            <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-2">
+              Tell Us About Your <span className="text-primary-600">Business</span>
+            </h2>
+            <p className="text-slate-600 mb-8">
+              Just the basics — takes <span className="text-primary-600 font-semibold">60 seconds</span>.
+            </p>
+          </FadeIn>
 
-          <div className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">Company Name</label>
-              <input
-                type="text"
-                value={data.companyName}
-                onChange={(e) => update('companyName', e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                placeholder="Acme Plumbing"
-              />
+          <GlassCard className="p-6 lg:p-8">
+            <div className="space-y-6">
+              <FadeIn delay={100}>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Company Name</label>
+                  <input
+                    type="text"
+                    value={data.companyName}
+                    onChange={(e) => update('companyName', e.target.value)}
+                    className="w-full px-4 py-3.5 bg-white/60 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+                    placeholder="Acme Plumbing"
+                  />
+                </div>
+              </FadeIn>
+
+              <FadeIn delay={200}>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">What service do you provide?</label>
+                  <select
+                    value={data.serviceType}
+                    onChange={(e) => update('serviceType', e.target.value)}
+                    className="w-full px-4 py-3.5 bg-white/60 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+                  >
+                    <option value="">Select a service...</option>
+                    <option value="hvac">HVAC</option>
+                    <option value="roofing">Roofing</option>
+                    <option value="plumbing">Plumbing</option>
+                    <option value="electrical">Electrical</option>
+                    <option value="solar">Solar Installation</option>
+                    <option value="general">General Contracting</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </FadeIn>
+
+              <FadeIn delay={300}>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">What area do you serve?</label>
+                  <input
+                    type="text"
+                    value={data.serviceArea}
+                    onChange={(e) => update('serviceArea', e.target.value)}
+                    className="w-full px-4 py-3.5 bg-white/60 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+                    placeholder="Salt Lake County"
+                  />
+                </div>
+              </FadeIn>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">What service do you provide?</label>
-              <select
-                value={data.serviceType}
-                onChange={(e) => update('serviceType', e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white"
-              >
-                <option value="">Select a service...</option>
-                <option value="hvac">HVAC</option>
-                <option value="roofing">Roofing</option>
-                <option value="plumbing">Plumbing</option>
-                <option value="electrical">Electrical</option>
-                <option value="solar">Solar Installation</option>
-                <option value="general">General Contracting</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">What area do you serve?</label>
-              <input
-                type="text"
-                value={data.serviceArea}
-                onChange={(e) => update('serviceArea', e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                placeholder="Salt Lake County"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-3 mt-8">
-            <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
-            <button
-              onClick={next}
-              disabled={!data.companyName || !data.serviceType}
-              className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+            <FadeIn delay={400}>
+              <div className="flex flex-col sm:flex-row gap-3 mt-8">
+                <button 
+                  onClick={back} 
+                  className="sm:w-auto px-6 py-3 text-slate-600 font-semibold hover:bg-white/80 rounded-xl transition-all border border-slate-200"
+                >
+                  Back
+                </button>
+                <CTAButton
+                  onClick={next}
+                  disabled={!data.companyName || !data.serviceType}
+                  className="flex-1"
+                >
+                  Next
+                </CTAButton>
+              </div>
+            </FadeIn>
+          </GlassCard>
         </div>
       </div>
     );
