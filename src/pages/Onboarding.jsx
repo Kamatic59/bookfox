@@ -404,13 +404,19 @@ export default function Onboarding() {
   // STEP 4: Business Questions
   if (step === 4) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
-        <div className="max-w-lg mx-auto pt-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/30 to-slate-50 p-6 relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl" />
+        
+        <div className="max-w-2xl mx-auto pt-8 relative z-10">
           <Progress step={4} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">How Should <span className="text-primary-600">BookFox</span> Talk To Leads?</h2>
-          <p className="text-stone-500 mb-6">Quick questions so BookFox knows what to say.</p>
+          
+          <FadeIn>
+            <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-2">How Should <span className="text-primary-600">BookFox</span> Talk To Leads?</h2>
+            <p className="text-slate-600 mb-6">Quick questions so BookFox knows what to say.</p>
+          </FadeIn>
 
-          <div className="space-y-6">
+          <GlassCard className="p-6 lg:p-8">
+            <div className="space-y-6">
             {/* Response Time */}
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-2">Typical response time for quotes?</label>
@@ -485,12 +491,13 @@ export default function Onboarding() {
             </div>
           </div>
 
-          <div className="flex gap-3 mt-8">
-            <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
-            <button onClick={next} className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition">
-              Next
-            </button>
-          </div>
+            <div className="flex flex-col sm:flex-row gap-3 mt-8">
+              <button onClick={back} className="sm:w-auto px-6 py-3 text-slate-600 font-semibold hover:bg-white/80 rounded-xl transition-all border border-slate-200">Back</button>
+              <CTAButton onClick={next} className="flex-1">
+                Next
+              </CTAButton>
+            </div>
+          </GlassCard>
         </div>
       </div>
     );
@@ -519,8 +526,8 @@ export default function Onboarding() {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
-        <div className="max-w-lg mx-auto pt-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/30 to-slate-50 p-6 relative overflow-hidden">
+        <div className="max-w-2xl mx-auto pt-8 relative z-10">
           <Progress step={5} total={6} />
           <h2 className="text-2xl font-bold text-stone-800 mb-2">When Can You Take <span className="text-green-600">Jobs</span>?</h2>
           <p className="text-stone-500 mb-6">BookFox will only book during these times.</p>
@@ -619,8 +626,8 @@ export default function Onboarding() {
   // STEP 6: Test & Finish
   if (step === 6) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
-        <div className="max-w-lg mx-auto pt-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/30 to-slate-50 p-6 relative overflow-hidden">
+        <div className="max-w-2xl mx-auto pt-8 relative z-10">
           <Progress step={6} total={6} />
           <h2 className="text-2xl font-bold text-stone-800 mb-2">You're <span className="text-green-600">All Set</span>! Let's <span className="text-primary-600">Test It</span>.</h2>
           <p className="text-stone-500 mb-6">Here's how BookFox will respond to leads:</p>
