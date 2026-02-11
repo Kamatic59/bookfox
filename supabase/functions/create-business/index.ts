@@ -15,16 +15,15 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
-  // Rate limiting: 5 requests per minute per IP
-  const rateLimitKey = getRateLimitKey(req, 'create-business');
-  const rateLimit = checkRateLimit(rateLimitKey, 5, 60);
-  
-  if (!rateLimit.allowed) {
-    console.warn('Rate limit exceeded for create-business:', rateLimitKey);
-    return rateLimitResponse(rateLimit);
-  }
-
   try {
+    // Rate limiting: 5 requests per minute per IP
+    const rateLimitKey = getRateLimitKey(req, 'create-business');
+    const rateLimit = checkRateLimit(rateLimitKey, 5, 60);
+    
+    if (!rateLimit.allowed) {
+      console.warn('Rate limit exceeded for create-business:', rateLimitKey);
+      return rateLimitResponse(rateLimit);
+    }
     // Get the authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
@@ -35,9 +34,24 @@ Deno.serve(async (req) => {
     }
 
     // Create a client with the user's JWT to verify they're authenticated
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+      console.error('Missing environment variables:', {
+        hasUrl: !!supabaseUrl,
+        hasAnonKey: !!supabaseAnonKey,
+        hasServiceKey: !!supabaseServiceKey
+      });
+      return new Response(
+        JSON.stringify({ 
+          error: 'Server configuration error',
+          details: 'Missing required environment variables'
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Verify the user's JWT
     const userClient = createClient(supabaseUrl, supabaseAnonKey, {
@@ -139,10 +153,18 @@ Deno.serve(async (req) => {
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
-    console.error('Unexpected error:', error);
+  } catch (error: unknown) {
+    console.error('Unexpected error in create-business:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : '';
+    console.error('Error stack:', errorStack);
+    
     return new Response(
-      JSON.stringify({ error: 'Internal server error', details: error.message }),
+      JSON.stringify({ 
+        error: 'Internal server error', 
+        details: errorMessage,
+        stack: Deno.env.get('ENVIRONMENT') === 'development' ? errorStack : undefined
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
