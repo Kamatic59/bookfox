@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FadeIn, AnimateOnScroll } from '../components/Animations';
+import { FadeIn, GlassCard } from '../components/shared/Animations';
 
 // Mock appointments data
 const mockAppointments = [
@@ -131,8 +131,8 @@ export default function Calendar() {
       <FadeIn>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-stone-800">Calendar</h1>
-            <p className="text-stone-500 mt-1 text-sm sm:text-base">Manage your appointments</p>
+            <h1 className="text-2xl lg:text-4xl font-bold text-slate-800">Calendar</h1>
+            <p className="text-slate-600 mt-1 text-sm sm:text-base">Manage your appointments</p>
           </div>
           <button className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 active:bg-primary-800 transition-colors shadow-lg shadow-primary-500/20 sm:w-auto w-full">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

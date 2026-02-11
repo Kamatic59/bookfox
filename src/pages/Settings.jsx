@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import { FadeIn, GlassCard } from '../components/shared/Animations';
 
 // Settings section component
-function SettingsSection({ title, description, children }) {
+function SettingsSection({ title, description, children, delay = 0 }) {
   return (
-    <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-stone-100">
-        <h3 className="text-lg font-bold text-stone-800">{title}</h3>
-        {description && <p className="text-stone-500 text-sm mt-1">{description}</p>}
-      </div>
-      <div className="p-6">{children}</div>
-    </div>
+    <FadeIn delay={delay}>
+      <GlassCard className="overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-200/50">
+          <h3 className="text-lg font-bold text-slate-800">{title}</h3>
+          {description && <p className="text-slate-600 text-sm mt-1">{description}</p>}
+        </div>
+        <div className="p-6">{children}</div>
+      </GlassCard>
+    </FadeIn>
   );
 }
 
@@ -169,41 +172,47 @@ export default function Settings() {
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl lg:text-3xl font-bold text-stone-800">Settings</h1>
-        <p className="text-stone-500 mt-1">Manage your business and AI configuration</p>
-      </div>
+      <FadeIn>
+        <div className="mb-8">
+          <h1 className="text-2xl lg:text-4xl font-bold text-slate-800">Settings</h1>
+          <p className="text-slate-600 mt-1">Manage your business and AI configuration</p>
+        </div>
+      </FadeIn>
 
       {/* Success Message */}
       {successMessage && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center gap-3">
-          <span className="text-xl">✅</span>
-          {successMessage}
-        </div>
+        <FadeIn delay={100}>
+          <div className="mb-6 p-4 bg-green-50/80 backdrop-blur-sm border border-green-200 text-green-700 rounded-xl flex items-center gap-3 shadow-sm">
+            <span className="text-xl">✅</span>
+            {successMessage}
+          </div>
+        </FadeIn>
       )}
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-              activeTab === tab.id
-                ? 'bg-primary-100 text-primary-700'
-                : 'text-stone-600 hover:bg-stone-100'
-            }`}
-          >
-            <span>{tab.icon}</span>
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <FadeIn delay={100}>
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+                activeTab === tab.id
+                  ? 'bg-primary-100 text-primary-700'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              <span>{tab.icon}</span>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </FadeIn>
 
       {/* Business Settings */}
       {activeTab === 'business' && (
         <div className="space-y-6">
-          <SettingsSection title="Business Information" description="Basic details about your business">
+          <SettingsSection title="Business Information" delay={200} description="Basic details about your business">
             <div className="space-y-4">
               <InputField
                 label="Business Name"
@@ -257,7 +266,7 @@ export default function Settings() {
             </div>
           </SettingsSection>
 
-          <SettingsSection title="BookFox Phone Number" description="Your dedicated phone number for catching missed calls">
+          <SettingsSection title="BookFox Phone Number" delay={300} description="Your dedicated phone number for catching missed calls">
             <div className="flex items-center justify-between p-4 bg-stone-50 rounded-xl">
               <div>
                 <p className="font-mono text-xl font-bold text-stone-800">
@@ -284,7 +293,7 @@ export default function Settings() {
       {/* AI Settings */}
       {activeTab === 'ai' && (
         <div className="space-y-6">
-          <SettingsSection title="AI Behavior" description="Control how your AI assistant responds to customers">
+          <SettingsSection title="AI Behavior" delay={200} description="Control how your AI assistant responds to customers">
             <div className="space-y-6">
               <Toggle
                 enabled={aiSettings.auto_respond}
@@ -355,7 +364,7 @@ export default function Settings() {
             </div>
           </SettingsSection>
 
-          <SettingsSection title="AI Personality Preview" description="See how your AI will respond to customers">
+          <SettingsSection title="AI Personality Preview" delay={300} description="See how your AI will respond to customers">
             <div className="bg-stone-50 rounded-xl p-4">
               <div className="flex gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-lg">
