@@ -5,6 +5,7 @@ import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { supabase, type Business } from '../_shared/supabase.ts';
 import { parseTwilioBody, twiml, TwiML, sendSMS, validateTwilioSignature } from '../_shared/twilio.ts';
 import { generateGreeting } from '../_shared/gemini.ts';
+import { checkRateLimit } from '../_shared/rate-limit.ts';
 
 serve(async (req) => {
   try {
@@ -21,10 +22,19 @@ serve(async (req) => {
       return twiml(TwiML.reject('rejected'));
     }
     
+    // Rate limiting: 10 calls per minute per phone number
+    const fromPhone = params.From;
+    const rateLimitKey = `voice:${fromPhone}`;
+    const rateLimit = checkRateLimit(rateLimitKey, 10, 60);
+    
+    if (!rateLimit.allowed) {
+      console.warn('Rate limit exceeded for', fromPhone, '- rejecting call');
+      return twiml(TwiML.reject('busy'));
+    }
+    
     console.log('Voice webhook received:', params);
     
     const toPhone = params.To; // Our Twilio number
-    const fromPhone = params.From; // Caller's phone
     const callStatus = params.CallStatus;
     const callSid = params.CallSid;
     

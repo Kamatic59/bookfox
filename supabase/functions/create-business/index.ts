@@ -2,6 +2,7 @@
 // Uses service role to bypass RLS, but validates JWT first
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { checkRateLimit, getRateLimitKey, rateLimitResponse } from '../_shared/rate-limit.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,6 +13,15 @@ Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
+  }
+
+  // Rate limiting: 5 requests per minute per IP
+  const rateLimitKey = getRateLimitKey(req, 'create-business');
+  const rateLimit = checkRateLimit(rateLimitKey, 5, 60);
+  
+  if (!rateLimit.allowed) {
+    console.warn('Rate limit exceeded for create-business:', rateLimitKey);
+    return rateLimitResponse(rateLimit);
   }
 
   try {

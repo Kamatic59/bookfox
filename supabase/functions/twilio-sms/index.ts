@@ -5,6 +5,7 @@ import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { supabase } from '../_shared/supabase.ts';
 import { parseTwilioBody, twiml, TwiML, sendSMS, validateTwilioSignature, sanitizeInput } from '../_shared/twilio.ts';
 import { generateResponse, shouldEscalate } from '../_shared/gemini.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 
 serve(async (req) => {
   try {
@@ -21,10 +22,19 @@ serve(async (req) => {
       return twiml(''); // Empty response for invalid signature
     }
     
+    // Rate limiting: 60 messages per minute per phone number
+    const fromPhone = params.From;
+    const rateLimitKey = `sms:${fromPhone}`;
+    const rateLimit = checkRateLimit(rateLimitKey, 60, 60);
+    
+    if (!rateLimit.allowed) {
+      console.warn('Rate limit exceeded for', fromPhone, '- ignoring message');
+      return twiml(''); // Silently ignore (don't send 429 to Twilio)
+    }
+    
     console.log('SMS webhook received:', params);
     
     const toPhone = params.To; // Our Twilio number
-    const fromPhone = params.From; // Customer's phone
     const messageBody = sanitizeInput(params.Body); // Sanitize user input!
     const messageSid = params.MessageSid;
     

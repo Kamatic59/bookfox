@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { setUser as setSentryUser } from '../lib/sentry';
 
 const AuthContext = createContext({});
 
@@ -32,9 +33,12 @@ export function AuthProvider({ children }) {
           return;
         }
         
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          loadBusiness(session.user.id);
+        const newUser = session?.user ?? null;
+        setUser(newUser);
+        setSentryUser(newUser); // Track user in Sentry
+        
+        if (newUser) {
+          loadBusiness(newUser.id);
         } else {
           setLoading(false);
         }
