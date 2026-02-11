@@ -655,26 +655,6 @@ export default function Landing() {
           </div>
         </div>
       </footer>
-
-      {/* ==================== */}
-      {/* STICKY MOBILE CTA */}
-      {/* ==================== */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-xl border-t border-slate-200/50 z-50 lg:hidden">
-        <Link 
-          to="/signup" 
-          className="
-            block w-full py-4 rounded-2xl text-center font-bold text-xl text-white
-            bg-gradient-to-r from-orange-500 to-orange-600
-            shadow-[0_4px_24px_rgba(249,115,22,0.4)]
-            active:scale-[0.98] transition-transform
-          "
-        >
-          Get Demo
-        </Link>
-      </div>
-      
-      {/* Spacer for sticky CTA */}
-      <div className="h-24 lg:hidden" />
     </div>
   );
 }
