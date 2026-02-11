@@ -3,7 +3,7 @@
 
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { supabase } from '../_shared/supabase.ts';
-import { parseTwilioBody, twiml, TwiML, sendSMS } from '../_shared/twilio.ts';
+import { parseTwilioBody, twiml, TwiML, sendSMS, validateTwilioSignature, sanitizeInput } from '../_shared/twilio.ts';
 import { generateResponse, shouldEscalate } from '../_shared/gemini.ts';
 
 serve(async (req) => {
@@ -11,11 +11,21 @@ serve(async (req) => {
     const body = await req.text();
     const params = parseTwilioBody(body);
     
+    // Validate Twilio signature for security
+    const signature = req.headers.get('X-Twilio-Signature') || '';
+    const url = req.url;
+    const isValid = await validateTwilioSignature(signature, url, params);
+    
+    if (!isValid) {
+      console.error('Invalid Twilio signature - rejecting SMS webhook');
+      return twiml(''); // Empty response for invalid signature
+    }
+    
     console.log('SMS webhook received:', params);
     
     const toPhone = params.To; // Our Twilio number
     const fromPhone = params.From; // Customer's phone
-    const messageBody = params.Body;
+    const messageBody = sanitizeInput(params.Body); // Sanitize user input!
     const messageSid = params.MessageSid;
     
     // Find the business by Twilio phone number

@@ -32,22 +32,55 @@ export async function sendSMS(to: string, from: string, body: string): Promise<{
 }
 
 // Validate Twilio webhook signature
-export function validateTwilioSignature(
+// See: https://www.twilio.com/docs/usage/security#validating-requests
+export async function validateTwilioSignature(
   signature: string,
   url: string,
   params: Record<string, string>
-): boolean {
-  // TODO: Implement proper signature validation
-  // For now, we'll trust requests (add validation before production!)
-  // See: https://www.twilio.com/docs/usage/security#validating-requests
-  
+): Promise<boolean> {
   if (!signature) {
-    console.warn('No Twilio signature provided - skipping validation');
-    return true; // Allow for development
+    console.warn('No Twilio signature provided - REJECTING request');
+    return false; // Production: reject unsigned requests
   }
   
-  // In production, implement HMAC-SHA1 validation here
-  return true;
+  const authToken = TWILIO_AUTH_TOKEN;
+  
+  // Build the data string: URL + sorted params concatenated
+  const sortedKeys = Object.keys(params).sort();
+  let data = url;
+  for (const key of sortedKeys) {
+    data += key + params[key];
+  }
+  
+  // Compute HMAC-SHA1 signature
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(authToken);
+  const messageData = encoder.encode(data);
+  
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-1' },
+    false,
+    ['sign']
+  );
+  
+  const signature_bytes = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+  
+  // Convert to base64
+  const computedSignature = btoa(String.fromCharCode(...new Uint8Array(signature_bytes)));
+  
+  const isValid = signature === computedSignature;
+  
+  if (!isValid) {
+    console.error('Twilio signature validation FAILED', {
+      expected: signature,
+      computed: computedSignature,
+      url,
+    });
+  }
+  
+  return isValid;
 }
 
 // Generate TwiML response
@@ -86,6 +119,24 @@ function escapeXml(text: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
+}
+
+// Sanitize customer input to prevent injection attacks
+export function sanitizeInput(text: string): string {
+  if (!text) return '';
+  
+  return text
+    // Remove potential script tags
+    .replace(/<script[^>]*>.*?<\/script>/gi, '')
+    .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '')
+    // Remove javascript: protocol
+    .replace(/javascript:/gi, '')
+    // Remove on* event handlers
+    .replace(/on\w+\s*=/gi, '')
+    // Limit length (SMS is max 1600 chars)
+    .slice(0, 1600)
+    // Trim whitespace
+    .trim();
 }
 
 // Parse form-urlencoded body from Twilio webhook

@@ -3,13 +3,23 @@
 
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { supabase, type Business } from '../_shared/supabase.ts';
-import { parseTwilioBody, twiml, TwiML, sendSMS } from '../_shared/twilio.ts';
+import { parseTwilioBody, twiml, TwiML, sendSMS, validateTwilioSignature } from '../_shared/twilio.ts';
 import { generateGreeting } from '../_shared/gemini.ts';
 
 serve(async (req) => {
   try {
     const body = await req.text();
     const params = parseTwilioBody(body);
+    
+    // Validate Twilio signature for security
+    const signature = req.headers.get('X-Twilio-Signature') || '';
+    const url = req.url;
+    const isValid = await validateTwilioSignature(signature, url, params);
+    
+    if (!isValid) {
+      console.error('Invalid Twilio signature - rejecting request');
+      return twiml(TwiML.reject('rejected'));
+    }
     
     console.log('Voice webhook received:', params);
     
