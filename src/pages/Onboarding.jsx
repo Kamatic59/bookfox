@@ -104,8 +104,8 @@ export default function Onboarding() {
         
         <GlassCard className="max-w-xl w-full p-8 lg:p-12 relative z-10">
           <FadeIn delay={0}>
-            <div className="relative w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary-500/30">
-              <img src="/logo.png" alt="BookFox" className="w-14 h-14" />
+            <div className="relative w-24 h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary-500/30">
+              <img src="/logo.png" alt="BookFox" className="w-16 h-16 lg:w-20 lg:h-20" />
               <div className="absolute inset-0 bg-primary-400/30 rounded-2xl blur-xl scale-150" />
             </div>
           </FadeIn>

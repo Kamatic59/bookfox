@@ -34,9 +34,9 @@ export default function Signup() {
       {/* Left - Form */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
-          <Link to="/" className="inline-flex items-center gap-2 mb-8">
-            <img src="/logo.png" alt="BookFox" className="w-10 h-10" />
-            <span className="text-xl font-bold text-stone-800">Book<span className="text-primary-600">Fox</span></span>
+          <Link to="/" className="inline-flex items-center gap-3 mb-8">
+            <img src="/logo.png" alt="BookFox" className="w-14 h-14" />
+            <span className="text-2xl font-bold text-stone-800">Book<span className="text-primary-600">Fox</span></span>
           </Link>
 
           <h1 className="text-3xl font-bold text-stone-800 mb-2">Start Your <span className="text-primary-600">Free Trial</span></h1>

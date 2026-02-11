@@ -168,10 +168,10 @@ export default function DashboardLayout() {
         {/* Logo */}
         <div className={`p-4 border-b border-stone-100 flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
           {sidebarCollapsed ? (
-            <img src="/logo.png" alt="BookFox" className="w-10 h-10" />
+            <img src="/logo.png" alt="BookFox" className="w-12 h-12" />
           ) : (
-            <div className="flex items-center gap-2.5">
-              <img src="/logo.png" alt="BookFox" className="w-10 h-10" />
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="BookFox" className="w-12 h-12" />
               <span className="text-xl font-bold text-stone-800">
                 Book<span className="text-primary-600">Fox</span>
               </span>
@@ -305,7 +305,7 @@ export default function DashboardLayout() {
 
             {/* Mobile logo */}
             <div className="lg:hidden">
-              <img src="/logo.png" alt="BookFox" className="w-9 h-9" />
+              <img src="/logo.png" alt="BookFox" className="w-11 h-11" />
             </div>
 
             {/* Search - hidden on mobile */}

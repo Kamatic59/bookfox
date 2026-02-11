@@ -157,12 +157,12 @@ export default function Landing() {
           
           {/* Logo */}
           <FadeIn delay={0}>
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-4 mb-8">
               <div className="relative">
-                <img src="/logo.png" alt="BookFox" className="w-12 h-12 relative z-10" />
+                <img src="/logo.png" alt="BookFox" className="w-16 h-16 lg:w-20 lg:h-20 relative z-10" />
                 <div className="absolute inset-0 bg-primary-400/30 rounded-full blur-xl scale-150" />
               </div>
-              <span className="text-2xl font-bold">Book<span className="text-primary-600">Fox</span></span>
+              <span className="text-3xl lg:text-4xl font-bold">Book<span className="text-primary-600">Fox</span></span>
             </div>
           </FadeIn>
           
@@ -481,9 +481,9 @@ export default function Landing() {
         <div className="max-w-2xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="relative">
-              <img src="/logo.png" alt="BookFox" className="w-8 h-8" />
+              <img src="/logo.png" alt="BookFox" className="w-10 h-10" />
             </div>
-            <span className="font-bold text-lg">Book<span className="text-primary-600">Fox</span></span>
+            <span className="font-bold text-xl">Book<span className="text-primary-600">Fox</span></span>
           </div>
           <p className="text-slate-400 text-sm mb-3">© 2026 BookFox</p>
           <div className="flex justify-center gap-6 text-slate-400 text-sm">
