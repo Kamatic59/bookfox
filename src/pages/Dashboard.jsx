@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLeads } from '../hooks/useLeads';
 import { useConversations } from '../hooks/useConversations';
+import { useCallActivity, useWeeklyStats } from '../hooks/useCallActivity';
 import { FadeIn, GlassCard } from '../components/shared/Animations';
 
 // Premium stat card with gradient background
@@ -180,6 +181,8 @@ export default function Dashboard() {
   const { business, loading: authLoading } = useAuth();
   const { leads, loading: leadsLoading } = useLeads();
   const { conversations, loading: convoLoading } = useConversations();
+  const { activity, loading: activityLoading } = useCallActivity(10);
+  const { weeklyData, loading: weeklyLoading } = useWeeklyStats();
   const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
@@ -233,24 +236,8 @@ export default function Dashboard() {
   const qualifiedLeads = leads?.filter(l => l.status === 'qualified') || [];
   const activeConvos = conversations?.filter(c => c.status === 'active') || [];
 
-  // Mock weekly data for chart
-  const weeklyData = [
-    { label: 'Mon', value: 5 },
-    { label: 'Tue', value: 8 },
-    { label: 'Wed', value: 3 },
-    { label: 'Thu', value: 12 },
-    { label: 'Fri', value: 7 },
-    { label: 'Sat', value: 2 },
-    { label: 'Sun', value: 1 },
-  ];
-
-  // Mock activity data
-  const recentActivity = [
-    { icon: '📞', title: 'Missed call from (385) 555-0123', description: 'AI sent follow-up SMS', time: '2 min ago', type: 'call' },
-    { icon: '💬', title: 'New message from John D.', description: 'Looking for a quote on water heater...', time: '15 min ago', type: 'message' },
-    { icon: '📅', title: 'Appointment booked', description: 'Sarah M. - Pipe repair - Tomorrow 2pm', time: '1 hr ago', type: 'booking' },
-    { icon: '✨', title: 'New lead qualified', description: 'Mike T. - Emergency plumbing - Hot lead', time: '2 hrs ago', type: 'lead' },
-  ];
+  // Use real activity data
+  const recentActivity = activity;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -322,17 +309,38 @@ export default function Dashboard() {
                 <option>This Year</option>
               </select>
             </div>
-            <MiniBarChart data={weeklyData} />
-            <div className="mt-6 pt-4 border-t border-slate-200/50 flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold text-slate-800">38</p>
-                <p className="text-slate-600 text-sm">Total leads this week</p>
+            {weeklyLoading ? (
+              <div className="h-48 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-3"></div>
+                  <p className="text-slate-500 text-sm">Loading stats...</p>
+                </div>
               </div>
-              <div className="text-right bg-green-50 rounded-xl px-4 py-2">
-                <p className="text-green-700 font-semibold">+15%</p>
-                <p className="text-green-600 text-sm">vs last week</p>
+            ) : weeklyData.length > 0 ? (
+              <>
+                <MiniBarChart data={weeklyData} />
+                <div className="mt-6 pt-4 border-t border-slate-200/50 flex items-center justify-between">
+                  <div>
+                    <p className="text-2xl font-bold text-slate-800">{weeklyData.reduce((sum, day) => sum + day.value, 0)}</p>
+                    <p className="text-slate-600 text-sm">Total leads this week</p>
+                  </div>
+                  {weeklyData.reduce((sum, day) => sum + day.value, 0) > 0 && (
+                    <div className="text-right bg-primary-50 rounded-xl px-4 py-2">
+                      <p className="text-primary-700 font-semibold">Active</p>
+                      <p className="text-primary-600 text-sm">Tracking</p>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="h-48 flex items-center justify-center">
+                <div className="text-center">
+                  <span className="text-5xl mb-3 block">📊</span>
+                  <p className="text-slate-600 font-medium">No data yet</p>
+                  <p className="text-slate-500 text-sm">Stats will appear when you start getting leads</p>
+                </div>
               </div>
-            </div>
+            )}
           </GlassCard>
         </FadeIn>
 
@@ -391,9 +399,29 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="divide-y divide-slate-100/50">
-            {recentActivity.map((activity, i) => (
-              <ActivityItem key={i} {...activity} />
-            ))}
+            {activityLoading ? (
+              <div className="p-6 space-y-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 animate-pulse">
+                    <div className="w-11 h-11 bg-slate-200 rounded-full" />
+                    <div className="flex-1">
+                      <div className="h-4 bg-slate-200 rounded w-48 mb-2" />
+                      <div className="h-3 bg-slate-100 rounded w-32" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : recentActivity.length > 0 ? (
+              recentActivity.map((activity) => (
+                <ActivityItem key={activity.id} {...activity} />
+              ))
+            ) : (
+              <EmptyState 
+                icon="📞"
+                title="No activity yet"
+                description="Call and message activity will appear here once your Twilio number is set up."
+              />
+            )}
           </div>
           </GlassCard>
         </FadeIn>

@@ -19,7 +19,7 @@ function SettingsSection({ title, description, children, delay = 0 }) {
 }
 
 // Input field component
-function InputField({ label, type = 'text', value, onChange, placeholder, helpText, disabled }) {
+function InputField({ label, type = 'text', value, onChange, placeholder, helpText, disabled, error }) {
   return (
     <div>
       <label className="block text-sm font-medium text-stone-700 mb-2">{label}</label>
@@ -29,7 +29,27 @@ function InputField({ label, type = 'text', value, onChange, placeholder, helpTe
         onChange={onChange}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all disabled:bg-stone-100 disabled:text-stone-500"
+        className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all disabled:bg-stone-100 disabled:text-stone-500 ${
+          error ? 'border-red-300' : 'border-stone-300'
+        }`}
+      />
+      {helpText && <p className="text-stone-500 text-xs mt-2">{helpText}</p>}
+      {error && <p className="text-red-600 text-xs mt-2">{error}</p>}
+    </div>
+  );
+}
+
+// Textarea component
+function TextArea({ label, value, onChange, placeholder, helpText, rows = 3 }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-stone-700 mb-2">{label}</label>
+      <textarea
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        rows={rows}
+        className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all resize-none"
       />
       {helpText && <p className="text-stone-500 text-xs mt-2">{helpText}</p>}
     </div>
@@ -46,7 +66,7 @@ function Toggle({ enabled, onChange, label, description }) {
       </div>
       <button
         onClick={() => onChange(!enabled)}
-        className={`relative w-12 h-6 rounded-full transition-colors ${
+        className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${
           enabled ? 'bg-primary-600' : 'bg-stone-300'
         }`}
       >
@@ -63,36 +83,46 @@ function Toggle({ enabled, onChange, label, description }) {
 export default function Settings() {
   const { business, user, refreshBusiness } = useAuth();
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState('business');
+  const [activeTab, setActiveTab] = useState('twilio');
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  
+  // Twilio settings
+  const [twilioPhone, setTwilioPhone] = useState('');
+  const [twilioConfigured, setTwilioConfigured] = useState(false);
   
   // Business settings
   const [businessName, setBusinessName] = useState('');
-  const [businessPhone, setBusinessPhone] = useState('');
   const [businessEmail, setBusinessEmail] = useState('');
   const [businessAddress, setBusinessAddress] = useState('');
-  const [businessTimezone, setBusinessTimezone] = useState('America/Denver');
   
   // AI settings
   const [aiSettings, setAiSettings] = useState({
     auto_respond: true,
     assistant_name: 'BookFox',
-    greeting_template: '',
+    services_offered: [],
+    pricing_notes: '',
+    qualification_questions: [],
     response_delay_seconds: 30,
     max_messages_before_human: 10,
   });
+  
+  // Service input
+  const [newService, setNewService] = useState('');
+  const [newQuestion, setNewQuestion] = useState('');
 
-  // Load settings
+  // Load business settings
   useEffect(() => {
     if (business) {
       setBusinessName(business.name || '');
-      setBusinessPhone(business.phone || '');
       setBusinessEmail(business.email || '');
       setBusinessAddress(business.address_line1 || '');
-      setBusinessTimezone(business.timezone || 'America/Denver');
+      setTwilioPhone(business.twilio_phone || '');
+      setTwilioConfigured(!!business.twilio_phone);
     }
   }, [business]);
 
+  // Load AI settings
   useEffect(() => {
     async function loadAiSettings() {
       if (!business?.id) return;
@@ -107,36 +137,75 @@ export default function Settings() {
         setAiSettings({
           auto_respond: data.auto_respond ?? true,
           assistant_name: data.assistant_name || 'BookFox',
-          greeting_template: data.greeting_template || '',
+          services_offered: data.services_offered || [],
+          pricing_notes: data.pricing_notes || '',
+          qualification_questions: data.qualification_questions || [],
           response_delay_seconds: data.response_delay_seconds || 30,
           max_messages_before_human: data.max_messages_before_human || 10,
+        });
+      } else if (error && error.code === 'PGRST116') {
+        // No settings yet, create default
+        await supabase.from('ai_settings').insert({
+          business_id: business.id,
+          ...aiSettings,
         });
       }
     }
     loadAiSettings();
   }, [business?.id]);
 
-  const handleSaveBusinessSettings = async () => {
+  const handleSaveTwilio = async () => {
     setSaving(true);
+    setErrorMessage('');
     try {
+      // Validate phone format
+      const phoneRegex = /^\+?[1-9]\d{10,14}$/;
+      if (!phoneRegex.test(twilioPhone.replace(/[\s()-]/g, ''))) {
+        throw new Error('Invalid phone format. Use: +15551234567');
+      }
+
       const { error } = await supabase
         .from('businesses')
         .update({
-          name: businessName,
-          phone: businessPhone,
-          email: businessEmail,
-          address_line1: businessAddress,
-          timezone: businessTimezone,
+          twilio_phone: twilioPhone,
         })
         .eq('id', business.id);
       
       if (error) throw error;
       
       await refreshBusiness();
-      setSuccessMessage('Settings saved successfully!');
+      setTwilioConfigured(true);
+      setSuccessMessage('Twilio number saved! Configure your Twilio webhooks now.');
+      setTimeout(() => setSuccessMessage(''), 5000);
+    } catch (error) {
+      console.error('Failed to save Twilio settings:', error);
+      setErrorMessage(error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveBusinessSettings = async () => {
+    setSaving(true);
+    setErrorMessage('');
+    try {
+      const { error } = await supabase
+        .from('businesses')
+        .update({
+          name: businessName,
+          email: businessEmail,
+          address_line1: businessAddress,
+        })
+        .eq('id', business.id);
+      
+      if (error) throw error;
+      
+      await refreshBusiness();
+      setSuccessMessage('Business settings saved!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error('Failed to save settings:', error);
+      setErrorMessage(error.message);
     } finally {
       setSaving(false);
     }
@@ -144,30 +213,70 @@ export default function Settings() {
 
   const handleSaveAiSettings = async () => {
     setSaving(true);
+    setErrorMessage('');
     try {
       const { error } = await supabase
         .from('ai_settings')
-        .update(aiSettings)
-        .eq('business_id', business.id);
+        .upsert({
+          business_id: business.id,
+          ...aiSettings,
+        }, {
+          onConflict: 'business_id'
+        });
       
       if (error) throw error;
       
-      setSuccessMessage('AI settings saved successfully!');
+      setSuccessMessage('AI settings saved!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error('Failed to save AI settings:', error);
+      setErrorMessage(error.message);
     } finally {
       setSaving(false);
     }
   };
 
+  const addService = () => {
+    if (newService.trim()) {
+      setAiSettings({
+        ...aiSettings,
+        services_offered: [...aiSettings.services_offered, newService.trim()]
+      });
+      setNewService('');
+    }
+  };
+
+  const removeService = (index) => {
+    setAiSettings({
+      ...aiSettings,
+      services_offered: aiSettings.services_offered.filter((_, i) => i !== index)
+    });
+  };
+
+  const addQuestion = () => {
+    if (newQuestion.trim()) {
+      setAiSettings({
+        ...aiSettings,
+        qualification_questions: [...aiSettings.qualification_questions, newQuestion.trim()]
+      });
+      setNewQuestion('');
+    }
+  };
+
+  const removeQuestion = (index) => {
+    setAiSettings({
+      ...aiSettings,
+      qualification_questions: aiSettings.qualification_questions.filter((_, i) => i !== index)
+    });
+  };
+
   const tabs = [
-    { id: 'business', label: 'Business', icon: '🏢' },
+    { id: 'twilio', label: 'Phone Setup', icon: '📞' },
     { id: 'ai', label: 'AI Assistant', icon: '🤖' },
-    { id: 'integrations', label: 'Integrations', icon: '🔗' },
-    { id: 'billing', label: 'Billing', icon: '💳' },
-    { id: 'team', label: 'Team', icon: '👥' },
+    { id: 'business', label: 'Business Info', icon: '🏢' },
   ];
+
+  const webhookUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
 
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto">
@@ -175,7 +284,7 @@ export default function Settings() {
       <FadeIn>
         <div className="mb-8">
           <h1 className="text-2xl lg:text-4xl font-bold text-slate-800">Settings</h1>
-          <p className="text-slate-600 mt-1">Manage your business and AI configuration</p>
+          <p className="text-slate-600 mt-1">Configure your AI receptionist</p>
         </div>
       </FadeIn>
 
@@ -185,6 +294,16 @@ export default function Settings() {
           <div className="mb-6 p-4 bg-green-50/80 backdrop-blur-sm border border-green-200 text-green-700 rounded-xl flex items-center gap-3 shadow-sm">
             <span className="text-xl">✅</span>
             {successMessage}
+          </div>
+        </FadeIn>
+      )}
+
+      {/* Error Message */}
+      {errorMessage && (
+        <FadeIn delay={100}>
+          <div className="mb-6 p-4 bg-red-50/80 backdrop-blur-sm border border-red-200 text-red-700 rounded-xl flex items-center gap-3 shadow-sm">
+            <span className="text-xl">⚠️</span>
+            {errorMessage}
           </div>
         </FadeIn>
       )}
@@ -209,7 +328,264 @@ export default function Settings() {
         </div>
       </FadeIn>
 
-      {/* Business Settings */}
+      {/* TWILIO SETUP TAB */}
+      {activeTab === 'twilio' && (
+        <div className="space-y-6">
+          <SettingsSection 
+            title="Twilio Phone Number" 
+            delay={200} 
+            description="Connect your Twilio phone number to receive calls and texts"
+          >
+            <div className="space-y-6">
+              {!twilioConfigured && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">⚠️</span>
+                    <div>
+                      <p className="font-semibold text-amber-800">Setup Required</p>
+                      <p className="text-amber-700 text-sm mt-1">
+                        You need a Twilio phone number to receive calls. Don't have one yet?{' '}
+                        <a href="https://console.twilio.com/us1/develop/phone-numbers/manage/search" target="_blank" rel="noopener noreferrer" className="underline font-medium">
+                          Buy one from Twilio ($1-5/month) →
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <InputField
+                label="Twilio Phone Number"
+                value={twilioPhone}
+                onChange={(e) => setTwilioPhone(e.target.value)}
+                placeholder="+15551234567"
+                helpText="Format: +1 followed by 10 digits (no spaces or dashes)"
+              />
+
+              {twilioConfigured && (
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">✅</span>
+                    <div className="flex-1">
+                      <p className="font-semibold text-green-800">Phone Number Configured</p>
+                      <p className="text-green-700 text-sm mt-1">
+                        Now configure your Twilio webhooks to complete setup.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={handleSaveTwilio}
+                disabled={saving || !twilioPhone}
+                className="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? 'Saving...' : twilioConfigured ? 'Update Phone Number' : 'Save Phone Number'}
+              </button>
+            </div>
+          </SettingsSection>
+
+          {twilioConfigured && (
+            <SettingsSection 
+              title="Webhook Configuration" 
+              delay={300} 
+              description="Copy these URLs into your Twilio phone number settings"
+            >
+              <div className="space-y-4">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                  <p className="text-sm font-semibold text-slate-700 mb-2">Voice Webhook (When a call comes in)</p>
+                  <code className="block bg-white p-3 rounded-lg text-sm text-slate-700 font-mono border border-slate-200 break-all">
+                    {webhookUrl}/twilio-voice
+                  </code>
+                  <p className="text-xs text-slate-500 mt-2">
+                    Set this in: Twilio Console → Phone Numbers → {twilioPhone} → Voice Configuration → "A CALL COMES IN" → Webhook
+                  </p>
+                </div>
+
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                  <p className="text-sm font-semibold text-slate-700 mb-2">SMS Webhook (When a message comes in)</p>
+                  <code className="block bg-white p-3 rounded-lg text-sm text-slate-700 font-mono border border-slate-200 break-all">
+                    {webhookUrl}/twilio-sms
+                  </code>
+                  <p className="text-xs text-slate-500 mt-2">
+                    Set this in: Twilio Console → Phone Numbers → {twilioPhone} → Messaging Configuration → "A MESSAGE COMES IN" → Webhook
+                  </p>
+                </div>
+
+                <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl">💡</span>
+                    <div>
+                      <p className="font-semibold text-primary-800">Quick Setup Guide</p>
+                      <ol className="text-primary-700 text-sm mt-2 space-y-1 list-decimal list-inside">
+                        <li>Go to <a href="https://console.twilio.com/us1/develop/phone-numbers/manage/active" target="_blank" rel="noopener noreferrer" className="underline font-medium">Twilio Console → Active Numbers</a></li>
+                        <li>Click your phone number ({twilioPhone})</li>
+                        <li>Scroll to "Voice Configuration" → paste Voice Webhook URL</li>
+                        <li>Scroll to "Messaging Configuration" → paste SMS Webhook URL</li>
+                        <li>Click "Save" at the bottom</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SettingsSection>
+          )}
+        </div>
+      )}
+
+      {/* AI ASSISTANT TAB */}
+      {activeTab === 'ai' && (
+        <div className="space-y-6">
+          <SettingsSection title="Assistant Identity" delay={200} description="How your AI introduces itself">
+            <div className="space-y-4">
+              <InputField
+                label="Assistant Name"
+                value={aiSettings.assistant_name}
+                onChange={(e) => setAiSettings({ ...aiSettings, assistant_name: e.target.value })}
+                placeholder="BookFox"
+                helpText="What should the AI call itself when talking to customers?"
+              />
+
+              <Toggle
+                enabled={aiSettings.auto_respond}
+                onChange={(val) => setAiSettings({ ...aiSettings, auto_respond: val })}
+                label="Auto-Respond to Missed Calls"
+                description="Automatically text customers when they call and you can't answer"
+              />
+
+              <div>
+                <label className="block text-sm font-medium text-stone-700 mb-2">Response Delay (seconds)</label>
+                <input
+                  type="number"
+                  value={aiSettings.response_delay_seconds}
+                  onChange={(e) => setAiSettings({ ...aiSettings, response_delay_seconds: parseInt(e.target.value) || 30 })}
+                  min="0"
+                  max="300"
+                  className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none"
+                />
+                <p className="text-stone-500 text-xs mt-2">
+                  How long to wait before sending the first SMS after a missed call (0-300 seconds)
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-stone-700 mb-2">Max Messages Before Human Handoff</label>
+                <input
+                  type="number"
+                  value={aiSettings.max_messages_before_human}
+                  onChange={(e) => setAiSettings({ ...aiSettings, max_messages_before_human: parseInt(e.target.value) || 10 })}
+                  min="3"
+                  max="50"
+                  className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none"
+                />
+                <p className="text-stone-500 text-xs mt-2">
+                  After this many messages, escalate to a human team member
+                </p>
+              </div>
+            </div>
+          </SettingsSection>
+
+          <SettingsSection title="Services Offered" delay={300} description="What services do you provide?">
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newService}
+                  onChange={(e) => setNewService(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && addService()}
+                  placeholder="e.g., Water heater repair"
+                  className="flex-1 px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none"
+                />
+                <button
+                  onClick={addService}
+                  className="px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition"
+                >
+                  Add
+                </button>
+              </div>
+
+              {aiSettings.services_offered.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {aiSettings.services_offered.map((service, index) => (
+                    <div key={index} className="flex items-center gap-2 px-3 py-2 bg-primary-100 text-primary-700 rounded-lg">
+                      <span className="text-sm">{service}</span>
+                      <button
+                        onClick={() => removeService(index)}
+                        className="text-primary-600 hover:text-primary-800 font-bold"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-stone-500 text-sm italic">No services added yet. Add your first service above.</p>
+              )}
+            </div>
+          </SettingsSection>
+
+          <SettingsSection title="Pricing Information" delay={400} description="Help the AI discuss pricing with customers">
+            <TextArea
+              label="Pricing Notes"
+              value={aiSettings.pricing_notes}
+              onChange={(e) => setAiSettings({ ...aiSettings, pricing_notes: e.target.value })}
+              placeholder="e.g., $150-300 for most jobs, emergency calls add $50, free estimates available"
+              helpText="The AI will use this to answer pricing questions (doesn't have to be exact)"
+              rows={4}
+            />
+          </SettingsSection>
+
+          <SettingsSection title="Qualification Questions" delay={500} description="What should the AI ask to qualify leads?">
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newQuestion}
+                  onChange={(e) => setNewQuestion(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && addQuestion()}
+                  placeholder="e.g., Is this an emergency?"
+                  className="flex-1 px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none"
+                />
+                <button
+                  onClick={addQuestion}
+                  className="px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition"
+                >
+                  Add
+                </button>
+              </div>
+
+              {aiSettings.qualification_questions.length > 0 ? (
+                <div className="space-y-2">
+                  {aiSettings.qualification_questions.map((question, index) => (
+                    <div key={index} className="flex items-center justify-between gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                      <span className="text-sm text-slate-700">{question}</span>
+                      <button
+                        onClick={() => removeQuestion(index)}
+                        className="text-red-600 hover:text-red-800 font-bold flex-shrink-0"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-stone-500 text-sm italic">No questions added yet. Add your first question above.</p>
+              )}
+            </div>
+          </SettingsSection>
+
+          <button
+            onClick={handleSaveAiSettings}
+            disabled={saving}
+            className="w-full bg-primary-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-primary-700 transition disabled:opacity-50"
+          >
+            {saving ? 'Saving...' : 'Save AI Settings'}
+          </button>
+        </div>
+      )}
+
+      {/* BUSINESS INFO TAB */}
       {activeTab === 'business' && (
         <div className="space-y-6">
           <SettingsSection title="Business Information" delay={200} description="Basic details about your business">
@@ -220,280 +596,30 @@ export default function Settings() {
                 onChange={(e) => setBusinessName(e.target.value)}
                 placeholder="Acme Plumbing Co."
               />
-              <div className="grid md:grid-cols-2 gap-4">
-                <InputField
-                  label="Phone Number"
-                  value={businessPhone}
-                  onChange={(e) => setBusinessPhone(e.target.value)}
-                  placeholder="(385) 555-0100"
-                />
-                <InputField
-                  label="Email"
-                  type="email"
-                  value={businessEmail}
-                  onChange={(e) => setBusinessEmail(e.target.value)}
-                  placeholder="contact@acmeplumbing.com"
-                />
-              </div>
+              
+              <InputField
+                label="Email"
+                type="email"
+                value={businessEmail}
+                onChange={(e) => setBusinessEmail(e.target.value)}
+                placeholder="contact@acmeplumbing.com"
+              />
+              
               <InputField
                 label="Business Address"
                 value={businessAddress}
                 onChange={(e) => setBusinessAddress(e.target.value)}
                 placeholder="123 Main St, Salt Lake City, UT"
               />
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-2">Timezone</label>
-                <select
-                  value={businessTimezone}
-                  onChange={(e) => setBusinessTimezone(e.target.value)}
-                  className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                >
-                  <option value="America/New_York">Eastern Time</option>
-                  <option value="America/Chicago">Central Time</option>
-                  <option value="America/Denver">Mountain Time</option>
-                  <option value="America/Los_Angeles">Pacific Time</option>
-                </select>
-              </div>
-            </div>
-            <div className="mt-6 flex justify-end">
+
               <button
                 onClick={handleSaveBusinessSettings}
                 disabled={saving}
-                className="px-6 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-all"
+                className="w-full bg-primary-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-primary-700 transition disabled:opacity-50"
               >
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? 'Saving...' : 'Save Business Info'}
               </button>
             </div>
-          </SettingsSection>
-
-          <SettingsSection title="BookFox Phone Number" delay={300} description="Your dedicated phone number for catching missed calls">
-            <div className="flex items-center justify-between p-4 bg-stone-50 rounded-xl">
-              <div>
-                <p className="font-mono text-xl font-bold text-stone-800">
-                  {business?.twilio_phone || 'Not configured'}
-                </p>
-                <p className="text-stone-500 text-sm mt-1">
-                  Forward your business calls to this number to catch missed calls
-                </p>
-              </div>
-              {business?.twilio_phone ? (
-                <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
-                  Active
-                </span>
-              ) : (
-                <button className="px-4 py-2 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 transition-all">
-                  Setup Number
-                </button>
-              )}
-            </div>
-          </SettingsSection>
-        </div>
-      )}
-
-      {/* AI Settings */}
-      {activeTab === 'ai' && (
-        <div className="space-y-6">
-          <SettingsSection title="AI Behavior" delay={200} description="Control how your AI assistant responds to customers">
-            <div className="space-y-6">
-              <Toggle
-                enabled={aiSettings.auto_respond}
-                onChange={(v) => setAiSettings({ ...aiSettings, auto_respond: v })}
-                label="Auto-respond to missed calls"
-                description="Automatically send an SMS when a call is missed"
-              />
-              
-              <div className="pt-4 border-t border-stone-100">
-                <InputField
-                  label="Assistant Name"
-                  value={aiSettings.assistant_name}
-                  onChange={(e) => setAiSettings({ ...aiSettings, assistant_name: e.target.value })}
-                  placeholder="BookFox"
-                  helpText="The name your AI will use when greeting customers"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-2">Greeting Template</label>
-                <textarea
-                  value={aiSettings.greeting_template}
-                  onChange={(e) => setAiSettings({ ...aiSettings, greeting_template: e.target.value })}
-                  placeholder="Hi! This is {{assistant_name}} from {{business_name}}. I noticed we missed your call. How can I help you today?"
-                  rows={3}
-                  className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none resize-none"
-                />
-                <p className="text-stone-500 text-xs mt-2">
-                  Use {'{{assistant_name}}'} and {'{{business_name}}'} as placeholders
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-2">Response Delay (seconds)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="300"
-                    value={aiSettings.response_delay_seconds}
-                    onChange={(e) => setAiSettings({ ...aiSettings, response_delay_seconds: parseInt(e.target.value) })}
-                    className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                  />
-                  <p className="text-stone-500 text-xs mt-2">Wait before sending the first SMS</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-2">Max AI Messages</label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={aiSettings.max_messages_before_human}
-                    onChange={(e) => setAiSettings({ ...aiSettings, max_messages_before_human: parseInt(e.target.value) })}
-                    className="w-full px-4 py-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                  />
-                  <p className="text-stone-500 text-xs mt-2">Auto-escalate to human after this many messages</p>
-                </div>
-              </div>
-            </div>
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={handleSaveAiSettings}
-                disabled={saving}
-                className="px-6 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-all"
-              >
-                {saving ? 'Saving...' : 'Save AI Settings'}
-              </button>
-            </div>
-          </SettingsSection>
-
-          <SettingsSection title="AI Personality Preview" delay={300} description="See how your AI will respond to customers">
-            <div className="bg-stone-50 rounded-xl p-4">
-              <div className="flex gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-lg">
-                  🦊
-                </div>
-                <div className="flex-1">
-                  <div className="bg-white rounded-2xl rounded-tl-md p-4 shadow-sm">
-                    <p className="text-stone-700">
-                      Hi! This is {aiSettings.assistant_name || 'BookFox'} from {businessName || 'your business'}. 
-                      I noticed we missed your call. How can I help you today? 🦊
-                    </p>
-                  </div>
-                  <p className="text-stone-400 text-xs mt-1.5 ml-2">AI • Just now</p>
-                </div>
-              </div>
-            </div>
-          </SettingsSection>
-        </div>
-      )}
-
-      {/* Integrations */}
-      {activeTab === 'integrations' && (
-        <div className="space-y-6">
-          <SettingsSection title="Connected Services" description="Manage your integrations">
-            <div className="space-y-4">
-              {[
-                { name: 'Twilio', icon: '📱', status: 'connected', description: 'SMS and voice calls' },
-                { name: 'Google Calendar', icon: '📅', status: 'not_connected', description: 'Sync appointments' },
-                { name: 'QuickBooks', icon: '📊', status: 'not_connected', description: 'Invoicing and payments' },
-                { name: 'Zapier', icon: '⚡', status: 'not_connected', description: 'Connect 5,000+ apps' },
-              ].map((integration) => (
-                <div key={integration.name} className="flex items-center justify-between p-4 border border-stone-200 rounded-xl">
-                  <div className="flex items-center gap-4">
-                    <span className="text-3xl">{integration.icon}</span>
-                    <div>
-                      <p className="font-medium text-stone-800">{integration.name}</p>
-                      <p className="text-stone-500 text-sm">{integration.description}</p>
-                    </div>
-                  </div>
-                  {integration.status === 'connected' ? (
-                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
-                      Connected
-                    </span>
-                  ) : (
-                    <button className="px-4 py-2 border border-stone-300 text-stone-700 font-medium rounded-xl hover:bg-stone-50 transition-all">
-                      Connect
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </SettingsSection>
-        </div>
-      )}
-
-      {/* Billing */}
-      {activeTab === 'billing' && (
-        <div className="space-y-6">
-          <SettingsSection title="Current Plan" description="Manage your subscription">
-            <div className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl p-6 text-white">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-primary-200 text-sm">Current Plan</p>
-                  <p className="text-2xl font-bold">14-Day Trial</p>
-                </div>
-                <span className="px-3 py-1 bg-primary-500/30 text-white text-sm font-medium rounded-full">
-                  Active
-                </span>
-              </div>
-              <p className="text-primary-100 mb-4">
-                Your trial ends on February 17, 2026. Upgrade now to keep your leads flowing!
-              </p>
-              <button className="w-full py-3 bg-white text-primary-600 font-semibold rounded-xl hover:bg-primary-50 transition-all">
-                Upgrade to Professional - $99/mo
-              </button>
-            </div>
-          </SettingsSection>
-
-          <SettingsSection title="Usage This Month" description="Track your usage">
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="p-4 bg-stone-50 rounded-xl">
-                <p className="text-stone-500 text-sm">Leads Captured</p>
-                <p className="text-2xl font-bold text-stone-800">23 / 100</p>
-                <div className="mt-2 h-2 bg-stone-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-primary-500 rounded-full" style={{ width: '23%' }} />
-                </div>
-              </div>
-              <div className="p-4 bg-stone-50 rounded-xl">
-                <p className="text-stone-500 text-sm">SMS Sent</p>
-                <p className="text-2xl font-bold text-stone-800">156 / 500</p>
-                <div className="mt-2 h-2 bg-stone-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500 rounded-full" style={{ width: '31%' }} />
-                </div>
-              </div>
-              <div className="p-4 bg-stone-50 rounded-xl">
-                <p className="text-stone-500 text-sm">AI Conversations</p>
-                <p className="text-2xl font-bold text-stone-800">18 / ∞</p>
-                <div className="mt-2 h-2 bg-stone-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-purple-500 rounded-full" style={{ width: '100%' }} />
-                </div>
-              </div>
-            </div>
-          </SettingsSection>
-        </div>
-      )}
-
-      {/* Team */}
-      {activeTab === 'team' && (
-        <div className="space-y-6">
-          <SettingsSection title="Team Members" description="Manage who has access to your BookFox account">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border border-stone-200 rounded-xl">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold">
-                    {user?.email?.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="font-medium text-stone-800">{user?.email}</p>
-                    <p className="text-stone-500 text-sm">Owner</p>
-                  </div>
-                </div>
-                <span className="px-3 py-1 bg-primary-100 text-primary-700 text-sm font-medium rounded-full">
-                  You
-                </span>
-              </div>
-            </div>
-            <button className="mt-4 w-full py-3 border-2 border-dashed border-stone-300 text-stone-500 font-medium rounded-xl hover:border-primary-300 hover:text-primary-600 transition-all">
-              + Invite Team Member
-            </button>
           </SettingsSection>
         </div>
       )}
