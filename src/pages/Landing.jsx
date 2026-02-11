@@ -253,57 +253,92 @@ export default function Landing() {
       </section>
 
       {/* ==================== */}
-      {/* SECTION 3: WHAT BOOKFOX DOES */}
-      {/* ==================== */}
-      <section className="relative py-20 px-6">
-        <div className="max-w-6xl mx-auto relative z-10">
-          <FadeIn>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-10 text-center">
-              What <span className="text-primary-700">BookFox</span> Does
-            </h2>
-          </FadeIn>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-            <FeatureCard icon="📞" title="Answers Every Call" desc="Even nights and weekends." delay={100} />
-            <FeatureCard icon="📅" title="Books Jobs Automatically" desc="Sends you confirmed, qualified leads." delay={200} />
-            <FeatureCard icon="🚫" title="Filters Bad Calls" desc="No tire-kickers or spam." delay={300} />
-            <FeatureCard icon="💰" title="Costs Less Than Hiring" desc="No payroll. No sick days." delay={400} />
-          </div>
-          
-          <FadeIn delay={500}>
-            <div className="mt-10">
-              <CTAButton>See It In Action</CTAButton>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ==================== */}
-      {/* SECTION 4: HOW IT WORKS */}
+      {/* SECTION 3: HOW IT WORKS */}
       {/* ==================== */}
       <section className="relative py-20 px-6 bg-gradient-to-br from-primary-900 via-blue-800 to-slate-900 text-white overflow-hidden">
         {/* Glow effects */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-primary-400/20 rounded-full blur-3xl" />
         
-        <div className="max-w-4xl mx-auto relative z-10">
+        <div className="max-w-5xl mx-auto relative z-10">
           <FadeIn>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-10 text-center">
-              How It <span className="text-primary-500">Works</span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-center">
+              How It <span className="text-primary-400">Works</span>
             </h2>
+            <p className="text-primary-200 text-lg text-center mb-12 max-w-2xl mx-auto">
+              Never miss another job. BookFox handles calls 24/7 and books appointments automatically.
+            </p>
           </FadeIn>
           
-          <ol className="space-y-6">
-            <StepItem num="1" text="Customer calls your business" delay={100} />
-            <StepItem num="2" text="BookFox answers instantly" delay={200} />
-            <StepItem num="3" text="Asks smart questions" delay={300} />
-            <StepItem num="4" text="Books the job or sends you the lead" delay={400} />
-          </ol>
+          {/* Steps with benefits */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <FadeIn delay={100}>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-2xl font-bold flex-shrink-0">
+                    1
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Customer calls</h3>
+                    <p className="text-primary-100">You're busy on a job or it's after hours - BookFox answers instantly</p>
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+            
+            <FadeIn delay={200}>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-2xl font-bold flex-shrink-0">
+                    2
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">AI qualifies the lead</h3>
+                    <p className="text-primary-100">Asks about the problem, urgency, location - just like you would</p>
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+            
+            <FadeIn delay={300}>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-2xl font-bold flex-shrink-0">
+                    3
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Books appointment</h3>
+                    <p className="text-primary-100">Checks your calendar and schedules the job - confirmed and ready</p>
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+            
+            <FadeIn delay={400}>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-2xl font-bold flex-shrink-0">
+                    4
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">You show up & get paid</h3>
+                    <p className="text-primary-100">No tire-kickers, no spam calls - just qualified jobs that make money</p>
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+          
+          <FadeIn delay={500}>
+            <div className="mt-12">
+              <CTAButton>Start Free Trial</CTAButton>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* ==================== */}
-      {/* SECTION 5: PRICING */}
+      {/* SECTION 4: PRICING */}
       {/* ==================== */}
       <section className="relative py-20 px-6">
         <div className="max-w-7xl mx-auto relative z-10">
@@ -508,7 +543,7 @@ export default function Landing() {
       </section>
 
       {/* ==================== */}
-      {/* SECTION 6: WHO IT'S FOR */}
+      {/* SECTION 5: WHO IT'S FOR */}
       {/* ==================== */}
       <section className="relative py-20 px-6">
         <div className="max-w-4xl mx-auto relative z-10">
@@ -559,7 +594,7 @@ export default function Landing() {
       </section>
 
       {/* ==================== */}
-      {/* SECTION 7: FAQ */}
+      {/* SECTION 6: FAQ */}
       {/* ==================== */}
       <section className="relative py-20 px-6">
         <div className="max-w-3xl mx-auto relative z-10">
@@ -597,7 +632,7 @@ export default function Landing() {
       </section>
 
       {/* ==================== */}
-      {/* SECTION 8: FINAL CTA */}
+      {/* SECTION 7: FINAL CTA */}
       {/* ==================== */}
       <section className="relative py-20 px-6 bg-gradient-to-br from-primary-900 via-slate-900 to-slate-900 text-white overflow-hidden">
         {/* Glow effects */}
