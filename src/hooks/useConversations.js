@@ -11,7 +11,11 @@ export function useConversations(options = {}) {
   const { status = 'active', limit = 50 } = options;
 
   useEffect(() => {
-    if (!business?.id) return;
+    if (!business?.id) {
+      setConversations([]);
+      setLoading(false);
+      return;
+    }
 
     async function fetchConversations() {
       setLoading(true);

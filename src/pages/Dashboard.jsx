@@ -177,7 +177,7 @@ function EmptyState({ icon, title, description }) {
 }
 
 export default function Dashboard() {
-  const { business } = useAuth();
+  const { business, loading: authLoading } = useAuth();
   const { leads, loading: leadsLoading } = useLeads();
   const { conversations, loading: convoLoading } = useConversations();
   const [greeting, setGreeting] = useState('');
@@ -188,6 +188,41 @@ export default function Dashboard() {
     else if (hour < 17) setGreeting('Good afternoon');
     else setGreeting('Good evening');
   }, []);
+
+  // Show loading state while auth/business is loading
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-stone-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if no business (shouldn't happen after onboarding)
+  if (!business) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Business Not Found</h2>
+          <p className="text-stone-600 mb-6">
+            We couldn't load your business. Please complete onboarding or contact support.
+          </p>
+          <Link 
+            to="/onboarding"
+            className="inline-block px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition"
+          >
+            Complete Setup
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // Calculate stats
   const today = new Date();

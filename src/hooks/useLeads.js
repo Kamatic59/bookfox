@@ -11,7 +11,11 @@ export function useLeads(options = {}) {
   const { status, limit = 50, search = '' } = options;
 
   useEffect(() => {
-    if (!business?.id) return;
+    if (!business?.id) {
+      setLeads([]);
+      setLoading(false);
+      return;
+    }
 
     async function fetchLeads() {
       setLoading(true);
