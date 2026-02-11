@@ -51,44 +51,70 @@ export default function Onboarding() {
   };
   const back = () => step > 0 && setStep(step - 1);
 
-  // Final save
+  // Final save - using direct Supabase instead of Edge Function
   const finish = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Get session
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No session');
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
-      // Create or update business via Edge Function
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-business`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            name: data.companyName,
-            trade_type: data.serviceType,
-            business_hours: data.schedule,
-          }),
-        }
-      );
+      // Check if user already has a business
+      const { data: existingMember } = await supabase
+        .from('team_members')
+        .select('business_id, business:businesses(*)')
+        .eq('user_id', user.id)
+        .single();
 
-      if (!response.ok) {
-        const result = await response.json();
-        console.error('Edge Function error:', response.status, result);
-        throw new Error(result.details || result.error || `Failed to save (${response.status})`);
+      if (existingMember?.business) {
+        console.log('User already has business, skipping creation');
+        await refreshBusiness();
+        localStorage.removeItem('bookfox_firstName');
+        navigate('/dashboard');
+        return;
       }
 
+      // Create the business (RLS allows authenticated users to insert)
+      const { data: newBusiness, error: bizError } = await supabase
+        .from('businesses')
+        .insert({
+          name: data.companyName.trim(),
+          trade_type: data.serviceType || null,
+          business_hours: data.schedule,
+        })
+        .select()
+        .single();
+
+      if (bizError) {
+        console.error('Business creation error:', bizError);
+        throw new Error(`Failed to create business: ${bizError.message}`);
+      }
+
+      // Create team member link
+      const { error: teamError } = await supabase
+        .from('team_members')
+        .insert({
+          user_id: user.id,
+          business_id: newBusiness.id,
+          role: 'owner',
+        });
+
+      if (teamError) {
+        console.error('Team member error:', teamError);
+        // Try to clean up
+        await supabase.from('businesses').delete().eq('id', newBusiness.id);
+        throw new Error(`Failed to link to business: ${teamError.message}`);
+      }
+
+      console.log('Business created successfully:', newBusiness.id);
+      
       await refreshBusiness();
       localStorage.removeItem('bookfox_firstName');
       navigate('/dashboard');
     } catch (err) {
       console.error('Save error:', err);
-      setError(err.message);
+      setError(err.message || 'Failed to complete onboarding. Please try again.');
     } finally {
       setLoading(false);
     }
