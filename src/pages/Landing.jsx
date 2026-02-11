@@ -374,15 +374,13 @@ export default function Landing() {
             
             {/* PRO (Most Popular) */}
             <FadeIn delay={200}>
-              <div className="relative">
-                {/* Most Popular Badge */}
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+              <GlassCard className="p-8 border-orange-300 shadow-[0_8px_40px_rgba(249,115,22,0.2)] hover:shadow-[0_12px_48px_rgba(249,115,22,0.3)] transition-all duration-300 md:transform md:hover:scale-105">
+                {/* Most Popular Badge - inline on mobile, absolute on desktop */}
+                <div className="mb-4 md:absolute md:-top-4 md:left-1/2 md:-translate-x-1/2 md:mb-0 flex justify-center">
                   <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg shadow-orange-500/30">
                     🔥 MOST POPULAR
                   </div>
                 </div>
-                
-                <GlassCard className="p-8 border-orange-300 shadow-[0_8px_40px_rgba(249,115,22,0.2)] hover:shadow-[0_12px_48px_rgba(249,115,22,0.3)] transition-all duration-300 transform hover:scale-105">
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-slate-900 mb-2">Pro</h3>
                     <p className="text-slate-600 text-sm">Everything you need to scale</p>
@@ -435,7 +433,6 @@ export default function Landing() {
                     Start Free Trial
                   </Link>
                 </GlassCard>
-              </div>
             </FadeIn>
             
             {/* ENTERPRISE */}

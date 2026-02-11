@@ -54,33 +54,6 @@ const navItems = [
   },
 ];
 
-// Mobile bottom navigation item
-function MobileNavItem({ to, icon, label, badge, end = false }) {
-  return (
-    <NavLink
-      to={to}
-      end={end}
-      className={({ isActive }) =>
-        `relative flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all duration-200 ${
-          isActive
-            ? 'text-primary-600 bg-primary-50'
-            : 'text-stone-500 active:bg-stone-100'
-        }`
-      }
-    >
-      <span className="relative">
-        {icon}
-        {badge && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-            {badge}
-          </span>
-        )}
-      </span>
-      <span className="text-[10px] font-medium mt-1">{label}</span>
-    </NavLink>
-  );
-}
-
 // Sidebar nav link component
 function SidebarLink({ to, icon, label, badge, end = false, collapsed, onClick }) {
   return (
@@ -289,7 +262,7 @@ export default function DashboardLayout() {
       </aside>
 
       {/* Main content area */}
-      <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'} pb-28 lg:pb-0`}>
+      <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'}`}>
         {/* Top bar */}
         <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-stone-200/80">
           <div className="flex items-center justify-between px-4 lg:px-6 h-16">
@@ -354,15 +327,6 @@ export default function DashboardLayout() {
           <Outlet />
         </main>
       </div>
-
-      {/* Mobile bottom navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-stone-200 lg:hidden safe-area-bottom">
-        <div className="flex items-center justify-around px-2 py-1">
-          {navItems.map((item) => (
-            <MobileNavItem key={item.to} {...item} />
-          ))}
-        </div>
-      </nav>
     </div>
   );
 }
