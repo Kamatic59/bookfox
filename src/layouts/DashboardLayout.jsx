@@ -289,7 +289,7 @@ export default function DashboardLayout() {
       </aside>
 
       {/* Main content area */}
-      <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'} pb-20 lg:pb-0`}>
+      <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'} pb-28 lg:pb-0`}>
         {/* Top bar */}
         <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-stone-200/80">
           <div className="flex items-center justify-between px-4 lg:px-6 h-16">
