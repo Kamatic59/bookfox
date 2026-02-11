@@ -303,42 +303,208 @@ export default function Landing() {
       </section>
 
       {/* ==================== */}
-      {/* SECTION 5: PROOF / ROI */}
+      {/* SECTION 5: PRICING */}
       {/* ==================== */}
       <section className="relative py-20 px-6">
-        <div className="max-w-4xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto relative z-10">
           <FadeIn>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-8 text-center">
-              Just <span className="text-primary-700">1 Extra Job</span> Per Week Pays for BookFox
+            <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-slate-900 mb-4 text-center">
+              Simple, <span className="text-primary-700">Transparent</span> Pricing
             </h2>
           </FadeIn>
           
           <FadeIn delay={100}>
-            <p className="text-lg text-slate-600 mb-4 text-center">
-              Most trade jobs are worth $200–$1,000+.
+            <p className="text-lg sm:text-xl text-slate-600 mb-12 text-center max-w-2xl mx-auto">
+              Start small or go all-in. Every plan includes a 14-day free trial.
             </p>
           </FadeIn>
           
-          <FadeIn delay={200}>
-            <p className="text-lg text-slate-600 mb-10 text-center">
-              Missing just a few calls costs you thousands every month.
-            </p>
-          </FadeIn>
-          
-          <FadeIn delay={300}>
-            <GlassCard glow className="p-8 text-center bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700">
-              <p className="text-slate-400 mb-2">BookFox costs</p>
-              <p className="text-5xl font-bold text-white mb-3">$299<span className="text-2xl text-slate-400">/month</span></p>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 rounded-full">
-                <span className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
-                <span className="text-orange-400 font-medium">One job pays for 3+ months</span>
+          {/* Pricing Cards */}
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+            {/* STARTER */}
+            <FadeIn delay={100}>
+              <GlassCard className="p-8 hover:shadow-xl transition-all duration-300">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-2">Starter</h3>
+                  <p className="text-slate-500 text-sm">Perfect for trying it out</p>
+                </div>
+                
+                <div className="text-center mb-8">
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-5xl font-bold text-slate-900">$99</span>
+                    <span className="text-xl text-slate-500">/mo</span>
+                  </div>
+                </div>
+                
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <span className="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-primary-600 text-xs">✓</span>
+                    </span>
+                    <span><strong>200 calls/month</strong></span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <span className="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-primary-600 text-xs">✓</span>
+                    </span>
+                    <span>AI SMS assistant</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <span className="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-primary-600 text-xs">✓</span>
+                    </span>
+                    <span>Lead capture & tracking</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <span className="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-primary-600 text-xs">✓</span>
+                    </span>
+                    <span>Email support</span>
+                  </li>
+                </ul>
+                
+                <Link 
+                  to="/signup" 
+                  className="block w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-4 rounded-xl text-center transition-all duration-300 active:scale-95"
+                >
+                  Start Free Trial
+                </Link>
+              </GlassCard>
+            </FadeIn>
+            
+            {/* PRO (Most Popular) */}
+            <FadeIn delay={200}>
+              <div className="relative">
+                {/* Most Popular Badge */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                  <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg shadow-orange-500/30">
+                    🔥 MOST POPULAR
+                  </div>
+                </div>
+                
+                <GlassCard className="p-8 border-orange-300 shadow-[0_8px_40px_rgba(249,115,22,0.2)] hover:shadow-[0_12px_48px_rgba(249,115,22,0.3)] transition-all duration-300 transform hover:scale-105">
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Pro</h3>
+                    <p className="text-slate-600 text-sm">Everything you need to scale</p>
+                  </div>
+                  
+                  <div className="text-center mb-8">
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-5xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">$299</span>
+                      <span className="text-xl text-slate-500">/mo</span>
+                    </div>
+                  </div>
+                  
+                  <ul className="space-y-4 mb-8">
+                    <li className="flex items-start gap-3 text-slate-700">
+                      <span className="w-5 h-5 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-orange-600 text-xs">✓</span>
+                      </span>
+                      <span><strong>Unlimited calls & SMS</strong></span>
+                    </li>
+                    <li className="flex items-start gap-3 text-slate-700">
+                      <span className="w-5 h-5 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-orange-600 text-xs">✓</span>
+                      </span>
+                      <span><strong>AI voice + SMS assistant</strong></span>
+                    </li>
+                    <li className="flex items-start gap-3 text-slate-700">
+                      <span className="w-5 h-5 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-orange-600 text-xs">✓</span>
+                      </span>
+                      <span>Advanced AI qualification</span>
+                    </li>
+                    <li className="flex items-start gap-3 text-slate-700">
+                      <span className="w-5 h-5 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-orange-600 text-xs">✓</span>
+                      </span>
+                      <span>Calendar integrations</span>
+                    </li>
+                    <li className="flex items-start gap-3 text-slate-700">
+                      <span className="w-5 h-5 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-orange-600 text-xs">✓</span>
+                      </span>
+                      <span>Priority support</span>
+                    </li>
+                  </ul>
+                  
+                  <Link 
+                    to="/signup" 
+                    className="block w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold py-4 rounded-xl text-center transition-all duration-300 active:scale-95 shadow-lg shadow-orange-500/30"
+                  >
+                    Start Free Trial
+                  </Link>
+                </GlassCard>
               </div>
-            </GlassCard>
-          </FadeIn>
+            </FadeIn>
+            
+            {/* ENTERPRISE */}
+            <FadeIn delay={300}>
+              <GlassCard className="p-8 hover:shadow-xl transition-all duration-300">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-2">Enterprise</h3>
+                  <p className="text-slate-500 text-sm">For growing businesses</p>
+                </div>
+                
+                <div className="text-center mb-8">
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-5xl font-bold text-slate-900">Custom</span>
+                  </div>
+                  <p className="text-sm text-slate-500 mt-2">Let's talk pricing</p>
+                </div>
+                
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <span className="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-primary-600 text-xs">✓</span>
+                    </span>
+                    <span><strong>Everything in Pro</strong></span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <span className="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-primary-600 text-xs">✓</span>
+                    </span>
+                    <span>Multi-location support</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <span className="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-primary-600 text-xs">✓</span>
+                    </span>
+                    <span>Custom AI training</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <span className="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-primary-600 text-xs">✓</span>
+                    </span>
+                    <span>API access</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-slate-700">
+                    <span className="w-5 h-5 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-primary-600 text-xs">✓</span>
+                    </span>
+                    <span>Dedicated account manager</span>
+                  </li>
+                </ul>
+                
+                <a 
+                  href="mailto:hello@bookfox.ai" 
+                  className="block w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold py-4 rounded-xl text-center transition-all duration-300 active:scale-95"
+                >
+                  Contact Sales
+                </a>
+              </GlassCard>
+            </FadeIn>
+          </div>
           
+          {/* ROI Note */}
           <FadeIn delay={400}>
-            <div className="mt-10">
-              <CTAButton>See It In Action</CTAButton>
+            <div className="mt-12 text-center">
+              <p className="text-lg text-slate-600 mb-2">
+                Most trade jobs are worth <strong className="text-slate-800">$200–$1,000+</strong>
+              </p>
+              <p className="text-slate-500">
+                Just 1 extra booked job per week pays for BookFox
+              </p>
             </div>
           </FadeIn>
         </div>
@@ -426,7 +592,7 @@ export default function Landing() {
               />
               <FAQ 
                 q="What's the cost?" 
-                a="$299/month after a 14-day free trial. Cancel anytime." 
+                a="Plans start at $99/mo. Most businesses choose Pro at $299/mo. All plans include a 14-day free trial. Cancel anytime." 
               />
             </GlassCard>
           </FadeIn>
