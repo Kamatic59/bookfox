@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLeads } from '../hooks/useLeads';
-import { FadeIn } from '../components/Animations';
+import { FadeIn, GlassCard } from '../components/shared/Animations';
 
 // Status badge component
 function StatusBadge({ status }) {

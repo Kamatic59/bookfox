@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useConversations } from '../hooks/useConversations';
+import { FadeIn, GlassCard } from '../components/shared/Animations';
 
 // Format time helper
 function formatTime(dateString) {
