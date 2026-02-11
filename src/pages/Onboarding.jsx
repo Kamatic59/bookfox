@@ -244,67 +244,83 @@ export default function Onboarding() {
   // STEP 2: Phone Number
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
-        <div className="max-w-lg mx-auto pt-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/30 to-slate-50 p-6 relative overflow-hidden">
+        <div className="absolute top-20 left-0 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl" />
+        
+        <div className="max-w-2xl mx-auto pt-8 relative z-10">
           <Progress step={2} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Your Business <span className="text-primary-600">Phone Number</span></h2>
-          <p className="text-stone-500 mb-8">BookFox will text leads from this number.</p>
+          
+          <FadeIn>
+            <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-2">Your Business <span className="text-primary-600">Phone Number</span></h2>
+            <p className="text-slate-600 mb-8">BookFox will text leads from this number.</p>
+          </FadeIn>
 
-          <div className="space-y-4 mb-6">
-            <label 
-              className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition ${
-                data.useExistingPhone ? 'border-primary-500 bg-primary-50' : 'border-stone-200 hover:border-stone-300'
-              }`}
-              onClick={() => update('useExistingPhone', true)}
-            >
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                data.useExistingPhone ? 'border-primary-500' : 'border-stone-300'
-              }`}>
-                {data.useExistingPhone && <div className="w-3 h-3 bg-primary-500 rounded-full" />}
-              </div>
-              <div>
-                <p className="font-medium text-stone-800">Use my existing number</p>
-                <p className="text-sm text-stone-500">Free — works with your current business line</p>
-              </div>
-            </label>
+          <GlassCard className="p-6 lg:p-8">
 
-            <label 
-              className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition ${
-                !data.useExistingPhone ? 'border-primary-500 bg-primary-50' : 'border-stone-200 hover:border-stone-300'
-              }`}
-              onClick={() => update('useExistingPhone', false)}
-            >
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                !data.useExistingPhone ? 'border-primary-500' : 'border-stone-300'
-              }`}>
-                {!data.useExistingPhone && <div className="w-3 h-3 bg-primary-500 rounded-full" />}
-              </div>
-              <div>
-                <p className="font-medium text-stone-800">Get a new local number from BookFox</p>
-                <p className="text-sm text-stone-500">+$15/month — separate line for leads</p>
-              </div>
-            </label>
-          </div>
+            <div className="space-y-4 mb-6">
+              <FadeIn delay={100}>
+                <label 
+                  className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition ${
+                    data.useExistingPhone ? 'border-primary-500 bg-primary-50' : 'border-slate-200 hover:border-slate-300 bg-white/60'
+                  }`}
+                  onClick={() => update('useExistingPhone', true)}
+                >
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    data.useExistingPhone ? 'border-primary-500' : 'border-slate-300'
+                  }`}>
+                    {data.useExistingPhone && <div className="w-3 h-3 bg-primary-500 rounded-full" />}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-800">Use my existing number</p>
+                    <p className="text-sm text-slate-600">Free — works with your current business line</p>
+                  </div>
+                </label>
+              </FadeIn>
 
-          {data.useExistingPhone && (
-            <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1.5">Your Phone Number</label>
-              <input
-                type="tel"
-                value={data.phone}
-                onChange={(e) => update('phone', e.target.value)}
-                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                placeholder="(555) 123-4567"
-              />
+              <FadeIn delay={200}>
+                <label 
+                  className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition ${
+                    !data.useExistingPhone ? 'border-primary-500 bg-primary-50' : 'border-slate-200 hover:border-slate-300 bg-white/60'
+                  }`}
+                  onClick={() => update('useExistingPhone', false)}
+                >
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    !data.useExistingPhone ? 'border-primary-500' : 'border-slate-300'
+                  }`}>
+                    {!data.useExistingPhone && <div className="w-3 h-3 bg-primary-500 rounded-full" />}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-800">Get a new local number from BookFox</p>
+                    <p className="text-sm text-slate-600">+$15/month — separate line for leads</p>
+                  </div>
+                </label>
+              </FadeIn>
             </div>
-          )}
 
-          <div className="flex gap-3 mt-8">
-            <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
-            <button onClick={next} className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition">
-              Next
-            </button>
-          </div>
+            {data.useExistingPhone && (
+              <FadeIn delay={300}>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Your Phone Number</label>
+                  <input
+                    type="tel"
+                    value={data.phone}
+                    onChange={(e) => update('phone', e.target.value)}
+                    className="w-full px-4 py-3.5 bg-white/60 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+                    placeholder="(555) 123-4567"
+                  />
+                </div>
+              </FadeIn>
+            )}
+
+            <FadeIn delay={400}>
+              <div className="flex flex-col sm:flex-row gap-3 mt-8">
+                <button onClick={back} className="sm:w-auto px-6 py-3 text-slate-600 font-semibold hover:bg-white/80 rounded-xl transition-all border border-slate-200">Back</button>
+                <CTAButton onClick={next} className="flex-1">
+                  Next
+                </CTAButton>
+              </div>
+            </FadeIn>
+          </GlassCard>
         </div>
       </div>
     );
@@ -332,42 +348,54 @@ export default function Onboarding() {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-6">
-        <div className="max-w-lg mx-auto pt-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-primary-50/30 to-slate-50 p-6 relative overflow-hidden">
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl" />
+        
+        <div className="max-w-2xl mx-auto pt-8 relative z-10">
           <Progress step={3} total={6} />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Where Do Your <span className="text-purple-600">Leads</span> Come From?</h2>
-          <p className="text-stone-500 mb-6">Check all that apply. We'll help you connect them.</p>
+          
+          <FadeIn>
+            <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 mb-2">Where Do Your <span className="text-purple-600">Leads</span> Come From?</h2>
+            <p className="text-slate-600 mb-6">Check all that apply. We'll help you connect them.</p>
+          </FadeIn>
 
-          <div className="space-y-2">
-            {sources.map(s => (
-              <button
-                key={s.id}
-                onClick={() => toggle(s.id)}
-                className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-left transition ${
-                  data.leadSources.includes(s.id) 
-                    ? 'border-primary-500 bg-primary-50' 
-                    : 'border-stone-200 hover:border-stone-300'
-                }`}
-              >
-                <span className="text-xl">{s.icon}</span>
-                <span className="font-medium text-stone-700 flex-1">{s.label}</span>
-                {data.leadSources.includes(s.id) && (
-                  <span className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm">✓</span>
-                )}
+          <GlassCard className="p-6 lg:p-8">
+            <div className="space-y-2">
+              {sources.map((s, i) => (
+                <FadeIn key={s.id} delay={100 + i * 50}>
+                  <button
+                    onClick={() => toggle(s.id)}
+                    className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-left transition ${
+                      data.leadSources.includes(s.id) 
+                        ? 'border-primary-500 bg-primary-50' 
+                        : 'border-slate-200 hover:border-slate-300 bg-white/60'
+                    }`}
+                  >
+                    <span className="text-2xl">{s.icon}</span>
+                    <span className="font-semibold text-slate-700 flex-1">{s.label}</span>
+                    {data.leadSources.includes(s.id) && (
+                      <span className="w-7 h-7 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">✓</span>
+                    )}
+                  </button>
+                </FadeIn>
+              ))}
+            </div>
+
+            <FadeIn delay={500}>
+              <div className="flex flex-col sm:flex-row gap-3 mt-8">
+                <button onClick={back} className="sm:w-auto px-6 py-3 text-slate-600 font-semibold hover:bg-white/80 rounded-xl transition-all border border-slate-200">Back</button>
+                <CTAButton onClick={next} className="flex-1">
+                  Next
+                </CTAButton>
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={600}>
+              <button onClick={next} className="w-full text-slate-400 text-sm mt-4 hover:text-slate-600 font-medium transition-colors">
+                I'll do this later →
               </button>
-            ))}
-          </div>
-
-          <div className="flex gap-3 mt-8">
-            <button onClick={back} className="px-6 py-3 text-stone-600 font-medium hover:bg-stone-100 rounded-xl transition">Back</button>
-            <button onClick={next} className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition">
-              Next
-            </button>
-          </div>
-
-          <button onClick={next} className="w-full text-stone-400 text-sm mt-4 hover:text-stone-600">
-            I'll do this later
-          </button>
+            </FadeIn>
+          </GlassCard>
         </div>
       </div>
     );
