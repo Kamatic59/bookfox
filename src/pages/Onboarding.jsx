@@ -55,12 +55,18 @@ export default function Onboarding() {
   const finish = async () => {
     setLoading(true);
     setError(null);
+    
+    console.log('🔵 Starting onboarding finish...');
+    
     try {
       // Get current user
+      console.log('🔵 Getting user...');
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
+      console.log('✅ User found:', user.id);
 
       // Check if user already has a business
+      console.log('🔵 Checking for existing business...');
       const { data: existingMember } = await supabase
         .from('team_members')
         .select('business_id, business:businesses(*)')
@@ -68,13 +74,17 @@ export default function Onboarding() {
         .single();
 
       if (existingMember?.business) {
-        console.log('User already has business, skipping creation');
+        console.log('✅ User already has business:', existingMember.business_id);
+        console.log('🔵 Refreshing business data...');
         await refreshBusiness();
+        console.log('✅ Business refreshed');
         localStorage.removeItem('bookfox_firstName');
+        console.log('🔵 Navigating to dashboard...');
         navigate('/dashboard');
         return;
       }
 
+      console.log('🔵 Creating new business...');
       // Create the business (RLS allows authenticated users to insert)
       const { data: newBusiness, error: bizError } = await supabase
         .from('businesses')
@@ -87,11 +97,13 @@ export default function Onboarding() {
         .single();
 
       if (bizError) {
-        console.error('Business creation error:', bizError);
+        console.error('❌ Business creation error:', bizError);
         throw new Error(`Failed to create business: ${bizError.message}`);
       }
+      console.log('✅ Business created:', newBusiness.id);
 
       // Create team member link
+      console.log('🔵 Creating team member link...');
       const { error: teamError } = await supabase
         .from('team_members')
         .insert({
@@ -101,21 +113,27 @@ export default function Onboarding() {
         });
 
       if (teamError) {
-        console.error('Team member error:', teamError);
+        console.error('❌ Team member error:', teamError);
         // Try to clean up
         await supabase.from('businesses').delete().eq('id', newBusiness.id);
         throw new Error(`Failed to link to business: ${teamError.message}`);
       }
+      console.log('✅ Team member created');
 
-      console.log('Business created successfully:', newBusiness.id);
-      
+      console.log('🔵 Refreshing business data...');
       await refreshBusiness();
+      console.log('✅ Business refreshed');
+      
       localStorage.removeItem('bookfox_firstName');
+      
+      console.log('🔵 Navigating to dashboard...');
       navigate('/dashboard');
+      console.log('✅ Navigation called');
     } catch (err) {
-      console.error('Save error:', err);
+      console.error('❌ Save error:', err);
       setError(err.message || 'Failed to complete onboarding. Please try again.');
     } finally {
+      console.log('🔵 Setting loading to false');
       setLoading(false);
     }
   };

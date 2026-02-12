@@ -1,0 +1,36 @@
+-- SIMPLE FIX - Just add the missing INSERT policy
+-- Run this in Supabase SQL Editor
+
+-- Check if the INSERT policy exists, if not create it
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE tablename = 'businesses' 
+    AND policyname = 'Users can insert businesses'
+  ) THEN
+    CREATE POLICY "Users can insert businesses"
+      ON businesses
+      FOR INSERT
+      TO authenticated
+      WITH CHECK (true);
+  END IF;
+END $$;
+
+-- Also ensure team_members INSERT works
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE tablename = 'team_members' 
+    AND policyname = 'Users can insert team members for their businesses'
+  ) THEN
+    CREATE POLICY "Users can insert team members for their businesses"
+      ON team_members
+      FOR INSERT
+      TO authenticated
+      WITH CHECK (
+        user_id = auth.uid()
+      );
+  END IF;
+END $$;
