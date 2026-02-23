@@ -492,7 +492,7 @@ body.no-bounce {
 }
 
 .glass-dark {
-  @apply bg-stone-900/80 backdrop-blur-lg;
+  @apply bg-[#141e19]/80 backdrop-blur-lg;
 }
 
 .blur-edge {
@@ -505,15 +505,15 @@ body.no-bounce {
    ======================================== */
 
 .gradient-text {
-  @apply bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-[#2E4036] to-[#557864] bg-clip-text text-transparent;
 }
 
 .gradient-primary {
-  @apply bg-gradient-to-r from-primary-600 to-primary-500;
+  @apply bg-gradient-to-r from-[#2E4036] to-[#405E4C];
 }
 
 .gradient-hero {
-  @apply bg-gradient-to-br from-stone-50 via-orange-50/50 to-stone-50;
+  @apply bg-gradient-to-br from-[#F2F0E9] via-[#F2F0E9]/50 to-[#F2F0E9];
 }
 
 /* ========================================
@@ -521,11 +521,11 @@ body.no-bounce {
    ======================================== */
 
 .skeleton {
-  @apply bg-stone-200 rounded animate-pulse;
+  @apply bg-[#2E4036]/10 rounded animate-pulse;
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #F2F0E9 25%, #E5EBE7 50%, #F2F0E9 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -535,7 +535,7 @@ body.no-bounce {
    ======================================== */
 
 .input-focus {
-  @apply transition-all duration-200 border-stone-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none;
+  @apply transition-all duration-200 border-[#2E4036]/20 focus:border-[#2E4036] focus:ring-2 focus:ring-[#2E4036]/10 focus:outline-none;
 }
 
 /* ========================================
@@ -543,16 +543,16 @@ body.no-bounce {
    ======================================== */
 
 .shadow-soft {
-  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.05),
-    0 4px 16px -4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px -2px rgba(46, 64, 54, 0.05),
+    0 4px 16px -4px rgba(46, 64, 54, 0.1);
 }
 
 .shadow-glow-orange {
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 0 20px rgba(204, 88, 51, 0.2);
 }
 
 .shadow-glow-primary {
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 0 20px rgba(46, 64, 54, 0.2);
 }
 
 /* ========================================
@@ -584,12 +584,12 @@ body.no-bounce {
    ======================================== */
 
 .bottom-sheet {
-  @apply fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl shadow-2xl;
+  @apply fixed inset-x-0 bottom-0 z-50 bg-[#F2F0E9] rounded-t-3xl shadow-2xl;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
 .bottom-sheet-handle {
-  @apply w-12 h-1.5 bg-stone-300 rounded-full mx-auto mt-3 mb-2;
+  @apply w-12 h-1.5 bg-[#2E4036]/20 rounded-full mx-auto mt-3 mb-2;
 }
 
 /* ========================================
