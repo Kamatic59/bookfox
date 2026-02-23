@@ -1,0 +1,408 @@
+import { useState, useEffect, useRef } from 'react';
+import { useConversations } from '../hooks/useConversations';
+import { FadeIn } from '../components/shared/Animations';
+
+// Format time helper
+function formatTime(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = now - date;
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes}m`;
+  if (hours < 24) return `${hours}h`;
+  if (days < 7) return `${days}d`;
+  return date.toLocaleDateString();
+}
+
+// Conversation list item
+function ConversationItem({ conversation, selected, onClick }) {
+  const lastMessage = conversation.messages?.[0];
+  const isUnread = conversation.status === 'active' && lastMessage?.direction === 'inbound';
+  const name = conversation.lead?.name || conversation.customer_phone || '?';
+
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full p-4 text-left transition-all duration-200 ${selected
+          ? 'bg-[#2E4036]/10 border-l-4 border-[#2E4036]'
+          : 'hover:bg-[#2E4036]/5 border-l-4 border-transparent active:bg-[#2E4036]/10'
+        }`}
+    >
+      <div className="flex items-center gap-3">
+        <div className="relative flex-shrink-0">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center text-[#F2F0E9] font-bold text-sm bg-[#2E4036] shadow-md shadow-[#2E4036]/20">
+            {name.charAt(0).toUpperCase()}
+          </div>
+          {isUnread && (
+            <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#CC5833] rounded-full border-2 border-[#F2F0E9] animate-pulse"></span>
+          )}
+          {conversation.mode === 'ai' && (
+            <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#2E4036]/10 rounded-full flex items-center justify-center border-2 border-[#F2F0E9]">
+              <span className="text-[10px]">🤖</span>
+            </span>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <p className={`font-semibold truncate font-['Plus_Jakarta_Sans'] ${isUnread ? 'text-[#1A1A1A]' : 'text-[#1A1A1A]/70'}`}>
+              {conversation.lead?.name || conversation.customer_phone || 'Unknown'}
+            </p>
+            <span className="text-xs text-[#2E4036]/40 whitespace-nowrap flex-shrink-0 font-['IBM_Plex_Mono']">
+              {lastMessage ? formatTime(lastMessage.created_at) : ''}
+            </span>
+          </div>
+          <p className={`text-sm truncate mt-0.5 font-['Outfit'] ${isUnread ? 'text-[#1A1A1A]/70 font-medium' : 'text-[#2E4036]/60'}`}>
+            {lastMessage?.content || 'No messages yet'}
+          </p>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+// Message bubble with premium styling
+function MessageBubble({ message, isOwn }) {
+  return (
+    <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'} mb-4`}>
+      <div className={`max-w-[85%] sm:max-w-[70%]`}>
+        <div className={`px-4 py-3 rounded-2xl ${isOwn
+            ? message.sender_type === 'ai'
+              ? 'bg-[#2E4036] text-[#F2F0E9] rounded-br-md shadow-md shadow-[#2E4036]/20'
+              : 'bg-[#CC5833] text-[#F2F0E9] rounded-br-md shadow-md shadow-[#CC5833]/20'
+            : 'bg-white border border-[#2E4036]/10 text-[#1A1A1A] rounded-bl-md shadow-sm'
+          }`}>
+          <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed font-['Outfit']">{message.content}</p>
+        </div>
+        <div className={`flex items-center gap-2 mt-1.5 text-xs text-[#2E4036]/40 font-['IBM_Plex_Mono'] ${isOwn ? 'justify-end pr-1' : 'justify-start pl-1'}`}>
+          {isOwn && message.sender_type === 'ai' && (
+            <span className="flex items-center gap-1 text-[#2E4036] font-medium">
+              <span>🤖</span>
+              <span>AI</span>
+            </span>
+          )}
+          <span>{formatTime(message.created_at)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Empty state with illustration
+function EmptyInbox() {
+  return (
+    <div className="flex-1 flex items-center justify-center p-8">
+      <div className="text-center max-w-sm">
+        <div className="w-24 h-24 bg-[#2E4036]/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+          <svg className="w-12 h-12 text-[#2E4036]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-bold text-[#1A1A1A] mb-2 font-['Plus_Jakarta_Sans']">No conversations yet</h3>
+        <p className="text-[#2E4036]/60 font-['Outfit']">
+          When customers text your BookFox number, their conversations will appear here.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Sidebar with conversation list
+function ConversationList({ conversations, selectedId, onSelect, searchQuery, setSearchQuery, filter, setFilter }) {
+  return (
+    <div className="flex flex-col h-full bg-[#F2F0E9]">
+      <div className="p-4 border-b border-[#2E4036]/10 bg-[#F2F0E9] sticky top-0 z-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-[#1A1A1A] font-['Plus_Jakarta_Sans']">Inbox</h2>
+          <span className="px-2.5 py-1 bg-[#2E4036]/10 text-[#2E4036] text-xs font-bold rounded-full font-['IBM_Plex_Mono']">
+            {conversations.length}
+          </span>
+        </div>
+
+        <div className="relative mb-3">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2E4036]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search conversations..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 bg-[#2E4036]/5 border-2 border-transparent rounded-xl text-sm focus:bg-white focus:border-[#2E4036]/30 focus:ring-2 focus:ring-[#2E4036]/10 outline-none transition-all font-['Outfit']"
+          />
+        </div>
+
+        <div className="flex gap-2">
+          {[
+            { value: 'all', label: 'All' },
+            { value: 'ai', label: '🤖 AI' },
+            { value: 'human', label: '👤 Human' },
+          ].map((f) => (
+            <button
+              key={f.value}
+              onClick={() => setFilter(f.value)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 font-['Plus_Jakarta_Sans'] ${filter === f.value
+                  ? 'bg-[#2E4036] text-[#F2F0E9] shadow-md shadow-[#2E4036]/30'
+                  : 'bg-[#2E4036]/5 text-[#2E4036]/60 hover:bg-[#2E4036]/10 active:bg-[#2E4036]/15'
+                }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        {conversations.length === 0 ? (
+          <EmptyInbox />
+        ) : (
+          <div className="divide-y divide-[#2E4036]/5">
+            {conversations.map((conversation) => (
+              <ConversationItem
+                key={conversation.id}
+                conversation={conversation}
+                selected={selectedId === conversation.id}
+                onClick={() => onSelect(conversation.id)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Chat view with premium header
+function ChatView({ conversation, messages, onBack, onSend, newMessage, setNewMessage, sending }) {
+  const messagesEndRef = useRef(null);
+  const name = conversation.lead?.name || conversation.customer_phone || '?';
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  return (
+    <div className="flex flex-col h-full bg-gradient-to-b from-[#F2F0E9] to-[#F2F0E9]/70">
+      <div className="bg-[#F2F0E9] border-b border-[#2E4036]/10 px-4 py-3 flex items-center gap-3 shadow-sm">
+        {onBack && (
+          <button onClick={onBack} className="p-2 -ml-2 rounded-xl hover:bg-[#2E4036]/5 active:bg-[#2E4036]/10 transition-colors lg:hidden">
+            <svg className="w-5 h-5 text-[#2E4036]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
+
+        <div className="w-11 h-11 rounded-full flex items-center justify-center text-[#F2F0E9] font-bold text-sm flex-shrink-0 bg-[#2E4036] shadow-md shadow-[#2E4036]/20">
+          {name.charAt(0).toUpperCase()}
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <h3 className="font-bold text-[#1A1A1A] truncate font-['Plus_Jakarta_Sans']">
+            {conversation.lead?.name || conversation.customer_phone || 'Unknown'}
+          </h3>
+          <div className="flex items-center gap-2">
+            <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-['IBM_Plex_Mono'] ${conversation.mode === 'ai'
+                ? 'bg-[#2E4036]/10 text-[#2E4036]'
+                : 'bg-[#CC5833]/10 text-[#CC5833]'
+              }`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+              {conversation.mode === 'ai' ? 'AI Mode' : 'Human Mode'}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <button className="p-2.5 rounded-xl hover:bg-[#2E4036]/5 active:bg-[#2E4036]/10 transition-colors" title="View lead">
+            <svg className="w-5 h-5 text-[#2E4036]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </button>
+          <button className="p-2.5 rounded-xl hover:bg-[#2E4036]/5 active:bg-[#2E4036]/10 transition-colors" title="Call">
+            <svg className="w-5 h-5 text-[#2E4036]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+          </button>
+          <button className="p-2.5 rounded-xl hover:bg-[#2E4036]/5 active:bg-[#2E4036]/10 transition-colors" title="More options">
+            <svg className="w-5 h-5 text-[#2E4036]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4 scroll-smooth">
+        {messages?.length === 0 ? (
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#F2F0E9] rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">💬</span>
+              </div>
+              <p className="text-[#2E4036]/40 font-['Outfit']">No messages yet</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-center mb-6">
+              <span className="px-3 py-1 bg-[#F2F0E9] rounded-full text-xs text-[#2E4036]/60 shadow-sm font-['IBM_Plex_Mono']">Today</span>
+            </div>
+            {messages?.map((message) => (
+              <MessageBubble key={message.id} message={message} isOwn={message.direction === 'outbound'} />
+            ))}
+            <div ref={messagesEndRef} />
+          </>
+        )}
+      </div>
+
+      <div className="bg-[#F2F0E9] border-t border-[#2E4036]/10 p-4 safe-area-bottom">
+        <form onSubmit={onSend} className="flex items-end gap-3">
+          <div className="flex-1 relative">
+            <textarea
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message..."
+              rows={1}
+              className="w-full px-4 py-3 pr-12 bg-[#2E4036]/5 border-2 border-transparent rounded-2xl resize-none focus:bg-white focus:border-[#2E4036]/30 focus:ring-2 focus:ring-[#2E4036]/10 outline-none transition-all text-[16px] font-['Outfit']"
+              style={{ minHeight: '48px', maxHeight: '120px' }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend(e); }
+              }}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={!newMessage.trim() || sending}
+            className="p-3.5 bg-[#2E4036] text-[#F2F0E9] rounded-2xl hover:bg-[#1A1A1A] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-[#2E4036]/30 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 flex-shrink-0"
+          >
+            {sending ? (
+              <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            )}
+          </button>
+        </form>
+
+        {conversation.mode === 'ai' && (
+          <p className="text-xs text-[#2E4036]/40 mt-2 text-center flex items-center justify-center gap-1 font-['Outfit']">
+            <span>💡</span>
+            <span>Sending a message will switch to Human mode</span>
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Select conversation placeholder
+function SelectConversationPlaceholder() {
+  return (
+    <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-b from-[#F2F0E9] to-[#F2F0E9]/70">
+      <div className="text-center">
+        <div className="w-20 h-20 bg-[#F2F0E9] rounded-3xl shadow-lg flex items-center justify-center mx-auto mb-6">
+          <svg className="w-10 h-10 text-[#2E4036]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1 font-['Plus_Jakarta_Sans']">Select a conversation</h3>
+        <p className="text-[#2E4036]/60 font-['Outfit']">Choose from the list to view messages</p>
+      </div>
+    </div>
+  );
+}
+
+// Loading skeleton
+function LoadingSkeleton() {
+  return (
+    <div className="h-[calc(100vh-4rem)] flex items-center justify-center bg-[#F2F0E9]">
+      <div className="text-center">
+        <div className="w-16 h-16 bg-[#2E4036]/10 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+          <img src="/logo.png" alt="" className="w-10 h-10" />
+        </div>
+        <p className="text-[#2E4036]/60 font-['Outfit']">Loading conversations...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function Inbox() {
+  const { conversations, loading, selectConversation, selectedConversation, messages } = useConversations();
+  const [newMessage, setNewMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [mobileShowChat, setMobileShowChat] = useState(false);
+
+  const filteredConversations = conversations?.filter(c => {
+    const matchesSearch = searchQuery === '' ||
+      c.customer_phone?.includes(searchQuery) ||
+      c.lead?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = filter === 'all' || c.mode === filter;
+    return matchesSearch && matchesFilter;
+  }) || [];
+
+  const handleSelectConversation = (id) => {
+    selectConversation(id);
+    setMobileShowChat(true);
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !selectedConversation) return;
+
+    setSending(true);
+    try {
+      console.log('Sending message:', newMessage);
+      setNewMessage('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (loading) {
+    return <LoadingSkeleton />;
+  }
+
+  return (
+    <div className="h-[calc(100vh-4rem-5rem)] lg:h-[calc(100vh-4rem)] flex">
+      <div className={`w-full lg:w-96 border-r border-[#2E4036]/10 bg-[#F2F0E9] flex-shrink-0 ${mobileShowChat ? 'hidden lg:flex lg:flex-col' : 'flex flex-col'
+        }`}>
+        <ConversationList
+          conversations={filteredConversations}
+          selectedId={selectedConversation?.id}
+          onSelect={handleSelectConversation}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          filter={filter}
+          setFilter={setFilter}
+        />
+      </div>
+
+      <div className={`flex-1 ${!mobileShowChat ? 'hidden lg:flex' : 'flex'}`}>
+        {selectedConversation ? (
+          <div className="flex-1 flex flex-col">
+            <ChatView
+              conversation={selectedConversation}
+              messages={messages}
+              onBack={() => setMobileShowChat(false)}
+              onSend={handleSendMessage}
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              sending={sending}
+            />
+          </div>
+        ) : (
+          <SelectConversationPlaceholder />
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,36 @@
+-- FIRST: Check what policies exist
+-- Run this to see current policies:
+
+SELECT schemaname, tablename, policyname 
+FROM pg_policies 
+WHERE tablename IN ('businesses', 'team_members')
+ORDER BY tablename, policyname;
+
+-- ============================================
+-- AFTER you run the above and see results,
+-- Run this to fix (uses DROP IF EXISTS so no errors):
+-- ============================================
+
+BEGIN;
+
+-- Drop and recreate businesses INSERT policy
+DROP POLICY IF EXISTS "Users can insert businesses" ON businesses;
+DROP POLICY IF EXISTS "Authenticated users can create businesses" ON businesses;
+
+CREATE POLICY "Users can insert businesses"
+  ON businesses
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+-- Drop and recreate team_members INSERT policy  
+DROP POLICY IF EXISTS "Users can insert team members for their businesses" ON team_members;
+DROP POLICY IF EXISTS "Users can add themselves to businesses" ON team_members;
+
+CREATE POLICY "Users can insert team members for their businesses"
+  ON team_members
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (user_id = auth.uid());
+
+COMMIT;

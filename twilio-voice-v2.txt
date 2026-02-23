@@ -1,0 +1,158 @@
+// Twilio Voice Webhook Handler v2 - No JWT Required
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
+
+serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
+  try {
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    const TWILIO_ACCOUNT_SID = Deno.env.get('TWILIO_ACCOUNT_SID') ?? '';
+    const TWILIO_AUTH_TOKEN = Deno.env.get('TWILIO_AUTH_TOKEN') ?? '';
+
+    // Parse form data from Twilio
+    const formData = await req.formData();
+    const params: Record<string, string> = {};
+    formData.forEach((value, key) => {
+      params[key] = value.toString();
+    });
+
+    console.log('Voice webhook received:', JSON.stringify(params));
+
+    const toPhone = params.To || '';
+    const fromPhone = params.From || '';
+    const callStatus = params.CallStatus || '';
+    const callSid = params.CallSid || '';
+
+    // Find business by Twilio phone
+    const { data: business, error: bizError } = await supabase
+      .from('businesses')
+      .select('*')
+      .eq('twilio_phone', toPhone)
+      .single();
+
+    if (bizError || !business) {
+      console.error('Business not found for phone:', toPhone, bizError);
+      return new Response(
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Say>Sorry, this number is not configured.</Say><Hangup/></Response>',
+        { headers: { ...corsHeaders, 'Content-Type': 'application/xml' } }
+      );
+    }
+
+    // Log the call
+    await supabase.from('call_log').insert({
+      business_id: business.id,
+      from_phone: fromPhone,
+      to_phone: toPhone,
+      call_status: callStatus,
+      twilio_sid: callSid,
+    });
+
+    // For any call, send SMS follow-up
+    if (fromPhone && fromPhone !== '' && callStatus !== 'completed') {
+      // Get AI settings
+      const { data: aiSettings } = await supabase
+        .from('ai_settings')
+        .select('*')
+        .eq('business_id', business.id)
+        .single();
+
+      // Check for existing active conversation
+      const { data: existingConvo } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('business_id', business.id)
+        .eq('customer_phone', fromPhone)
+        .eq('status', 'active')
+        .maybeSingle();
+
+      if (!existingConvo) {
+        // Create lead
+        const { data: lead } = await supabase
+          .from('leads')
+          .insert({ business_id: business.id, phone: fromPhone, source: 'missed_call', status: 'new' })
+          .select()
+          .single();
+
+        if (lead) {
+          // Create conversation
+          const { data: conversation } = await supabase
+            .from('conversations')
+            .insert({
+              business_id: business.id,
+              lead_id: lead.id,
+              business_phone: business.twilio_phone,
+              customer_phone: fromPhone,
+              status: 'active',
+              mode: 'ai',
+              ai_context: { collected_info: {} },
+            })
+            .select()
+            .single();
+
+          if (conversation) {
+            // Send greeting SMS
+            const assistantName = aiSettings?.assistant_name || 'BookFox';
+            const greeting = `Hi! This is ${assistantName} from ${business.name}. I noticed we missed your call - how can I help you today? 🦊`;
+
+            const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
+            const auth = btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`);
+
+            const smsResponse = await fetch(twilioUrl, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Basic ${auth}`,
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: new URLSearchParams({
+                To: fromPhone,
+                From: business.twilio_phone,
+                Body: greeting,
+              }),
+            });
+
+            const smsData = await smsResponse.json();
+            console.log('SMS sent:', smsData.sid);
+
+            // Log message
+            await supabase.from('messages').insert({
+              conversation_id: conversation.id,
+              direction: 'outbound',
+              content: greeting,
+              sender_type: 'ai',
+              twilio_sid: smsData.sid,
+              twilio_status: smsData.status,
+            });
+          }
+        }
+      }
+    }
+
+    // Return TwiML
+    const twiml = `<?xml version="1.0" encoding="UTF-8"?><Response><Say voice="Polly.Joanna">Thanks for calling ${business.name}. We will text you right away to help!</Say><Hangup/></Response>`;
+    
+    return new Response(twiml, {
+      headers: { ...corsHeaders, 'Content-Type': 'application/xml' },
+    });
+
+  } catch (error) {
+    console.error('Voice webhook error:', error);
+    return new Response(
+      '<?xml version="1.0" encoding="UTF-8"?><Response><Say>An error occurred.</Say><Hangup/></Response>',
+      { headers: { ...corsHeaders, 'Content-Type': 'application/xml' } }
+    );
+  }
+});

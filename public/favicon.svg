@@ -1,0 +1,21 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="url(#foxGradientFav)" />
+  <g transform="translate(4, 5)">
+    <!-- Ears -->
+    <path d="M4 12 L1 2 L9 9 Z" fill="#FFF" opacity="0.95" />
+    <path d="M20 12 L23 2 L15 9 Z" fill="#FFF" opacity="0.95" />
+    <!-- Face -->
+    <ellipse cx="12" cy="14" rx="9" ry="8" fill="#FFF" opacity="0.95" />
+    <!-- Eyes -->
+    <circle cx="9" cy="13" r="1.5" fill="#1e3a5f" />
+    <circle cx="15" cy="13" r="1.5" fill="#1e3a5f" />
+    <!-- Nose -->
+    <ellipse cx="12" cy="16" rx="1.5" ry="1" fill="#1e3a5f" />
+  </g>
+  <defs>
+    <linearGradient id="foxGradientFav" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+  </defs>
+</svg>
